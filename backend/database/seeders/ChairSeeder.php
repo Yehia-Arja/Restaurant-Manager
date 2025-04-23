@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Chair;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class ChairSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Chair::factory()->count(60)->create();
     }
 }
