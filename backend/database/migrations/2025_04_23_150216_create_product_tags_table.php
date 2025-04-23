@@ -17,6 +17,7 @@ return new class extends Migration
             // Composite Primary keys
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
+            
             $table->unique(['product_id', 'tag_id']);
         });
     }
