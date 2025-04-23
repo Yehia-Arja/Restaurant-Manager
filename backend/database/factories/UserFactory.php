@@ -25,12 +25,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        static $userTypeIds = null;
         static $locationIds = null;
-
-        if (is_null($userTypeIds)) {
-            $userTypeIds = UserType::pluck('id')->toArray();
-        }
 
         if (is_null($locationIds)) {
             $locationIds = RestaurantLocation::pluck('id')->toArray();
@@ -46,7 +41,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'date_of_birth' => $this->faker->date(),
             'remember_token' => Str::random(10),
-            'user_type_id' => $userTypeIds[array_rand($userTypeIds)],
+            'user_type_id' => $this->faker->numberBetween(3, 4), // Only Client (3) or Waiter (4)
             'restaurant_location_id' => $this->faker->boolean(70) ? $locationIds[array_rand($locationIds)] : null,
         ];
     }

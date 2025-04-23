@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserSetting>
@@ -16,8 +17,16 @@ class UserSettingFactory extends Factory
      */
     public function definition(): array
     {
+        static $userIds = null;
+
+        if (is_null($userIds)) {
+            $userIds = User::pluck('id')->toArray();
+        }
+
         return [
-            //
+            'user_id' => $userIds[array_rand($userIds)],
+            'dark_mode' => $this->faker->boolean(50),
+            'notifications' => $this->faker->boolean(80),
         ];
     }
 }
