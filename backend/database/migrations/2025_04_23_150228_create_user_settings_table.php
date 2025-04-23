@@ -19,6 +19,7 @@ return new class extends Migration
 
             // Foreign key
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            
             $table->unique('user_id');
         });
     }

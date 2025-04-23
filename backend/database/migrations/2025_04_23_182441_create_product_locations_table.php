@@ -11,19 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('product_locations', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default('pending');
-            $table->softDeletes();
+            $table->decimal('override_price')->nullable();
+            $table->string('override_description')->nullable();
             $table->timestamps();
 
-            // Foreign keys
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            // Foreign Keys
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->foreignId('table_id')->constrained('tables')->onDelete('cascade');
             $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
             
-            $table->index('restaurant_location_id');
+            $table->unique(['product_id', 'restaurant_location_id']);
         });
     }
 
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('product_locations');
     }
 };
