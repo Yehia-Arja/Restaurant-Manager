@@ -19,6 +19,10 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->unique(['user_id', 'product_id']);   
             
+            // Foreign key
+            $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
+            
+            $table->index('restaurant_location_id');
         });
     }
 

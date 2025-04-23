@@ -16,6 +16,11 @@ return new class extends Migration
             $table->json('position');
             $table->smallInteger('floor')->default(0);
             $table->timestamps();
+
+            // Foreign key
+            $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
+            
+            $table->index('restaurant_location_id');
         });
     }
 
