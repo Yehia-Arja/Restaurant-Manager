@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('file_name');
             $table->timestamps();
+
+            // Foreign Key
+            $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
         });
     }
 
