@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ProductTag;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class ProductTagSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        ProductTag::factory()->count(50)->create();
     }
 }
