@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('tables', function (Blueprint $table) {
             $table->id();
+            $table->json('position');
+            $table->smallInteger('floor')->default(0);
             $table->timestamps();
         });
     }
