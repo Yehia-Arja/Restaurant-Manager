@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\User;
+use App\Models\Product;
+use App\Models\RestaurantLocation;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Favorite>
@@ -16,8 +19,26 @@ class FavoriteFactory extends Factory
      */
     public function definition(): array
     {
+        static $userIds = null;
+        static $productIds = null;
+        static $locationIds = null;
+
+        if (is_null($userIds)) {
+            $userIds = User::pluck('id')->toArray();
+        }
+
+        if (is_null($productIds)) {
+            $productIds = Product::pluck('id')->toArray();
+        }
+
+        if (is_null($locationIds)) {
+            $locationIds = RestaurantLocation::pluck('id')->toArray();
+        }
+
         return [
-            //
+            'user_id' => $userIds[array_rand($userIds)],
+            'product_id' => $productIds[array_rand($productIds)],
+            'restaurant_location_id' => $locationIds[array_rand($locationIds)],
         ];
     }
 }
