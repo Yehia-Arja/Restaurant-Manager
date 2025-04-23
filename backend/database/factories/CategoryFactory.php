@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\RestaurantLocation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,9 +16,17 @@ class CategoryFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {
-        return [
-            //
-        ];
-    }
+	{
+		static $locationIds = null;
+
+		if (is_null($locationIds)) {
+			$locationIds = RestaurantLocation::pluck('id')->toArray();
+		}
+
+		return [
+			'name' => $this->faker->word(),
+			'file_name' => $this->faker->word() . '.jpg',
+			'restaurant_location_id' => $locationIds[array_rand($locationIds)],
+		];
+	}
 }
