@@ -26,6 +26,8 @@ return new class extends Migration
 			// Foreign keys
 			$table->foreignId('user_type_id')->constrained('user_types')->onDelete('cascade');
 			$table->foreignId('restaurant_location_id')->nullable()->constrained('restaurant_locations')->onDelete('set null');
+            
+            $table->index('restaurant_location_id');
 		});
 
 		Schema::create('password_reset_tokens', function (Blueprint $table) {

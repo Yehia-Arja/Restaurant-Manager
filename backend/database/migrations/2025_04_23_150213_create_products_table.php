@@ -24,6 +24,8 @@ return new class extends Migration
 			// Foreign keys
 			$table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
 			$table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
+            
+            $table->index('restaurant_location_id');
 		});
 	}
 
