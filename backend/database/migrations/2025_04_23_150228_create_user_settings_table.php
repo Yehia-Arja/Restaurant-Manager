@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
+            $table->boolean('dark_mode')->default(false);
+            $table->boolean('notifications')->default(true);
             $table->timestamps();
+
+            // Foreign key
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->unique('user_id');
         });
     }
 
