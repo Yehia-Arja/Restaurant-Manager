@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('product_tags', function (Blueprint $table) {
+            $table->timestamps();
+            
             // Composite Primary keys
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
             $table->unique(['product_id', 'tag_id']);
-            $table->timestamps();
         });
     }
 
