@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ProductLocation;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class ProductLocationSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        ProductLocation::factory()->count(50)->create();
     }
 }
