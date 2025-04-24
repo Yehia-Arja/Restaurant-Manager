@@ -29,7 +29,7 @@ class DeviceSessionFactory extends Factory
             'user_agent' => $this->faker->userAgent(),
             'last_used_at' => now()->subMinutes(rand(1, 10000)),
             'is_active' => $this->faker->boolean(80),
-            'user_id' => $userIds[array_rand($userIds)],
+            'user_id' => $this->faker->randomElement($userIds),
         ];
     }
 }

@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\RestaurantLocation;
 use App\Models\Table;
 use App\Models\Sensor;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Chair>
@@ -18,8 +19,13 @@ class ChairFactory extends Factory
      */
     public function definition(): array
     {
+        static $locationIds = null;
         static $tableIds = null;
         static $sensorIds = null;
+
+        if (is_null($locationIds)) {
+            $locationIds = RestaurantLocation::pluck('id')->toArray();
+        }
 
         if (is_null($tableIds)) {
             $tableIds = Table::pluck('id')->toArray();
@@ -30,9 +36,13 @@ class ChairFactory extends Factory
         }
 
         return [
-            'position' => json_encode(['x' => rand(0, 500), 'y' => rand(0, 500)]),
-            'table_id' => $tableIds[array_rand($tableIds)],
-            'sensor_id' => $sensorIds[array_rand($sensorIds)],
+            'position' => json_encode([
+                'x' => $this->faker->numberBetween(0, 500),
+                'y' => $this->faker->numberBetween(0, 500),
+            ]),
+            'restaurant_location_id' => $this->faker->randomElement($locationIds),
+            'table_id' => $this->faker->randomElement($tableIds),
+            'sensor_id' => $this->faker->unique()->randomElement($sensorIds),
         ];
     }
 }

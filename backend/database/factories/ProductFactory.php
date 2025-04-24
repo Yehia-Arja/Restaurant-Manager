@@ -30,7 +30,7 @@ class ProductFactory extends Factory
 			'price' => $this->faker->randomFloat(2, 5, 100),
 			'time_to_deliver' => $this->faker->numberBetween(10, 60) . ' mins',
 			'ingredients' => $this->faker->words(5, true),
-			'category_id' => $categoryIds[array_rand($categoryIds)],
+			'category_id' => $this->faker->randomElement($categoryIds),
 		];
 	}
 }

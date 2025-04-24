@@ -29,7 +29,7 @@ class TableFactory extends Factory
                 'y' => $this->faker->numberBetween(0, 1000),
             ]),
             'floor' => $this->faker->numberBetween(0, 3),
-            'restaurant_location_id' => $locationIds[array_rand($locationIds)],
+            'restaurant_location_id' => $this->faker->randomElement($locationIds),
         ];
     }
 }

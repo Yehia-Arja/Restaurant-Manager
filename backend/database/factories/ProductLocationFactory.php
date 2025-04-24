@@ -30,8 +30,6 @@ class ProductLocationFactory extends Factory
         }
 
         return [
-            'product_id' => $productIds[array_rand($productIds)],
-            'restaurant_location_id' => $locationIds[array_rand($locationIds)],
             'override_price' => $this->faker->optional()->randomFloat(2, 5, 40),
             'override_description' => $this->faker->optional()->sentence(),
         ];
