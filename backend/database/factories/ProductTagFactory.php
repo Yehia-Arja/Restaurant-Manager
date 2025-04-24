@@ -30,8 +30,8 @@ class ProductTagFactory extends Factory
         }
 
         return [
-            'product_id' => $productIds[array_rand($productIds)],
-            'tag_id' => $tagIds[array_rand($tagIds)],
+            'product_id' => $this->faker->randomElement($productIds),
+            'tag_id' => $this->faker->randomElement($tagIds),
         ];
     }
 }
