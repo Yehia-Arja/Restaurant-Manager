@@ -27,6 +27,7 @@ class UserSeeder extends Seeder
             'email' => 'owner@gmail.com',
             'password' => Hash::make('password'),
             'user_type_id' => 2,
+            'restaurant_id' => 1,
             'restaurant_location_id' => 1,
         ]);
 
