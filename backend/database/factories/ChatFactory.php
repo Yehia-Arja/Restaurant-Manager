@@ -24,7 +24,7 @@ class ChatFactory extends Factory
         }
 
         return [
-            'user_id' => $userIds[array_rand($userIds)],
+            'user_id' => $this->faker->randomElement($userIds),
         ];
     }
 }
