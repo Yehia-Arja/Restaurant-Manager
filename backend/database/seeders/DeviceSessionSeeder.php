@@ -13,6 +13,6 @@ class DeviceSessionSeeder extends Seeder
      */
     public function run(): void
     {
-        DeviceSession::factory()->count(50)->create();
+        DeviceSession::factory()->count(20)->create();
     }
 }
