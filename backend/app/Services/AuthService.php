@@ -18,7 +18,11 @@ class AuthService
 
         // Return user + token
         return [
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
             'access_token' => $token,
         ];
     }
