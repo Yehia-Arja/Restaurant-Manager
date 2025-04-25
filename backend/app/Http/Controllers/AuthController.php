@@ -18,4 +18,14 @@ class AuthController extends Controller
         }
         return $this->success($userData, 'Login successful');
     }
+
+    public function signup(LoginRequest $request) {
+        $data = $request->validated();
+        $userData = AuthService::signup($data);
+        
+        if (!$userData) {
+            return $this->error('Signup failed');
+        }
+        return $this->success($userData, 'Signup successful');
+    }
 }
