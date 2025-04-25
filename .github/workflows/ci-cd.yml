@@ -20,26 +20,46 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+
     steps:
       - uses: actions/checkout@v3
-      - run: cp backend/.env.example backend/.env
-      - uses: shivammathur/setup-php@v2
+
+      - name: Copy .env file
+        run: cp backend/.env.example backend/.env
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
           extensions: mbstring, pdo, pdo_mysql, zip
-      - run: composer install --no-progress --prefer-dist
-      - run: php artisan key:generate
-      - run: php artisan migrate --force
-      - run: php artisan test
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist
+        working-directory: backend
+
+      - name: Generate app key
+        run: php artisan key:generate
+        working-directory: backend
+
+      - name: Run DB migrations
+        run: php artisan migrate --force
+        working-directory: backend
+
+      - name: Run Laravel tests
+        run: php artisan test
+        working-directory: backend
 
   deploy:
     needs: laravel-tests
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
+
       - uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.EC2_DEPLOY_KEY }}
+
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
