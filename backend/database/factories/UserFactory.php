@@ -26,10 +26,19 @@ class UserFactory extends Factory
     public function definition(): array
     {
         static $locationIds = null;
+        static $restaurantIds = null;
 
         if (is_null($locationIds)) {
             $locationIds = RestaurantLocation::pluck('id')->toArray();
         }
+
+        if (is_null($restaurantIds)) {
+            // collect unique restaurant_id values from locations
+            $restaurantIds = RestaurantLocation::pluck('restaurant_id')->unique()->toArray();
+        }
+
+        // Decide user type (2 = Owner, 3 = Client, 4 = Waiter)
+        $userType = $this->faker->numberBetween(2, 4);
 
         return [
             'name' => $this->faker->name(),
@@ -41,10 +50,17 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'date_of_birth' => $this->faker->date(),
             'remember_token' => Str::random(10),
-            'user_type_id' => $this->faker->numberBetween(3, 4), // Only Client (3) or Waiter (4)
-            'restaurant_location_id' => $this->faker->boolean(70) ? $locationIds[array_rand($locationIds)] : null,
+
+            'user_type_id' => $userType,
+
+            // Only Owners (type 2) get a restaurant_id
+            'restaurant_id' => $userType === 2 ? $this->faker->randomElement($restaurantIds) : null,
+
+            // Only Waiters (type 4) get a branch
+            'restaurant_location_id' => $userType === 4 ? $this->faker->randomElement($locationIds) : null,
         ];
     }
+
 
     /**
      * Indicate that the model's email address should be unverified.
