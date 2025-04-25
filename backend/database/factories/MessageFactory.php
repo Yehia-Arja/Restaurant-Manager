@@ -32,8 +32,8 @@ class MessageFactory extends Factory
         return [
             'sender_type' => $this->faker->randomElement(['user', 'ai']),
             'content' => $this->faker->sentence(),
-            'user_id' => $userIds[array_rand($userIds)],
-            'chat_id' => $chatIds[array_rand($chatIds)],
+            'user_id' => $this->faker->randomElement($userIds),
+            'chat_id' => $this->faker->randomElement($chatIds),
         ];
     }
 }

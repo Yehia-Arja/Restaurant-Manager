@@ -32,8 +32,8 @@ class ReviewFactory extends Factory
         return [
             'rating' => $this->faker->numberBetween(1, 5),
             'comment' => $this->faker->optional()->sentence(),
-            'order_id' => $orderIds[array_rand($orderIds)],
-            'restaurant_location_id' => $locationIds[array_rand($locationIds)],
+            'order_id' => $this->faker->randomElement($orderIds),
+            'restaurant_location_id' => $this->faker->randomElement($locationIds),
         ];
     }
 }

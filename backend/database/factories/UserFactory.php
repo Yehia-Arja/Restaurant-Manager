@@ -43,7 +43,6 @@ class UserFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
-            'email_verified_at' => now(),
             'google_id' => null,
             'provider' => null,
             'phone_number' => $this->faker->phoneNumber(),

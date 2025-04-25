@@ -43,10 +43,10 @@ class OrderFactory extends Factory
 
         return [
             'status' => $this->faker->randomElement(['pending', 'completed', 'cancelled']),
-            'user_id' => $userIds[array_rand($userIds)],
-            'product_id' => $productIds[array_rand($productIds)],
-            'table_id' => $tableIds[array_rand($tableIds)],
-            'restaurant_location_id' => $locationIds[array_rand($locationIds)],
+            'user_id' => $this->faker->randomElement($userIds),
+            'product_id' => $this->faker->randomElement($productIds),
+            'table_id' => $this->faker->randomElement($tableIds),
+            'restaurant_location_id' => $this->faker->randomElement($locationIds),
         ];
     }
 }

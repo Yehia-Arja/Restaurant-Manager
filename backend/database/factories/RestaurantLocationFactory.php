@@ -27,7 +27,7 @@ class RestaurantLocationFactory extends Factory
             'location_name' => $this->faker->streetName(),
             'address' => $this->faker->address(),
             'city' => $this->faker->city(),
-            'restaurant_id' => $restaurantIds[array_rand($restaurantIds)],
+            'restaurant_id' => $this->faker->randomElement($restaurantIds),
         ];
     }
 }

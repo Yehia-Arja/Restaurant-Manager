@@ -24,7 +24,7 @@ class SensorFactory extends Factory
         }
 
         return [
-            'restaurant_location_id' => $locationIds[array_rand($locationIds)],
+            'restaurant_location_id' => $this->faker->randomElement($locationIds),
         ];
     }
 }
