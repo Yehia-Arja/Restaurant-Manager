@@ -11,11 +11,11 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request) {
         $credentials = $request->validated();
-        $data = LoginService::login($credentials);
+        $userData = AuthService::login($credentials);
         
-        if (!$data) {
+        if (!$userData) {
             return $this->error('Invalid credentials', 401);
         }
-        return $this->success($data, 'Login successful');
+        return $this->success($userData, 'Login successful');
     }
 }
