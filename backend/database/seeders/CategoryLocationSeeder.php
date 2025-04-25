@@ -13,6 +13,7 @@ class CategoryLocationSeeder extends Seeder
     {
         $categoryIds = Category::pluck('id')->toArray();
         $locationIds = RestaurantLocation::pluck('id')->toArray();
+        
         $used = [];
 
         for ($i = 0; $i < 50; $i++) {
