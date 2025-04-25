@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\DeviceSession;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class DeviceSessionSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        DeviceSession::factory()->count(20)->create();
     }
 }

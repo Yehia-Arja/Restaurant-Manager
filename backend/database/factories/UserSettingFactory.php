@@ -24,7 +24,7 @@ class UserSettingFactory extends Factory
         }
 
         return [
-            'user_id' => $userIds[array_rand($userIds)],
+            'user_id' => $this->faker->unique()->randomElement($userIds),
             'dark_mode' => $this->faker->boolean(50),
             'notifications' => $this->faker->boolean(80),
         ];
