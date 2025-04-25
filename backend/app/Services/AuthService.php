@@ -33,10 +33,6 @@ class AuthService
         // Normalize email
         $data['email'] = strtolower($data['email']);
 
-        // Check if user already exists
-        if (User::where('email', $data['email'])->exists()) {
-            return false;
-        }
 
         // Create user
         User::create([
