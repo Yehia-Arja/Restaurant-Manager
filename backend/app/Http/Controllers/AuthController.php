@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Services\LoginService;
+use App\Services\AuthService;
 use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
 
