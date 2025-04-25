@@ -1,0 +1,70 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Copy .env file
+        run: cp backend/.env.example backend/.env
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, pdo, pdo_mysql, zip
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist
+        working-directory: backend
+
+      - name: Generate app key
+        run: php artisan key:generate
+        working-directory: backend
+
+      - name: Run DB migrations
+        run: php artisan migrate --force
+        working-directory: backend
+
+      - name: Run Laravel tests
+        run: php artisan test
+        working-directory: backend
+
+  deploy:
+    needs: laravel-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_DEPLOY_KEY }}
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+            cd Restaurant-Manager/backend
+            git pull origin docker-branch
+            docker-compose down
+            docker-compose up -d --build
+          EOF
