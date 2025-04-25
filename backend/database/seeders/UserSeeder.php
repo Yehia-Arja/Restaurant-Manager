@@ -21,16 +21,8 @@ class UserSeeder extends Seeder
             'user_type_id' => 1,
         ]);
 
-        // Owner
-        User::create([
-            'name' => 'Owner User',
-            'email' => 'owner@gmail.com',
-            'password' => Hash::make('password'),
-            'user_type_id' => 2,
-            'restaurant_location_id' => 1,
-        ]);
 
-        // Clients and Waiters
+        // Owners, Clients and Waiters
         User::factory()->count(100)->create();
     }
 }
