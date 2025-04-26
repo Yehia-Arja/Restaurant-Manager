@@ -44,7 +44,7 @@ class OnboardingPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Buttons
+                    // Google Button
                     CustomButton(
                         text: 'Continue with Google',
                         isOutlined: true,
@@ -52,12 +52,39 @@ class OnboardingPage extends StatelessWidget {
                         onPressed: () {},
                     ),
                     const SizedBox(height: 16),
-                    
-                    Center(
-                        child: Text('or', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.label)),
-                    ),
+					
+					// Divider with 'or' text
+                    Row(
+						children: [
+							const Expanded(
+								child: Divider(
+									thickness: 1,
+									color: AppColors.label,
+									endIndent: 8,
+								),
+							),
+				
+							Text(
+								'or',
+								style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+									color: AppColors.label,
+								),
+							),
+							
+							const Expanded(
+								child: Divider(
+									thickness: 1,
+									color: AppColors.label,
+									indent: 8,
+								),
+							),
+						]
+						
+					),
+
                     const SizedBox(height: 16),
 
+					// Login Button
                     CustomButton(
                         text: 'Login',
                         onPressed: () {
@@ -66,6 +93,7 @@ class OnboardingPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
+					// Sign Up Button
                     CustomButton(
                         text: 'Sign Up',
                         isSecondary: true,
