@@ -62,7 +62,36 @@ class OnboardingPage extends StatelessWidget {
                                 iconPath: 'lib/assets/icons/google-logo.png',
                                 onPressed: () {},
                             ),
-                            const SizedBox(height: 24),
+
+                            const SizedBox(height: 16),
+
+                            // Divider with "or"
+                            Row(
+                                children: [
+                                    const Expanded(
+                                        child: Divider(
+                                            color: AppColors.label,
+                                            thickness: 1,
+                                            endIndent: 8,
+                                        ),
+                                    ),
+                                    Text(
+                                        'or',
+                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                            color: AppColors.label,
+                                        ),
+                                    ),
+                                    const Expanded(
+                                        child: Divider(
+                                            color: AppColors.label,
+                                            thickness: 1,
+                                            indent: 8,
+                                        ),
+                                    ),
+                                ],
+                            ),
+
+                            const SizedBox(height: 16),
 
                             CustomButton(
                                 text: 'Login',
@@ -70,7 +99,8 @@ class OnboardingPage extends StatelessWidget {
                                     Navigator.pushNamed(context, '/login');
                                 },
                             ),
-                            const SizedBox(height: 12),
+
+                            const SizedBox(height: 16),
 
                             CustomButton(
                                 text: 'Sign Up',
