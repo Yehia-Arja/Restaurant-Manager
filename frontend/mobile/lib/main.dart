@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'features/auth/presentation/pages/onboarding_page.dart';
+import 'features/auth/presentation/pages/login_page.dart';
 import 'package:mobile/core/theme/theme.dart';
 
 
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
             routes: {
                 // when Navigator.pushNamed('/') is called, it shows OnboardingPage
                 '/': (_) => const OnboardingPage(),
+                '/login': (_) => const LoginPage(),
             },
         );
     }
