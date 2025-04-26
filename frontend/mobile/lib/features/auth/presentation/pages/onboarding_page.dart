@@ -7,14 +7,12 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // The global scaffoldBackgroundColor is applied from AppTheme
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // App name with mixed colors using RichText
               RichText(
                 text: TextSpan(
                   style: Theme.of(context).textTheme.headlineMedium,
@@ -32,15 +30,10 @@ class OnboardingPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // The following ElevatedButtons use the style defined in AppTheme.elevatedButtonTheme
-              // Wrapped in SizedBox to control width and height
               SizedBox(
                 width: double.infinity,
-                height: 57,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Handle "Get Started"
-                  },
+                  onPressed: () {},
                   child: const Text('Get Started'),
                 ),
               ),
@@ -48,11 +41,8 @@ class OnboardingPage extends StatelessWidget {
 
               SizedBox(
                 width: double.infinity,
-                height: 57,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Handle "Login"
-                  },
+                  onPressed: () {},
                   child: const Text('Login'),
                 ),
               ),
@@ -60,16 +50,11 @@ class OnboardingPage extends StatelessWidget {
 
               SizedBox(
                 width: double.infinity,
-                height: 57,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Handle "Sign Up"
-                  },
+                  onPressed: () {},
                   child: const Text('Sign Up'),
                 ),
               ),
-
-              // Add more SizedBox+ElevatedButton widgets here as needed
             ],
           ),
         ),

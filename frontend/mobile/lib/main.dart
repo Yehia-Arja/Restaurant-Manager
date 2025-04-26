@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'features/auth/presentation/pages/onboarding_page.dart';
+import 'package:mobile/core/theme/theme.dart';
 
 
 void main() {
@@ -17,9 +18,7 @@ class MyApp extends StatelessWidget {
             // A title for Android’s task switcher, not shown in UI.
             title: 'MyApp',
 
-            theme: ThemeData.from(
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            ),
+            theme: AppTheme.lightTheme, // Use the light theme defined in theme.dart
 
             // Instead of home:, we’ll use named routes:
             initialRoute: '/',  
