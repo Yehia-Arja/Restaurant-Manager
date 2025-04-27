@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobile/core/services/dio_service.dart';
 
 class AuthAPI {
     static Future<void> login({
