@@ -44,17 +44,17 @@ class AppTheme {
 
             elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,   // your orange
+                    backgroundColor: AppColors.accent,   // orange
                     foregroundColor: Colors.white,       // button text color
-                    textStyle: const TextStyle(           // <- button text style
+                    textStyle: const TextStyle(           // button text style
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     ),
-                    minimumSize: const Size(double.infinity, 57), // <- full width and height
+                    minimumSize: const Size(double.infinity, 57), // full width and height
                     shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),    // <- rounded border
+                    borderRadius: BorderRadius.circular(12),    // rounded border
                     ),
-                    elevation: 0,   // <- flat buttons, no ugly shadow unless you want it
+                    elevation: 0,   // flat buttons, no ugly shadow
                 ),
             ),
 
