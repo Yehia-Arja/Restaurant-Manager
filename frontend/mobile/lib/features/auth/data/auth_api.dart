@@ -23,7 +23,7 @@ class AuthAPI {
                 throw Exception('No data received from server');
             }
 
-            final data = response.data;
+            final data = response.data['data'];
             final token = data['access_token'];
 
             final prefs = await SharedPreferences.getInstance();
