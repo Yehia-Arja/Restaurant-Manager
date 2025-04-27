@@ -8,7 +8,7 @@ class AuthAPI {
     }) async {
         try {
             final response = await DioService.dio.post(
-                '/login',
+                'guest/login',
                 data: {
                     'email': email,
                     'password': password,
