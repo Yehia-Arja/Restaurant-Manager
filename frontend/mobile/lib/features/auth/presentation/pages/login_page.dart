@@ -4,6 +4,8 @@ import 'package:mobile/core/theme/theme.dart';
 import 'package:mobile/shared/widgets/base_scaffold.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile/shared/widgets/custom_button.dart';
+import 'package:mobile/features/auth/data/auth_api.dart';
+
 
 class LoginPage extends StatefulWidget {
     const LoginPage({super.key});
@@ -13,7 +15,16 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+    final TextEditingController _emailController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
     bool _isPasswordVisible = false;
+
+    @override
+    void dispose() {
+        _emailController.dispose();
+        _passwordController.dispose();
+        super.dispose();
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -26,8 +37,8 @@ class _LoginPageState extends State<LoginPage> {
                         child: IconButton(
                             onPressed: () => Navigator.pop(context),
                             icon: const Icon(
-                                Icons.chevron_left, 
-                                size: 24, 
+                                Icons.chevron_left,
+                                size: 24,
                                 color: AppColors.placeholder,
                             ),
                         ),
@@ -66,6 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 4),
 
                     TextField(
+                        controller: _emailController,
                         decoration: InputDecoration(
                             hintText: 'Enter your email',
                             prefixIcon: const Icon(Icons.email, color: AppColors.placeholder),
@@ -87,12 +99,13 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 4),
 
                     TextField(
+                        controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
                             hintText: 'Enter your password',
                             prefixIcon: const Icon(Icons.lock, color: AppColors.placeholder),
                             suffixIcon: Padding(
-                                padding: const EdgeInsets.only(right: 16), // 16px from right
+                                padding: const EdgeInsets.only(right: 16),
                                 child: IconButton(
                                     icon: Icon(
                                         _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -112,8 +125,29 @@ class _LoginPageState extends State<LoginPage> {
 
                     CustomButton(
                         text: 'Login',
-                        onPressed: () {
-                            // Handle login action
+                        onPressed: () async {
+                            try {
+                                await AuthAPI.login(
+                                    email: _emailController.text.trim(),
+                                    password: _passwordController.text.trim(),
+                                );
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Login successful!'),
+                                    ),
+                                );
+
+                                
+                                // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+                            } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Login failed: ${e.toString()}'),
+                                        backgroundColor: Colors.red,
+                                    ),
+                                );
+                            }
                         },
                     ),
 
