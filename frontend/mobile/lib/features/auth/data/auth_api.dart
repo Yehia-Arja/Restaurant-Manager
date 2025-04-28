@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile/core/services/dio_service.dart';
-import '../models/login_response.dart';
+import 'package:mobile/features/auth/models/login_response.dart';
 
 class AuthAPI {
     // This class handles the API calls related to authentication.
