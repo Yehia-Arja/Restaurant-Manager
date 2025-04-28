@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile/shared/widgets/custom_button.dart';
 import 'package:mobile/features/auth/data/auth_api.dart';
 
-
 class LoginPage extends StatefulWidget {
     const LoginPage({super.key});
 
@@ -18,12 +17,53 @@ class _LoginPageState extends State<LoginPage> {
     final TextEditingController _emailController = TextEditingController();
     final TextEditingController _passwordController = TextEditingController();
     bool _isPasswordVisible = false;
+    bool _isLoading = false;
 
     @override
     void dispose() {
         _emailController.dispose();
         _passwordController.dispose();
         super.dispose();
+    }
+
+    Future<void> _handleLogin() async {
+        if (_isLoading) return;
+
+        setState(() {
+            _isLoading = true;
+        });
+
+        try {
+            await AuthAPI.login(
+                email: _emailController.text.trim(),
+                password: _passwordController.text.trim(),
+            );
+
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Login successful!')),
+            );
+
+            // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
+
+        } catch (e) {
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                    title: const Text('Error'),
+                    content: Text(e.toString().replaceAll('Exception: ', '')),
+                    actions: [
+                        TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('OK'),
+                        ),
+                    ],
+                ),
+            );
+        } finally {
+            setState(() {
+                _isLoading = false;
+            });
+        }
     }
 
     @override
@@ -124,39 +164,20 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
 
                     CustomButton(
-                        text: 'Login',
-                        onPressed: () async {
-                            try {
-                                await AuthAPI.login(
-                                    email: _emailController.text.trim(),
-                                    password: _passwordController.text.trim(),
-                                );
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Login successful!'),
-                                    ),
-                                );
-
-                                
-                                // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomePage()));
-                            } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text(e.toString().replaceAll('Exception: ', '')), // Clean text
-                                        backgroundColor: Colors.red,
-                                    ),
-                                );
+                        text: _isLoading ? 'Loading...' : 'Login',
+                        onPressed: () {
+                            if (!_isLoading) {
+                                _handleLogin();
                             }
-                        },
+                        }
                     ),
 
                     const SizedBox(height: 16),
 
                     SvgPicture.asset(
                         'lib/assets/images/login.svg',
-                        width: MediaQuery.of(context).size.width * 0.9, // 90% of screen width
-                        height: MediaQuery.of(context).size.height * 0.4, // 40% of screen height
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: MediaQuery.of(context).size.height * 0.4,
                         fit: BoxFit.contain,
                     ),
                 ],
