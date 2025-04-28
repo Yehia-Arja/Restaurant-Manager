@@ -36,16 +36,16 @@ class AuthAPI {
                 'message': message,
                 'user': userJson,
             };
-        } on DioError catch (e) {
+        } on DioError catch (error) {
             // If the backend returned a response with an error message
-            final msg = (e.response?.data['message'] as String?) 
-                ?? e.message 
+            final msg = (error.response?.data['message'] as String?) 
+                ?? error.message 
                 ?? 'An unknown error occurred';
             return {
                 'success': false,
                 'message': msg,
             };
-        } catch (e) {
+        } catch (error) {
             // Any other error (parsing, network down, etc.)
             return {
                 'success': false,
