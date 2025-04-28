@@ -22,17 +22,15 @@ class LoginController extends GetxController {
         isLoading.value    = true;
         errorMessage.value = null;
 
-        final resp = await AuthAPI.login(email: email, password: password);
+        final resppnse = await AuthAPI.login(email: email, password: password);
 
-        if (!resp['success'] as bool) {
+        if (!response['success'] as bool) {
             // Show exactly the backend’s message
             errorMessage.value = resp['message'] as String;
         } else {
             // Success path
-            final userJson = resp['user'] as Map<String, dynamic>;
+            final userJson = response['user'] as Map<String, dynamic>;
             user.value = UserModel.fromJson(userJson);
-            // You could also show a success snackbar if you like:
-            // Get.snackbar('Success', resp['message'] as String);
             Get.offAllNamed('/home');
         }
 
