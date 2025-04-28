@@ -1,44 +1,25 @@
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile/core/services/dio_service.dart';
-import 'package:dio/dio.dart';
 
 class AuthAPI {
-    static Future<void> login({
+    static Future<Map<String, dynamic>> login({
         required String email,
         required String password,
     }) async {
-        try {
-            final response = await DioService.dio.post(
-                'guest/login',
-                data: {
-                    'email': email,
-                    'password': password,
-                },
-            );
+        final response = await DioService.dio.post(
+            'guest/login',
+            data: {'email': email, 'password': password},
+        );
 
-            if (response.statusCode != 200) {
-                throw Exception('Failed to login: ${response.statusCode}');
-            }
+        final data = response.data['data'];
+        final token = data['access_token'] as String;
 
-            if (response.data == null) {
-                throw Exception('No data received from server');
-            }
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
 
-            final data = response.data['data'];
-            final token = data['access_token'];
-
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('token', token);
-
-            return;
-
-        }on DioException catch (e) {
-            final errorMessage = e.response?.data['message'] ?? 'An error occurred';
-            throw Exception('Login failed: $errorMessage');
-        } 
-        catch (e) {
-            print('Login error: $e');
-            rethrow;
-        }
+        // return just the user JSON and message
+        return data['user',data.message] as Map<String, dynamic>;
     }
+
 }
