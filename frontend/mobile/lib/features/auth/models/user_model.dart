@@ -2,11 +2,15 @@ class UserModel {
     final int id;
     final String name;
     final String email;
+    final String? date_of_birth;
+    final String? phone_number;
 
     UserModel({
         required this.id,
         required this.name,
         required this.email,
+        this.date_of_birth,
+        this.phone_number,
     });
 
     factory UserModel.fromJson(Map<String, dynamic> json) {
