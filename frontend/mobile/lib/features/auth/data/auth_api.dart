@@ -31,7 +31,11 @@ class AuthAPI {
 
             return;
 
-        } catch (e) {
+        }on DioException catch (e) {
+            final errorMessage = e.response?.data['message'] ?? 'An error occurred';
+            throw Exception('Login failed: $errorMessage');
+        } 
+        catch (e) {
             print('Login error: $e');
             rethrow;
         }
