@@ -1,4 +1,4 @@
-import 'package:frontend/mobile/lib/features/auth/models/user_model.dart';
+import 'package:mobile/features/auth/models/user_model.dart';
 
 class LoginResponse {
     final bool success;

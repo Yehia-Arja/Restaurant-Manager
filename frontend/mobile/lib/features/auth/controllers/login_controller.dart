@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:mobile/features/auth/data/auth_api.dart';
 import 'package:mobile/features/auth/models/login_response.dart';
 import 'package:mobile/features/auth/models/user_model.dart';
+import 'package:flutter/material.dart';
 
 class LoginController extends GetxController {
     final isLoading         = false.obs;
@@ -14,11 +15,21 @@ class LoginController extends GetxController {
         super.onInit();
         ever<String?>(errorMessage, (message) {
             if (message != null) {
-                Get.defaultDialog(
-                    title: 'Error',
-                    middleText: message,
-                    textConfirm: 'OK',
-                    onConfirm: () => errorMessage.value = null,
+                Get.dialog(
+                    AlertDialog(
+                        title: const Text('Error'),
+                        content: Text(message),
+                        actions: [
+                        TextButton(
+                            onPressed: () {
+                            errorMessage.value = null;
+                            Get.back();
+                            },
+                            child: const Text('OK'),
+                        ),
+                        ],
+                    ),
+                    barrierDismissible: false,  
                 );
             }
         });
