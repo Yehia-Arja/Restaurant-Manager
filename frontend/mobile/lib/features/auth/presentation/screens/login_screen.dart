@@ -8,14 +8,14 @@ import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_event.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_state.dart';
 
-class LoginPage extends StatefulWidget {
-    const LoginPage({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+    const LoginScreen({Key? key}) : super(key: key);
 
     @override
-    State<LoginPage> createState() => _LoginPageState();
+    State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
     final TextEditingController _emailController = TextEditingController();
     final TextEditingController _passwordController = TextEditingController();
     bool _isPasswordVisible = false;

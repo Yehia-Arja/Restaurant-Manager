@@ -6,8 +6,8 @@ import 'package:mobile/features/auth/data/datasources/auth_remote.dart';
 import 'package:mobile/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:mobile/features/auth/domain/usecases/login_usecase.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:mobile/features/auth/presentation/screens/onboarding_page.dart';
-import 'package:mobile/features/auth/presentation/screens/login_page.dart';
+import 'package:mobile/features/auth/presentation/screens/onboarding_screen.dart';
+import 'package:mobile/features/auth/presentation/screens/login_screen.dart';
 
 void main() {
     WidgetsFlutterBinding.ensureInitialized();
@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             initialRoute: '/',
             routes: {
-                '/': (_) => const OnboardingPage(),
-                '/login': (_) => const LoginPage(),
+                '/': (_) => const OnboardingScreen(),
+                '/login': (_) => const LoginScreen(),
                 '/home': (_) {
                     return Scaffold(
                         body: Center(child: Text('Home')),  
