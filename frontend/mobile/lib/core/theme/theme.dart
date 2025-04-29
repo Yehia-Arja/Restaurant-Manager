@@ -14,29 +14,29 @@ class AppTheme {
                 elevation: 0,
             ),
 
-            textTheme:TextTheme(
+            textTheme: TextTheme(
                 headlineLarge: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: AppColors.secondary,
                 ),
                 headlineMedium: TextStyle(
-                    fontSize: 22,
+                    fontSize: 24,
                     fontWeight: FontWeight.w600,
                     color: AppColors.secondary,
                 ),
                 bodyLarge: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.normal,
                     color: AppColors.secondary,
                 ),
                 bodyMedium: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.normal,
                     color: AppColors.secondary,
                 ),
                 bodySmall: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.normal,
                     color: AppColors.secondary,
                 ),
@@ -44,17 +44,17 @@ class AppTheme {
 
             elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,   // orange
-                    foregroundColor: Colors.white,       // button text color
-                    textStyle: const TextStyle(           // button text style
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    backgroundColor: AppColors.accent,
+                    foregroundColor: Colors.white,
+                    textStyle: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                     ),
-                    minimumSize: const Size(double.infinity, 57), // full width and height
+                    minimumSize: const Size(double.infinity, 57),
                     shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),    // rounded border
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
-                    elevation: 0,   // flat buttons, no ugly shadow
+                    elevation: 0,
                 ),
             ),
 
