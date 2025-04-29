@@ -5,11 +5,7 @@ class BaseScaffold extends StatelessWidget {
   final Widget child;
   final bool centerContent;
 
-  const BaseScaffold({
-    super.key,
-    required this.child,
-    this.centerContent = false,
-  });
+  const BaseScaffold({super.key, required this.child, this.centerContent = false});
 
   @override
   Widget build(BuildContext context) {
