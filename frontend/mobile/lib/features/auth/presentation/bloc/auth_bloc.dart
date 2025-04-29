@@ -15,12 +15,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLoginRequested(LoginRequested event, Emitter<AuthState> emit) async {
     if (event.email.isEmpty || event.password.isEmpty) {
-      emit(const AuthError("Email and password are both required."));
+      emit(AuthError("Email and password are both required."));
       return;
     }
     emit(AuthLoading());
     try {
-      final user = await _loginUseCase(email: event.email, password: event.password);
+      final user = await _loginUseCase(event.email, event.password);
       emit(AuthAuthenticated(user));
     } catch (e) {
       emit(AuthError(e.toString()));

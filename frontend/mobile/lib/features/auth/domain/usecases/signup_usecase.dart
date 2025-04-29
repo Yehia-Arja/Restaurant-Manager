@@ -1,9 +1,9 @@
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 
-class SignupUsecase {
+class SignupUseCase {
   final AuthRepository _repo;
-  SignupUsecase(this._repo);
+  SignupUseCase(this._repo);
 
   Future<User> call({
     required String firstName,
