@@ -4,8 +4,8 @@ import 'package:mobile/shared/widgets/custom_button.dart';
 import 'package:mobile/shared/widgets/base_scaffold.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class OnboardingPage extends StatelessWidget {
-    const OnboardingPage({super.key});
+class OnboardingScreen extends StatelessWidget {
+    const OnboardingScreen({super.key});
 
     @override
     Widget build(BuildContext context) {
