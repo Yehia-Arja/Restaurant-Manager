@@ -4,105 +4,84 @@ import 'package:flutter/material.dart';
 import 'package:mobile/core/theme/colors.dart';
 
 class CustomButton extends StatelessWidget {
-    // Either text or child must be non-null
-    final String? text;
-    final Widget? child;
-    final VoidCallback? onPressed;
-    final bool isSecondary;
-    final bool isOutlined;
-    final String? iconPath;
+  // Either text or child must be non-null
+  final String? text;
+  final Widget? child;
 
-    const CustomButton({
-        Key? key,
-        this.text,
-        this.child,
-        required this.onPressed,
-        this.isSecondary = false,
-        this.isOutlined = false,
-        this.iconPath,
-    })  : assert(text != null || child != null, 'Either text or child must be provided'),
-          super(key: key);
+  // Disabled when null
+  final VoidCallback? onPressed;
+  final bool isSecondary;
+  final bool isOutlined;
+  final String? iconPath;
 
-    @override
-    Widget build(BuildContext context) {
-        final size = MediaQuery.of(context).size;
-        final buttonWidth = size.width * 0.9;
-        final buttonHeight = size.height * 0.07;
+  const CustomButton({
+    super.key,
+    this.text,
+    this.child,
+    required this.onPressed,
+    this.isSecondary = false,
+    this.isOutlined = false,
+    this.iconPath,
+  }) : assert(
+         text != null || child != null,
+         'Either text or child must be provided',
+       );
 
-        Color backgroundColor = AppColors.accent;
-        Color textColor = Colors.white;
-        BorderSide borderSide = BorderSide.none;
+  @override
+  Widget build(BuildContext context) {
+    // Build the inner content
+    final content =
+        child ??
+        (iconPath != null
+            ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(iconPath!, height: 20),
+                const SizedBox(width: 8),
+                Text(text!),
+              ],
+            )
+            : Text(text!));
 
-        if (isSecondary) {
-            backgroundColor = AppColors.secondary;
-        }
-        if (isOutlined) {
-            backgroundColor = Colors.transparent;
-            textColor = AppColors.secondary;
-            borderSide = BorderSide(color: AppColors.border);
-        }
+    // Material button: rely on theme, override only when secondary or outlined
+    if (!Platform.isIOS) {
+      final baseStyle = Theme.of(context).elevatedButtonTheme.style;
+      ButtonStyle? style = baseStyle;
 
-        // Decide inner content
-        final Widget inner = child ??
-            (iconPath != null
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                        Image.asset(
-                            iconPath!,
-                            height: buttonHeight * 0.4,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                            text!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(
-                                    fontSize: buttonHeight * 0.3,
-                                    fontWeight: FontWeight.bold,
-                                    color: textColor,
-                                ),
-                        ),
-                    ],
-                )
-                : Text(
-                    text!,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge
-                        ?.copyWith(
-                            fontSize: buttonHeight * 0.3,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                        ),
-                ));
-
-        return SizedBox(
-            width: buttonWidth,
-            height: buttonHeight,
-            child: Platform.isIOS
-                ? CupertinoButton(
-                    color: backgroundColor,
-                    padding: EdgeInsets.zero,
-                    borderRadius: BorderRadius.circular(buttonHeight * 0.25),
-                    onPressed: onPressed,
-                    child: inner,
-                  )
-                : ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: backgroundColor,
-                        foregroundColor: textColor,
-                        elevation: 0,
-                        side: borderSide,
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(buttonHeight * 0.25),
-                        ),
-                    ),
-                    onPressed: onPressed,
-                    child: inner,
-                  ),
+      if (isSecondary) {
+        style = baseStyle?.copyWith(
+          backgroundColor: WidgetStateProperty.all(AppColors.secondary),
         );
+      } else if (isOutlined) {
+        style = baseStyle?.copyWith(
+          backgroundColor: WidgetStateProperty.all(Colors.transparent),
+          side: WidgetStateProperty.all(BorderSide(color: AppColors.border)),
+          foregroundColor: WidgetStateProperty.all(AppColors.secondary),
+        );
+      }
+
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          style: style,
+          onPressed: onPressed,
+          child: content,
+        ),
+      );
     }
+
+    // Cupertino button
+    Color bg = isSecondary ? AppColors.secondary : AppColors.accent;
+    final childContent = content;
+    return SizedBox(
+      width: double.infinity,
+      child: CupertinoButton(
+        color: bg,
+        borderRadius: BorderRadius.circular(8),
+        padding: EdgeInsets.symmetric(vertical: 16),
+        onPressed: onPressed,
+        child: childContent,
+      ),
+    );
+  }
 }
