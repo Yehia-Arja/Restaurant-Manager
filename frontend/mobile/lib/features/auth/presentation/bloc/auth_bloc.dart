@@ -8,6 +8,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     AuthBloc(this._loginUseCase) : super(AuthInitial()) {
         on<LoginRequested>((event, emit) async {
+            if (event.email.isEmpty || event.password.isEmpty) {
+                emit(AuthError("Email and password are both required."));
+                return;
+            }
             emit(AuthLoading());
             try {
                 final user = await _loginUseCase(event.email, event.password);
