@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/services/dio_service.dart';
 import 'package:mobile/core/theme/theme.dart';
+import 'package:mobile/features/auth/presentation/screens/signup_screen.dart';
 import 'package:mobile/features/auth/data/datasources/auth_remote.dart';
 import 'package:mobile/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:mobile/features/auth/domain/usecases/login_usecase.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => const OnboardingScreen(),
         '/login': (_) => const LoginScreen(),
+        '/signup': (_) => const SignupScreen(),
         '/home': (_) {
           return Scaffold(body: Center(child: Text('Home')));
         },
