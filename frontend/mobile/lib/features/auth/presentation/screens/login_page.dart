@@ -136,7 +136,14 @@ class _LoginPageState extends State<LoginPage> {
                             builder: (context, state) {
                                 final isLoading = state is AuthLoading;
                                 return CustomButton(
-                                    text: isLoading ? 'Loading...' : 'Login',
+                                    child: isLoading ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                            color: AppColors.primary,
+                                            strokeWidth: 2,
+                                        ),
+                                    ) : const Text('Login'),
                                     onPressed: () {
                                         if (!isLoading) {
                                             final email = _emailController.text.trim();
