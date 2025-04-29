@@ -41,10 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   title: const Text('Error'),
                   content: Text(state.message),
                   actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('OK'),
-                    ),
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
                   ],
                 ),
           );
@@ -58,11 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
               alignment: Alignment.topLeft,
               child: IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(
-                  Icons.chevron_left,
-                  size: 24,
-                  color: AppColors.placeholder,
-                ),
+                icon: const Icon(Icons.chevron_left, size: 24, color: AppColors.placeholder),
               ),
             ),
             const SizedBox(height: 16),
@@ -75,18 +68,14 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 16),
             Text(
               'Login to your account',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.label),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
             ),
             const SizedBox(height: 16),
             Align(
               alignment: Alignment.topLeft,
               child: Text(
                 'Email',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppColors.label),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
               ),
             ),
             const SizedBox(height: 4),
@@ -94,10 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _emailController,
               decoration: InputDecoration(
                 hintText: 'Enter your email',
-                prefixIcon: const Icon(
-                  Icons.email,
-                  color: AppColors.placeholder,
-                ),
+                prefixIcon: const Icon(Icons.email, color: AppColors.placeholder),
               ),
             ),
             const SizedBox(height: 16),
@@ -105,9 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
               alignment: Alignment.topLeft,
               child: Text(
                 'Password',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppColors.label),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
               ),
             ),
             const SizedBox(height: 4),
@@ -116,23 +100,15 @@ class _LoginScreenState extends State<LoginScreen> {
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
                 hintText: 'Enter your password',
-                prefixIcon: const Icon(
-                  Icons.lock,
-                  color: AppColors.placeholder,
-                ),
+                prefixIcon: const Icon(Icons.lock, color: AppColors.placeholder),
                 suffixIcon: Padding(
                   padding: const EdgeInsets.only(right: 16),
                   child: IconButton(
                     icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                       color: AppColors.placeholder,
                     ),
-                    onPressed:
-                        () => setState(
-                          () => _isPasswordVisible = !_isPasswordVisible,
-                        ),
+                    onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                   ),
                 ),
               ),
@@ -157,9 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (!isLoading) {
                       final email = _emailController.text.trim();
                       final password = _passwordController.text.trim();
-                      context.read<AuthBloc>().add(
-                        LoginRequested(email, password),
-                      );
+                      context.read<AuthBloc>().add(LoginRequested(email, password));
                     }
                   },
                 );
