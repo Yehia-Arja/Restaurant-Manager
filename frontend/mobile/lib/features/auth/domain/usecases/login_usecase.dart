@@ -5,7 +5,7 @@ class LoginUseCase {
   final AuthRepository _repo;
   LoginUseCase(this._repo);
 
-  Future<User> call(String email, String password) {
+  Future<User> call({required String email, required String password}) {
     return _repo.login(email: email, password: password);
   }
 }

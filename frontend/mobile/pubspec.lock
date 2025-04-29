@@ -152,14 +152,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  get:
-    dependency: "direct main"
-    description:
-      name: get
-      sha256: c79eeb4339f1f3deffd9ec912f8a923834bec55f7b49c9e882b8fef2c139d425
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.7.2"
   http:
     dependency: transitive
     description:
@@ -176,6 +168,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  keyboard_actions:
+    dependency: "direct main"
+    description:
+      name: keyboard_actions
+      sha256: "5f47285bb4c9aebee4f0e29655ab0fb9da3ac931bc9fe1fbc5d2c5d7d955b81e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.7"
   leak_tracker:
     dependency: transitive
     description:
