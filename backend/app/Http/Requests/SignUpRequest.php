@@ -22,7 +22,8 @@ class SignUpRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|string|min:6',
@@ -32,7 +33,12 @@ class SignUpRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Name is required',
+            'first_name.required' => 'First Name is required',
+            'first_name.string' => 'First Name must be a string',
+            'first_name.max' => 'First Name must not exceed 255 characters',
+            'last_name.required' => 'Last Name is required',
+            'last_name.string' => 'Last Name must be a string',
+            'last_name.max' => 'Last Name must not exceed 255 characters',
             'email.required' => 'Email is required',
             'email.email' => 'Email must be a valid email address',
             'email.unique' => 'Email already exists',
