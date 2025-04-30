@@ -42,11 +42,11 @@ class AuthService
         ]);
 
         // Log them in immediately
-        $data = self::login([
+        $userData = self::login([
             'email' => $data['email'],
             'password' => $data['password'],
         ]);
 
-        return $data;
+        return $userData;
     }
 }
