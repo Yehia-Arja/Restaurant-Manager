@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class AuthService
@@ -25,5 +26,27 @@ class AuthService
             ],
             'access_token' => $token,
         ];
+    }
+
+    public static function signup(array $data)
+    {
+        // Normalize email
+        $data['email'] = strtolower($data['email']);
+
+
+        // Create user
+        User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+        ]);
+
+        // Log them in immediately
+        $userData = self::login([
+            'email' => $data['email'],
+            'password' => $data['password'],
+        ]);
+
+        return $userData;
     }
 }

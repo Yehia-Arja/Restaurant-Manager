@@ -1,22 +1,23 @@
 <?php
 
-namespace App;
+namespace App\Traits;
 
 trait ApiResponseTrait
 {
-    public function success($data = null, $message = null, $code = 200)
+    public function success(string $message, $data = null, int $code = 200)
     {
         return response()->json([
             'success' => true,
-            'data' => $data,
             'message' => $message,
+            'data' => $data,
         ], $code);
     }
-    public function error($message = null, $code = 400)
+    public function error(string $message, $error = null, int $code = 400)
     {
         return response()->json([
             'success' => false,
             'message' => $message,
+            'error' => $error,
         ], $code);
     }
 }

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\SignupRequest;
 use App\Services\AuthService;
-use Illuminate\Container\Attributes\Log;
-use Illuminate\Http\Request;
+
 
 class AuthController extends Controller
 {
@@ -16,6 +16,16 @@ class AuthController extends Controller
         if (!$userData) {
             return $this->error('Invalid credentials', 401);
         }
-        return $this->success($userData, 'Login successful');
+        return $this->success('Login successful', $userData);
+    }
+
+    public function signup(SignupRequest $request) {
+        $data = $request->validated();
+        $userData = AuthService::signup($data);
+        
+        if (!$userData) {
+            return $this->error('Signup failed');
+        }
+        return $this->success('Signup successful', $userData);
     }
 }
