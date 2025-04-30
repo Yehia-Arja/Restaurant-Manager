@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Copy .env file
-        run: cp backend/.env.example backend/.env
+        run: cp smartDine-server/.env.example smartDine-server/.env
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -35,19 +35,19 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist
-        working-directory: backend
+        working-directory: smartDine-server
 
       - name: Generate app key
         run: php artisan key:generate
-        working-directory: backend
+        working-directory: smartDine-server
 
       - name: Run DB migrations
         run: php artisan migrate --force
-        working-directory: backend
+        working-directory: smartDine-server
 
       - name: Run Laravel tests
         run: php artisan test
-        working-directory: backend
+        working-directory: smartDine-server
 
   deploy:
     needs: laravel-tests
@@ -63,7 +63,7 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-            cd Restaurant-Manager/backend
+            cd Restaurant-Manager/smartDine-server
             git pull origin docker-branch
             docker-compose down
             docker-compose up -d --build
