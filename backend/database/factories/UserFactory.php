@@ -41,7 +41,8 @@ class UserFactory extends Factory
         $userType = $this->faker->numberBetween(2, 4);
 
         return [
-            'name' => $this->faker->name(),
+            'first_name' => $this->faker->name(),
+            'last_name' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
             'google_id' => null,
             'provider' => null,
