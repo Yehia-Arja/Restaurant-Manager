@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sensors', function (Blueprint $table) {
+        Schema::create('chairs', function (Blueprint $table) {
             $table->id();
+            $table->json('position');
             $table->timestamps();
 
-            // Foreign key
-            $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
+            // Foreign keys
+            $table->foreignId('table_id')->constrained('tables')->onDelete('cascade');
+            $table->foreignId('sensor_id')->constrained('sensors')->onDelete('cascade');
             
-            $table->index('restaurant_location_id');
+            $table->unique('sensor_id');
         });
     }
 
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sensors');
+        Schema::dropIfExists('chairs');
     }
 };

@@ -42,7 +42,7 @@ class UserFactory extends Factory
 
         return [
             'first_name' => $this->faker->name(),
-            'last_name' => $this->faker->lastName(),
+            'last_name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'google_id' => null,
             'provider' => null,

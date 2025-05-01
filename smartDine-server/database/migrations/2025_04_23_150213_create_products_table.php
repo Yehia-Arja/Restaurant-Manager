@@ -18,11 +18,14 @@ return new class extends Migration
 			$table->text('description');
 			$table->decimal('price', 8, 2);
 			$table->string('time_to_deliver');
-			$table->text('ingredients');
+			$table->longText('ingredients');
+			$table->decimal('avg_rating', 3, 2)->default(0);  // e.g. 4.25
+			$table->integer('rating_count')->default(0);
 			$table->timestamps();
 
 			// Foreign keys
 			$table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+			$table->foreignId('restaurant_id')->constrained('restaurants')->onDelete('cascade');
 		});
 	}
 
