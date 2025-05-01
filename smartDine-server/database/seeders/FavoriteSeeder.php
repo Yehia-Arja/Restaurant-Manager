@@ -4,37 +4,54 @@ namespace Database\Seeders;
 
 use App\Models\Favorite;
 use App\Models\Product;
-use App\Models\RestaurantLocation;
+use App\Models\Restaurant;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class FavoriteSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $userIds = User::pluck('id')->toArray();
         $productIds = Product::pluck('id')->toArray();
-        $locationIds = RestaurantLocation::pluck('id')->toArray();
+        $restaurantIds = Restaurant::pluck('id')->toArray();
 
-        $used = [];
+        $usedProductKeys = [];
+        $usedRestaurantKeys = [];
 
+        // Seed product favorites
         for ($i = 0; $i < 50; $i++) {
             do {
                 $userId = $userIds[array_rand($userIds)];
                 $productId = $productIds[array_rand($productIds)];
-                $key = $userId . '-' . $productId;
-            } while (in_array($key, $used));
-
-            $used[] = $key;
+                $key = "$userId-$productId";
+            } while (in_array($key, $usedProductKeys));
+            $usedProductKeys[] = $key;
 
             Favorite::create([
                 'user_id' => $userId,
                 'product_id' => $productId,
-                'restaurant_location_id' => $locationIds[array_rand($locationIds)],
+                'restaurant_id' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        // Seed restaurant favorites
+        for ($i = 0; $i < 30; $i++) {
+            do {
+                $userId = $userIds[array_rand($userIds)];
+                $restaurantId = $restaurantIds[array_rand($restaurantIds)];
+                $key = "$userId-$restaurantId";
+            } while (in_array($key, $usedRestaurantKeys));
+            $usedRestaurantKeys[] = $key;
+
+            Favorite::create([
+                'user_id' => $userId,
+                'product_id' => null,
+                'restaurant_id' => $restaurantId,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }
