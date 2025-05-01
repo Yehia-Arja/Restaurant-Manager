@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('rating'); //1-5
+            $table->unsignedBigInteger('reviewable_id');
+            $table->string('reviewable_type');
+            $table->tinyInteger('rating'); // 1–5 scale
             $table->text('comment')->nullable();
             $table->timestamps();
 
-            // Foreign key
-            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
-            $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
-            
-            $table->index('restaurant_location_id');
+            // Foreign keys
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         });
     }
 
