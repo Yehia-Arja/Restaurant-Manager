@@ -11,17 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('tables', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('rating'); //1-5
-            $table->text('comment')->nullable();
+            $table->json('position');
+            $table->smallInteger('floor')->default(0);
             $table->timestamps();
 
             // Foreign key
-            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
-            
-            $table->index('restaurant_location_id');
         });
     }
 
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('tables');
     }
 };

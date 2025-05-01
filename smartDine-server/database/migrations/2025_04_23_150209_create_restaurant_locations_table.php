@@ -16,7 +16,7 @@ return new class extends Migration
 			$table->string('location_name');
 			$table->string('address');
 			$table->string('city');
-			$table->string('floor_plan')->nullable(); // image
+			$table->string('image')->nullable(); // file name
 			$table->timestamps();
 
             // Foreign key

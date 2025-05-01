@@ -11,16 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('sensors', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('file_name');
             $table->timestamps();
-
-            // Foreign key
-            $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
-            
-            $table->index('restaurant_location_id');
         });
     }
 
@@ -29,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('sensors');
     }
 };
