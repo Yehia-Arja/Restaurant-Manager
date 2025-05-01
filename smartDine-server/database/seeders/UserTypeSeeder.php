@@ -18,7 +18,7 @@ class UserTypeSeeder extends Seeder
             ['id' => 1, 'name' => 'admin'],
             ['id' => 2, 'name' => 'owner'],
             ['id' => 3, 'name' => 'client'],
-            ['id' => 4, 'name' => 'waiter'],
+            ['id' => 4, 'name' => 'staff'],
         ];
 
         foreach ($types as $type) {
