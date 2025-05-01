@@ -6,24 +6,16 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Table;
-use App\Models\RestaurantLocation;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>
  */
 class OrderFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         static $userIds = null;
         static $productIds = null;
-        static $tableIds = null;
-        static $locationIds = null;
 
         if (is_null($userIds)) {
             $userIds = User::pluck('id')->toArray();
@@ -33,20 +25,14 @@ class OrderFactory extends Factory
             $productIds = Product::pluck('id')->toArray();
         }
 
-        if (is_null($tableIds)) {
-            $tableIds = Table::pluck('id')->toArray();
-        }
-
-        if (is_null($locationIds)) {
-            $locationIds = RestaurantLocation::pluck('id')->toArray();
-        }
+        $table = Table::inRandomOrder()->first(); // get table with location
 
         return [
             'status' => $this->faker->randomElement(['pending', 'completed', 'cancelled']),
             'user_id' => $this->faker->randomElement($userIds),
             'product_id' => $this->faker->randomElement($productIds),
-            'table_id' => $this->faker->randomElement($tableIds),
-            'restaurant_location_id' => $this->faker->randomElement($locationIds),
+            'table_id' => $table->id,
+            'restaurant_location_id' => $table->restaurant_location_id, // match the table
         ];
     }
 }
