@@ -12,46 +12,49 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // 1. User types must be seeded before users
+            // 1. Base system types
             UserTypeSeeder::class,
 
-            // 2. Restaurants first, then their locations
+            // 2. Restaurants and branches
             RestaurantSeeder::class,
             RestaurantLocationSeeder::class,
 
-            // 3. Users (admin + owner first) after restaurant_locations
+            // 3. Users (admins, owners, clients, staff)
             UserSeeder::class,
 
-            // 4. Categories and tags
+            // 4. Assign staff to branches
+            StaffLocationSeeder::class,
+
+            // 5. Categories, products, and tags
             CategorySeeder::class,
-            TagSeeder::class,
-
-            // 5. Pivot linking categories to branches
-            CategoryLocationSeeder::class,
-
-            // 6. Products and product pivot
             ProductSeeder::class,
-            ProductLocationSeeder::class,
+            TagSeeder::class,
+            ProductTagSeeder::class,
 
-            // 7. Physical setup (after locations exist)
+            // 6. Attach products & categories to branches
+            LocationableSeeder::class,
+
+            // 7. Physical setup (sensors, tables, chairs)
             SensorSeeder::class,
             TableSeeder::class,
             ChairSeeder::class,
 
-            // 8. Chats/messages after users
+            // 8. Orders, favorites, reviews
+            OrderSeeder::class,
+            FavoriteSeeder::class,
+            ReviewSeeder::class,
+
+            // 9. Product insights (precomputed stats)
+            ProductInsightsSeeder::class,
+
+            // 10. Chats and messages
             ChatSeeder::class,
             MessageSeeder::class,
 
-            // 9. Orders and related review/favorites (need users/products/tables)
-            OrderSeeder::class,
-            ReviewSeeder::class,
-            FavoriteSeeder::class,
-
-            // 10. User personalization
+            // 11. Personalization and sessions
             UserSettingSeeder::class,
             UserPreferenceSeeder::class,
             DeviceSessionSeeder::class,
         ]);
-
     }
 }
