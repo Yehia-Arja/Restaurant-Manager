@@ -11,10 +11,11 @@ return new class extends Migration
 	 */
 	public function up(): void
 	{
+		
 		Schema::create('users', function (Blueprint $table) {
 			$table->id();
 			$table->string('first_name');
-			$table->string('last_name');		
+			$table->string('last_name');
 			$table->string('email')->unique();
 			$table->string('google_id')->nullable();
 			$table->string('provider')->nullable();
@@ -24,14 +25,12 @@ return new class extends Migration
 			$table->rememberToken();
 			$table->timestamps();
 
-			// Foreign keys
-			$table->foreignId('user_type_id')->default('4')->constrained('user_types')->onDelete('cascade');
-			$table->foreignId('restaurant_id')->nullable()->constrained('restaurants')->onDelete('set null');
-			$table->foreignId('restaurant_location_id')->nullable()->constrained('restaurant_locations')->onDelete('set null');
-            
-            $table->index('restaurant_location_id');
+			$table->foreignId('user_type_id')
+				  ->default(4)
+				  ->constrained('user_types')
+				  ->onDelete('cascade');
 		});
-
+			
 		Schema::create('password_reset_tokens', function (Blueprint $table) {
 			$table->string('email')->primary();
 			$table->string('token');

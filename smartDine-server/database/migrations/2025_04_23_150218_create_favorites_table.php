@@ -12,17 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('favorites', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
             
-            // Composite Primary keys
+            // Foreign keys
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->unique(['user_id', 'product_id']);   
-            
-            // Foreign key
-            $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
-            
-            $table->index('restaurant_location_id');
+            $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('cascade');
+            $table->foreignId('restaurant_id')->nullable()->constrained('restaurants')->onDelete('cascade');
+
+            // Uniqueness for product and restaurant favorites
+            $table->unique(['user_id', 'product_id']);
+            $table->unique(['user_id', 'restaurant_id']);
         });
     }
 
