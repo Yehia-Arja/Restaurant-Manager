@@ -25,19 +25,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        static $locationIds = null;
-        static $restaurantIds = null;
-
-        if (is_null($locationIds)) {
-            $locationIds = RestaurantLocation::pluck('id')->toArray();
-        }
-
-        if (is_null($restaurantIds)) {
-            // collect unique restaurant_id values from locations
-            $restaurantIds = RestaurantLocation::pluck('restaurant_id')->unique()->toArray();
-        }
-
-        // Decide user type (2 = Owner, 3 = Client, 4 = Waiter)
+        // Decide user type (2 = Owner, 3 = Staff, 4 = Client)
         $userType = $this->faker->numberBetween(2, 4);
 
         return [
@@ -53,11 +41,7 @@ class UserFactory extends Factory
 
             'user_type_id' => $userType,
 
-            // Only Owners (type 2) get a restaurant_id
-            'restaurant_id' => $userType === 2 ? $this->faker->randomElement($restaurantIds) : null,
-
-            // Only Waiters (type 4) get a branch
-            'restaurant_location_id' => $userType === 4 ? $this->faker->randomElement($locationIds) : null,
+            
         ];
     }
 
