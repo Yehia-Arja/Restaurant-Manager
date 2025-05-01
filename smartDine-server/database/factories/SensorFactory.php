@@ -17,14 +17,8 @@ class SensorFactory extends Factory
      */
     public function definition(): array
     {
-        static $locationIds = null;
-
-        if (is_null($locationIds)) {
-            $locationIds = RestaurantLocation::pluck('id')->toArray();
-        }
-
         return [
-            'restaurant_location_id' => $this->faker->randomElement($locationIds),
+            //
         ];
     }
 }

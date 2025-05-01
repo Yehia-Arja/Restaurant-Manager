@@ -15,14 +15,14 @@ class DatabaseSeeder extends Seeder
             // 1. Base system types
             UserTypeSeeder::class,
 
-            // 2. Restaurants and branches
+            // 2. Users (admin, owner, client, staff)
+            UserSeeder::class,
+
+            // 3. Restaurants and branches
             RestaurantSeeder::class,
             RestaurantLocationSeeder::class,
 
-            // 3. Users (admins, owners, clients, staff)
-            UserSeeder::class,
-
-            // 4. Assign staff to branches
+            // 4. Assign staff to branches (pivot)
             StaffLocationSeeder::class,
 
             // 5. Categories, products, and tags
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
             FavoriteSeeder::class,
             ReviewSeeder::class,
 
-            // 9. Product insights (precomputed stats)
+            // 9. Product insights (analytics cache)
             ProductInsightsSeeder::class,
 
             // 10. Chats and messages

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
+            $table->string('file_name');
+            $table->string('logo')->nullable();
             $table->timestamps();
 
             // Forign key 
