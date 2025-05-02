@@ -15,9 +15,10 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    
     /**
      * The attributes that are mass assignable.
-     *
+     * @method \Illuminate\Database\Eloquent\Relations\HasMany restaurants()
      * @var list<string>
      */
     protected $fillable = [
@@ -74,6 +75,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(StaffLocation::class);
     }
+
 
     public function restaurants()
     {
