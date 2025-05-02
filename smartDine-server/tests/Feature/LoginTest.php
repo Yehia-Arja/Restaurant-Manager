@@ -17,16 +17,12 @@ class LoginTest extends TestCase
         // Seed required FK data (user_types)
         $this->seed(UserTypeSeeder::class);
 
-        // Create user with valid user_type_id (e.g., 4 = client)
-        User::factory()->create([
-            'email' => 'test@example.com',
-            'password' => Hash::make('password'),
-            'user_type_id' => 4,
-        ]);
+        // Create user with valid user_type_id
+        $user = User::factory()->create();
 
         // Send login request
         $response = $this->postJson('/api/v0.1/guest/login', [
-            'email' => 'test@example.com',
+            'email' => $user->email,
             'password' => 'password',
         ]);
 
@@ -40,7 +36,7 @@ class LoginTest extends TestCase
                 'access_token',
             ]
         ]);
-        $this->assertEquals(4, $response->json('data.user_type_id'));
+        $this->assertEquals($user->user_type_id, $response->json('data.user_type_id'));
         $this->assertIsString($response->json('data.access_token'));
     }
 }
