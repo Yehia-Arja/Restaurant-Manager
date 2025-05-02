@@ -9,4 +9,9 @@ class Restaurant extends Model
 {
     /** @use HasFactory<\Database\Factories\RestaurantFactory> */
     use HasFactory;
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 }

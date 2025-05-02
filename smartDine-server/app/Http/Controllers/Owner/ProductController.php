@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Owner;
 
 use App\Models\Product;
+use App\Http\Resources\Owner\ProductResource;
+use App\Http\Controllers\Controller;
 use GuzzleHttp\Promise\Create;
-use App\Services\ProductService;
-use App\Http\Requests\CreateProductRequest;
+use App\Http\Requests\Owner\UpdateProductRequest;
+use App\Services\Owner\ProductService;
+use App\Http\Requests\Owner\CreateProductRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -14,21 +17,22 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Check if the owner has a restaurant
         $owner = Auth::user();
-        if (!$owner->restaurant) {
-            return $this->error('Owner does not have a restaurant', 404);
+        $restaurantId = $request->query('restaurant_id');
+
+        // Validate restaurant belongs to this owner
+        if (!$owner->restaurants()->where('id', $restaurantId)->exists()) {
+            return $this->error('Unauthorized access to this restaurant', 403);
         }
 
-        // Fetch products for the restaurant
-        $products = Product::where('restaurant_id', $owner->restaurant->id)->get();
+        // Fetch products for that specific restaurant
+        $products = Product::where('restaurant_id', $restaurantId)->get();
 
-        // Return the products
-        return $this->success('Products fetched successfully', $products);
+        return $this->success('Products fetched successfully', ProductResource::collection($products));
     }
-
+    
      /**
      * Store a newly created resource in storage.
      */
@@ -52,14 +56,6 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         return $this->success('Product fetched successfully', $product);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Product $product)
-    {
-        //
     }
 
     /**
