@@ -2,9 +2,8 @@
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Common\AuthController;
-use App\Http\Controllers\Owner\ProductController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Common\CommonProductController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -17,15 +16,14 @@ Route::group(['prefix' => 'v0.1'], function () {
     });
     Route::group(['prefix' => 'common'], function () {
         Route::group(['prefix' => 'product'], function () {
-            Route::get('/', [CommonProductController::class, 'index']);
-            Route::get('/{product}', [CommonProductController::class, 'show']);
+            Route::get('/', [ProductController::class, 'commonIndex']);
+            Route::get('/{product}', [ProductController::class, 'show']);
         });
     });
     Route::group(['prefix' => 'owner'], function () {
         Route::group(['prefix' => 'product','middleware'=> 'auth:api'], function () {
-            Route::get('/', [ProductController::class, 'index']);
+            Route::get('/', [ProductController::class, 'ownerIndex']);
             Route::post('/', [ProductController::class, 'store']);
-            Route::get('/{product}', [ProductController::class, 'show']);
             Route::put('/{product}', [ProductController::class, 'update']);
             Route::delete('/{product}', [ProductController::class, 'destroy']);
         });
