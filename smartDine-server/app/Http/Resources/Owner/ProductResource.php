@@ -12,12 +12,13 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $price = $this->override_price != null ? $this->override_price : $this->price; 
         return [
             'id' => $this->id,
             'name' => $this->name,
             'file_name' => $this->file_name,
             'description' => $this->description,
-            'price' => '$' . $this->price,
+            'price' => '$' . $price,
             'time_to_deliver' => $this->time_to_deliver,
             'ingredients' => $this->ingredients,
             'avg_rating' => $this->avg_rating,
