@@ -42,6 +42,7 @@ class CategoryService
         return Category::destroy($id) > 0;
     }
 
+
     /**
      * List categories, filtered optionally by branch or by restaurant.
      *

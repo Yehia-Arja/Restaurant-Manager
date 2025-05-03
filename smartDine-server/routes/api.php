@@ -42,8 +42,8 @@ Route::group(['prefix' => 'v0.1'], function () {
             Route::delete('{product}',[ProductController::class, 'destroy']);
 
             Route::post('categories', [CategoryController::class, 'store']);
-            Route::put('categories/{category}', [CategoryController::class, 'update']);
-            Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
+            Route::put('categories/{id}', [CategoryController::class, 'update']);
+            Route::delete('categories/{id}', [CategoryController::class, 'destroy']);
         });
 
         // Admin endpoints (only admins hit these)
