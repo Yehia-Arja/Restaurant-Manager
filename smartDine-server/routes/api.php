@@ -21,12 +21,11 @@ Route::group(['prefix' => 'v0.1'], function () {
         Route::group(['prefix' => 'common'], function () {
             Route::get('restaurants',                 [RestaurantController::class,'index']);
             Route::get('restaurant/{id}/homepage',  [RestaurantController::class,'show']);
-            Route::get('products',                  [ProductController::class,'commonIndex']);
+            Route::get('products',                  [ProductController::class,'index']);
         });
 
         // Owner only:
         Route::group(['prefix' => 'owner'], function(){
-            Route::get('product',             [ProductController::class,'ownerIndex']);
             Route::post('product',            [ProductController::class,'store']);
             Route::get('product/{product}',   [ProductController::class,'show']);
             Route::put('product/{product}',   [ProductController::class,'update']);

@@ -25,39 +25,47 @@ class ProductService
         return $product;
     }
 
-    /**
-     * Fetch every product in a given restaurant (owner view).
-     */
-    public static function forOwner(int $restaurantId): Collection
-    {
-        return Product::where('restaurant_id', $restaurantId)
-                      ->get();
-    }
+    
 
     /**
-     * Fetch products available at a branch, with optional category & search filters.
+     * Fetch products at a restaurant or available at a branch, with optional category & search filters.
      * Always returns override_price & override_description from the pivot.
      */
-    public static function forBranch(
-        int     $branchId,
-        ?int    $categoryId = null,
+    public static function list(
+        ?int $branchId,
+        ?int $restaurantId,
+        ?int $categoryId = null,
         ?string $search     = null
     ): Collection {
-        $q = Product::select([
-                'products.*',
-                'loc.override_price',
-                'loc.override_description',
-            ])
-            ->join('locationables as loc', function($join) use ($branchId) {
-                $join->on('loc.locationable_id', '=', 'products.id')
-                     ->where('loc.locationable_type',       'Product')
-                     ->where('loc.restaurant_location_id', $branchId);
-            });
+        if (!$branchId && !$restaurantId) {
+            return collect(); 
+        }
+        $q = Product::query();
 
+        // Branch‐specific (with overrides)
+        if ($branchId) {
+            $q->select([
+                    'products.*',
+                    'loc.override_price',
+                    'loc.override_description',
+                ])
+              ->join('locationables as loc', function($join) use ($branchId) {
+                  $join->on('loc.locationable_id', '=', 'products.id')
+                       ->where('loc.locationable_type', 'Product')
+                       ->where('loc.restaurant_location_id', $branchId);
+              });
+        }
+        // Restaurant‐wide
+        elseif ($restaurantId) {
+            $q->where('restaurant_id', $restaurantId);
+        }
+
+        // Optional category filter
         if ($categoryId) {
             $q->where('products.category_id', $categoryId);
         }
 
+        // Optional search by name OR tag
         if ($search) {
             $q->where(function($sub) use ($search) {
                 $sub->where('products.name', 'like', "%{$search}%")

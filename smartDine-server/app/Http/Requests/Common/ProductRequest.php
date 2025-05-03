@@ -6,25 +6,27 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ProductRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'restaurant_location_id' => 'required|exists:restaurant_locations,id',
+            'restaurant_location_id' => 'sometimes|exists:restaurant_locations,id',
+            'restaurant_id'          => 'sometimes|exists:restaurants,id',
             'category_id'            => 'sometimes|exists:categories,id',
             'search'                 => 'sometimes|string',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'restaurant_location_id.exists' => 'Branch not found.',
+            'restaurant_id.exists'          => 'Restaurant not found.',
+            'category_id.exists'            => 'Category not found.',
         ];
     }
 }
