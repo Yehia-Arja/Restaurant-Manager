@@ -42,8 +42,8 @@ class RestaurantController extends Controller
     }
 
     /**
-     * POST /api/v0.1/common/restaurants
-     * PUT  /api/v0.1/common/restaurants/{id}
+     * POST /api/v0.1/admin/restaurants
+     * PUT  /api/v0.1/admin/restaurants/{id}
      *
      * Both use the same Request + Service::upsert()
      */
@@ -71,7 +71,7 @@ class RestaurantController extends Controller
     }
 
     /**
-     * DELETE /api/v0.1/common/restaurants/{id}
+     * DELETE /api/v0.1/admin/restaurants/{id}
      */
     public function destroy(int $id)
     {
