@@ -21,6 +21,7 @@ class CreateProductRequest extends FormRequest
             'time_to_deliver' => 'required|string|max:100',
             'ingredients' => 'required|string',
             'category_id' => 'required|exists:categories,id',
+            'restaurant_id' => 'required|exists:restaurants,id',
         ];
     }
 

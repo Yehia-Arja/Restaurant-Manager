@@ -13,11 +13,6 @@ class ProductService
      */
     public static function createProduct(array $data): Product
     {
-        $data['restaurant_id'] = Auth::user()
-            ->restaurants()
-            ->first()
-            ->id;
-
         return Product::create($data);
     }
 

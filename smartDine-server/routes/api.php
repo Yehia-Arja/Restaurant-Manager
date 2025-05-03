@@ -16,13 +16,15 @@ Route::group(['prefix' => 'v0.1'], function () {
         Route::post('/signup', [AuthController::class, 'signup']);
     });
     Route::group(['middleware'=>'auth:api'],function(){
+        
+        // Common:
+        Route::group(['prefix' => 'common'], function () {
+            Route::get('restaurants',                 [RestaurantController::class,'index']);
+            Route::get('restaurant/{id}/homepage',  [RestaurantController::class,'show']);
+            Route::get('products',                  [ProductController::class,'commonIndex']);
+        });
 
-        // Common for everybody:
-        Route::get('common/restaurants',                 [RestaurantController::class,'index']);
-        Route::get('common/restaurant/{id}/homepage',  [RestaurantController::class,'show']);
-        Route::get('common/products',                  [ProductController::class,'commonIndex']);
-
-        // Owner‐only:
+        // Owner only:
         Route::group(['prefix' => 'owner'], function(){
             Route::get('product',             [ProductController::class,'ownerIndex']);
             Route::post('product',            [ProductController::class,'store']);
