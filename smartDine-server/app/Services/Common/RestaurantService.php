@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Services\Common;
 
 use App\Models\Restaurant;
 use App\Services\CategoryService;

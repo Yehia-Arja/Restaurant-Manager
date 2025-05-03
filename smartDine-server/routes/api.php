@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Common\AuthController;
+use App\Http\Controllers\Common\RestaurantController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,10 @@ Route::group(['prefix' => 'v0.1'], function () {
         Route::group(['prefix' => 'product'], function () {
             Route::get('/', [ProductController::class, 'commonIndex']);
             Route::get('/{product}', [ProductController::class, 'show']);
+        });
+        Route::group(['prefix' => 'restaurant'], function () {
+            Route::get('/', [RestaurantController::class, 'index']);
+            Route::get('/{id}', [RestaurantController::class, 'show']);
         });
     });
     Route::group(['prefix' => 'owner'], function () {

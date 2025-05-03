@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Common;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Services\RestaurantService;
+use App\Services\Common\RestaurantService;
 
 class RestaurantController extends Controller
 {
