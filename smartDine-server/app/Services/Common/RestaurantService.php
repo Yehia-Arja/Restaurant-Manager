@@ -26,7 +26,7 @@ class RestaurantService
      */
     public static function deleteRestaurant(int $id): bool
     {
-        return (bool) Restaurant::destroy($id);
+        return Restaurant::destroy($id) > 0;
     }
     /**
      * Fetch every restaurant that has at least one branch.
@@ -57,7 +57,7 @@ class RestaurantService
         // Load restaurant + its branches
         $restaurant = Restaurant::with('locations')->find($restaurantId);
 
-        if (! $restaurant || $restaurant->locations->isEmpty()) {
+        if (!$restaurant || $restaurant->locations->isEmpty()) {
             return null;
         }
 
@@ -67,7 +67,7 @@ class RestaurantService
             ? $branches->firstWhere('id', $branchId)
             : $branches->first();
 
-        if (! $selected) {
+        if (!$selected) {
             return null;
         }
 
