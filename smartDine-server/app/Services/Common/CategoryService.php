@@ -37,7 +37,7 @@ class CategoryService
     /**
      * Delete a category by ID.
      */
-    public static function delete(int $id): bool
+    public static function deleteCategory(int $id): bool
     {
         return Category::destroy($id) > 0;
     }

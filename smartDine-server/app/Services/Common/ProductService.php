@@ -25,7 +25,10 @@ class ProductService
         return $product;
     }
 
-    
+    public static function deleteProduct($id): bool
+    {
+        return Product::destroy($id) > 0;
+    }
 
     /**
      * Fetch products at a restaurant or available at a branch, with optional category & search filters.
