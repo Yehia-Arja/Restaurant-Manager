@@ -21,7 +21,6 @@ class CategoryController extends Controller
         $categories = CategoryService::list(
             $data['restaurant_id'],
             $data['branch_id'],
-            $data['category_id']
         );
         
         if ($categories->isEmpty()) {
