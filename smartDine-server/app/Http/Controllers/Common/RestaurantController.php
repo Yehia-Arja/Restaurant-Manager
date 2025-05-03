@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Common;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Services\RestaurantService;
 
 class RestaurantController extends Controller
@@ -22,7 +23,7 @@ class RestaurantController extends Controller
     public function show($id)
     {
         // Fetch a specific restaurant by ID
-        $restaurant = RestaurantService::getRestaurantDefaultBranch($id);
+        $restaurant = RestaurantService::getRestaurantBranchDetails($id);
 
         if (!$restaurant) {
             return $this->error('Restaurant not found', 404);
