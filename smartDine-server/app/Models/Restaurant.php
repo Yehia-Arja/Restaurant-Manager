@@ -14,4 +14,8 @@ class Restaurant extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+    public function locations()
+    {
+        return $this->hasMany(RestaurantLocation::class, 'restaurant_id', 'id');
+    }
 }
