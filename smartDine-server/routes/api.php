@@ -29,7 +29,7 @@ Route::group(['prefix' => 'v0.1'], function () {
             Route::get('restaurants',                  [RestaurantController::class, 'index']);
             Route::get('restaurant/{id}/homepage',     [RestaurantController::class, 'show']);
             Route::get('products',                     [ProductController::class, 'index']);
-            Route::get('products/{product}',           [ProductController::class, 'show']);
+            Route::get('products/{id}',           [ProductController::class, 'show']);
 
             Route::get('categories',                   [CategoryController::class, 'index']);
         });
@@ -37,13 +37,13 @@ Route::group(['prefix' => 'v0.1'], function () {
         // Owner endpoints (only owners hit these)
         Route::group(['prefix' => 'owner/product'], function () {
             Route::post('/',          [ProductController::class, 'store']);
-            Route::get('{product}',   [ProductController::class, 'show']);
-            Route::put('{product}',   [ProductController::class, 'update']);
-            Route::delete('{product}',[ProductController::class, 'destroy']);
+            Route::get('{id}',   [ProductController::class, 'show']);
+            Route::put('{id}',   [ProductController::class, 'update']);
+            Route::delete('{id}',[ProductController::class, 'destroy']);
 
             Route::post('categories', [CategoryController::class, 'store']);
-            Route::put('categories/{category}', [CategoryController::class, 'update']);
-            Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
+            Route::put('categories/{id}', [CategoryController::class, 'update']);
+            Route::delete('categories/{id}', [CategoryController::class, 'destroy']);
         });
 
         // Admin endpoints (only admins hit these)
