@@ -8,6 +8,26 @@ use App\Services\Common\CategoryService;
 
 class RestaurantService
 {
+    public static function upsert(array $data): Restaurant
+    {
+        return Restaurant::updateOrCreate(
+            ['id' => $data['id'] ?? null],
+            [
+                'owner_id'    => $data['owner_id'],
+                'name'        => $data['name'],
+                'file_name'   => $data['file_name'],
+                'description' => $data['description'] ?? null,
+            ]
+        );
+    }
+
+    /**
+     * Delete a restaurant by ID.
+     */
+    public static function deleteRestaurant(int $id): bool
+    {
+        return (bool) Restaurant::destroy($id);
+    }
     /**
      * Fetch every restaurant that has at least one branch.
      *
