@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Common\AuthController;
 use App\Http\Controllers\Common\RestaurantController;
 use App\Http\Controllers\Common\ProductController;
+use App\Http\Controllers\Common\CategoryController;
+use App\Models\Category;
 
 Route::group(['prefix' => 'v0.1'], function () {
 
@@ -26,8 +28,10 @@ Route::group(['prefix' => 'v0.1'], function () {
         Route::group(['prefix' => 'common'], function () {
             Route::get('restaurants',                  [RestaurantController::class, 'index']);
             Route::get('restaurant/{id}/homepage',     [RestaurantController::class, 'show']);
-            Route::get('products',                     [ProductController::class, 'commonIndex']);
+            Route::get('products',                     [ProductController::class, 'index']);
             Route::get('products/{product}',           [ProductController::class, 'show']);
+
+            Route::get('categories',                   [CategoryController::class, 'index']);
         });
 
         // Owner endpoints (only owners hit these)
@@ -36,6 +40,10 @@ Route::group(['prefix' => 'v0.1'], function () {
             Route::get('{product}',   [ProductController::class, 'show']);
             Route::put('{product}',   [ProductController::class, 'update']);
             Route::delete('{product}',[ProductController::class, 'destroy']);
+
+            Route::post('categories', [CategoryController::class, 'store']);
+            Route::put('categories/{category}', [CategoryController::class, 'update']);
+            Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
         });
 
         // Admin endpoints (only admins hit these)
