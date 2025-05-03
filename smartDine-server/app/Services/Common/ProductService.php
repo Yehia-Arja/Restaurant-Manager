@@ -33,7 +33,15 @@ class ProductService
         // Delete the product by ID
         return Product::destroy($id) > 0;
     }
-    
+
+    /**
+     * Fetch a product by ID.
+     */
+    public static function getById(int $id)
+    {
+        return Product::find($id);
+    }
+
     /**
      * Fetch products at a restaurant or available at a branch, with optional category & search filters.
      * Always returns override_price & override_description from the pivot.

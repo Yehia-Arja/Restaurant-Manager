@@ -72,7 +72,7 @@ class ProductController extends Controller
     /**
      * (Owner) PUT /api/v0.1/owner/product/{product}
      */
-    public function update(UpdateProductRequest $request)
+    public function update(CreateOrUpdateProductRequest $request)
     {
         $data = $request->validated();
 
