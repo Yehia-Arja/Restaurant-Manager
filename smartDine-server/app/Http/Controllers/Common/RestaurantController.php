@@ -5,30 +5,44 @@ namespace App\Http\Controllers\Common;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Common\RestaurantService;
+use App\Http\Resources\Owner\RestaurantResource;
+use App\Http\Resources\Owner\BranchResource;
+use App\Http\Resources\Owner\ProductResource;
 
 class RestaurantController extends Controller
 {
+    /**
+     * GET /api/v0.1/common/restaurant
+     */
     public function index()
     {
-        // Fetch all restaurants
-        $restaurants = RestaurantService::getAllRestaurants();
-
-        if (!$restaurants) {
-            return $this->error('No restaurants found', 404);
-        }
-
-        return $this->success('Restaurants fetched successfully', $restaurants);
+        $all = RestaurantService::getAllRestaurants();
+        return $this->success(
+            'Restaurants fetched',
+            RestaurantResource::collection($all)
+        );
     }
 
-    public function show($id)
+    /**
+     * GET /api/v0.1/common/restaurant/{id}/homepage
+     * (optionally ?branch_id=)
+     */
+    public function show(Request $request, $id)
     {
-        // Fetch a specific restaurant by ID
-        $restaurant = RestaurantService::getRestaurantBranchDetails($id);
+        $payload = RestaurantService::getRestaurantHomepage(
+            $id,
+            $request->query('branch_id')
+        );
 
-        if (!$restaurant) {
-            return $this->error('Restaurant not found', 404);
+        if (!$payload) {
+            return $this->error('Not found or no branches', 404);
         }
 
-        return $this->success('Restaurant fetched successfully', $restaurant);
+        return $this->success('Restaurant homepage', [
+            'restaurant'      => new RestaurantResource($payload['restaurant']),
+            'branches'        => BranchResource::collection($payload['branches']),
+            'selected_branch' => new BranchResource($payload['selected_branch']),
+            'products'        => ProductResource::collection($payload['products']),
+        ]);
     }
 }
