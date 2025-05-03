@@ -75,7 +75,7 @@ class CategoryController extends Controller
      */
     public function destroy(int $id)
     {
-        $response = CategoryService::delete($id);
+        $response = CategoryService::deleteCategory($id);
 
         if (!$response) {
             return $this->error('Category not found', 404);
