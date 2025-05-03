@@ -2,24 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Common\CategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Services\Common\CategoryService;
+use App\Http\Resources\Common\CategoryResource;
 
 class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function commonIndex(Request $request)
+    public function index(CategoryRequest $request)
     {
-        $branchId = $request->query('restaurant_location_id');
+        
+        $data = $request->validated();
 
-        $categories = CategoryService::forBranch($branchId);
+        $categories = CategoryService::list(
+            $data['restaurant_id'],
+            $data['branch_id'],
+            $data['category_id']
+        );
         
         if ($categories->isEmpty()) {
             return $this->error('No categories found', 404);
         }
-        
+
         return $this->success(
             'Categories fetched',
             CategoryResource::collection($categories)
