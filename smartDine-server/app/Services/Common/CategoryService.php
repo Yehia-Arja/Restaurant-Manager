@@ -56,14 +56,16 @@ class CategoryService
         $q = Category::query();
 
         if ($branchId) {
-            // only categories assigned to this branch via category_locations pivot
+            // only those categories made available at this branch
             $q->select('categories.*')
-              ->join('category_locations as cl', function($join) use ($branchId) {
-                  $join->on('cl.category_id', '=', 'categories.id')
-                       ->where('cl.restaurant_location_id', $branchId);
+              ->join('locationables as loc', function($join) use ($branchId) {
+                  $join->on('loc.locationable_id', '=', 'categories.id')
+                       ->where('loc.locationable_type',  'Category')
+                       ->where('loc.restaurant_location_id', $branchId);
               });
-        } elseif ($restaurantId) {
-            // all categories for that restaurant
+        }
+        elseif ($restaurantId) {
+            // brand level list of all categories for that restaurant
             $q->where('restaurant_id', $restaurantId);
         }
 
