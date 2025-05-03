@@ -8,7 +8,7 @@ use App\Models\Product;
 use App\Http\Resources\Common\ProductResource;
 use App\Services\Common\ProductService;
 use App\Http\Requests\Common\ProductRequest;
-use App\Http\Requests\Owner\CreateProductRequest;
+use App\Http\Requests\Owner\CreateOrUpdateProductRequest;
 use App\Http\Requests\Owner\UpdateProductRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,9 +37,14 @@ class ProductController extends Controller
     /**
      * (Owner) POST /api/v0.1/owner/product
      */
-    public function store(CreateProductRequest $request)
+    public function store(CreateOrUpdateProductRequest $request)
     {
-        $product = ProductService::createProduct($request->validated());
+        $data = $request->validated();
+        $product = ProductService::upsert($data);
+
+        if (!$product) {
+            return $this->error('Product creation failed', 500);
+        }
 
         return $this->success(
             'Product created',
@@ -50,8 +55,14 @@ class ProductController extends Controller
     /**
      * (Owner) GET /api/v0.1/owner/product/{product}
      */
-    public function show(Product $product)
+    public function show(int $id)
     {
+        $product = ProductService::getById($id);
+
+        if (!$product) {
+            return $this->error('Product not found', 404);
+        }
+
         return $this->success(
             'Product details',
             new ProductResource($product)
@@ -61,9 +72,16 @@ class ProductController extends Controller
     /**
      * (Owner) PUT /api/v0.1/owner/product/{product}
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(CreateOrUpdateProductRequest $request, int $id)
     {
-        $updated = ProductService::updateProduct($product, $request->validated());
+        $data = $request->validated();
+        $data['id'] = $id;
+
+        $updated = ProductService::upsert($data);
+
+        if (!$updated) {
+            return $this->error('Product update failed', 500);
+        }
 
         return $this->success(
             'Product updated',
@@ -74,9 +92,14 @@ class ProductController extends Controller
     /**
      * (Owner) DELETE /api/v0.1/owner/product/{product}
      */
-    public function destroy(Product $product)
+    public function destroy(int $id)
     {
-        $product->delete();
+        $response = ProductService::delete($id);
+
+        if (!$response) {
+            return $this->error('Product deletion failed', 500);
+        }
+
         return $this->success('Product deleted');
     }
 }
