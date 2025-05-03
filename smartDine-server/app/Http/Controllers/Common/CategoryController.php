@@ -50,20 +50,18 @@ class CategoryController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Category $category)
-    {
-        //
-    }
-    /**
      * Update the specified resource in storage.
      */
-    public function update(CreateOrUpdateCategoryRequest $request)
+    public function update(CreateOrUpdateCategoryRequest $request, int $id)
     {
         $data = $request->validated();
+        $data['id'] = $id;
 
         $category = CategoryService::upsert($data);
+
+        if (!$category) {
+            return $this->error('Category not found', 404);
+        }
 
         return $this->success(
             'Category updated',
@@ -75,17 +73,14 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(int $id)
     {
-        $response = CategoryService::delete($category->id);
+        $response = CategoryService::delete($id);
 
         if (!$response) {
             return $this->error('Category not found', 404);
         }
 
-        return $this->success(
-            'Category deleted',
-            new CategoryResource($category)
-        );
+        return $this->success('Category deleted');
     }
 }
