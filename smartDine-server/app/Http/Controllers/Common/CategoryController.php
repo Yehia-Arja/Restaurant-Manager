@@ -10,9 +10,20 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function commonIndex(Request $request)
     {
-        //
+        $branchId = $request->query('restaurant_location_id');
+
+        $categories = CategoryService::forBranch($branchId);
+        
+        if ($categories->isEmpty()) {
+            return $this->error('No categories found', 404);
+        }
+        
+        return $this->success(
+            'Categories fetched',
+            CategoryResource::collection($categories)
+        );
     }
 
     /**

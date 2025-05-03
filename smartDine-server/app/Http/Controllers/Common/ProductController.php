@@ -14,47 +14,26 @@ use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
-    /**
-     * (Common) GET /api/v0.1/common/products
-     * — any logged-in user may call this to fetch/filter/search by branch.
-     */
-    public function commonIndex(ProductRequest $request)
+    public function index(ProductRequest $request)
     {
         $data = $request->validated();
 
-        $products = ProductService::forBranch(
-            $data['restaurant_location_id'],
-            $data['category_id'] ?? null,
-            $data['search']      ?? null
+        $products = ProductService::list(
+            $data['restaurant_location_id'] ?? null,
+            $data['restaurant_id']          ?? null,
+            $data['category_id']            ?? null,
+            $data['search']                 ?? null
         );
 
-        return $this->success(
-            'Products fetched',
-            ProductResource::collection($products)
-        );
-    }
-
-    /**
-     * (Owner) GET /api/v0.1/owner/product
-     * — owner may list *all* products for one of their restaurants.
-     */
-    public function ownerIndex(Request $request)
-    {
-        $owner        = Auth::user();
-        $restaurantId = $request->query('restaurant_id');
-
-        if (!$owner->restaurants()->where('id', $restaurantId)->exists()) {
-            return $this->error('Forbidden', 403);
+        if ($products->isEmpty()) {
+            return $this->error('No products found', 404);
         }
-
-        $products = ProductService::forOwner($restaurantId);
-
+        
         return $this->success(
             'Products fetched',
             ProductResource::collection($products)
         );
     }
-
     /**
      * (Owner) POST /api/v0.1/owner/product
      */
