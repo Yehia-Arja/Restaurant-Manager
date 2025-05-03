@@ -20,11 +20,7 @@ class ProductController extends Controller
      */
     public function commonIndex(ProductRequest $request)
     {
-        $data = $request->validate([
-            'restaurant_location_id' => 'required|exists:restaurant_locations,id',
-            'category_id'            => 'sometimes|exists:categories,id',
-            'search'                 => 'sometimes|string',
-        ]);
+        $data = $request->validated();
 
         $products = ProductService::forBranch(
             $data['restaurant_location_id'],
