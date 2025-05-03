@@ -32,8 +32,8 @@ class ProductService
      * Always returns override_price & override_description from the pivot.
      */
     public static function list(
-        ?int $branchId,
-        ?int $restaurantId,
+        ?int $branchId = null,
+        ?int $restaurantId = null,
         ?int $categoryId = null,
         ?string $search     = null
     ): Collection {
