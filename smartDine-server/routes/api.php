@@ -29,14 +29,14 @@ Route::group(['prefix' => 'v0.1'], function () {
             Route::get('restaurants',                  [RestaurantController::class, 'index']);
             Route::get('restaurant/{id}/homepage',     [RestaurantController::class, 'show']);
             Route::get('products',                     [ProductController::class, 'index']);
-            Route::get('products/{id}',           [ProductController::class, 'show']);
+            Route::get('products/{id}',                [ProductController::class, 'show']);
 
             Route::get('categories',                   [CategoryController::class, 'index']);
         });
 
         // Owner endpoints (only owners hit these)
         Route::group(['prefix' => 'owner/product'], function () {
-            Route::post('/',          [ProductController::class, 'store']);
+            Route::post('/',     [ProductController::class, 'store']);
             Route::get('{id}',   [ProductController::class, 'show']);
             Route::put('{id}',   [ProductController::class, 'update']);
             Route::delete('{id}',[ProductController::class, 'destroy']);
