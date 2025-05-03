@@ -18,7 +18,7 @@ Route::group(['prefix' => 'v0.1'], function () {
     Route::group(['middleware'=>'auth:api'],function(){
 
         // Common for everybody:
-        Route::get('common/restaurant',                 [RestaurantController::class,'index']);
+        Route::get('common/restaurants',                 [RestaurantController::class,'index']);
         Route::get('common/restaurant/{id}/homepage',  [RestaurantController::class,'show']);
         Route::get('common/products',                  [ProductController::class,'commonIndex']);
 
