@@ -45,7 +45,7 @@ class RestaurantService
         }
 
         // Fetch products for that branch
-        $products = ProductService::forBranch($selected->id);
+        $products = ProductService::list($selected->id);
 
         return [
             'restaurant'      => $restaurant,
