@@ -2,8 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Common\AuthController;
-use App\Http\Controllers\Common\RestaurantController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Common\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
@@ -16,7 +15,7 @@ Route::group(['prefix' => 'v0.1'], function () {
         Route::post('/signup', [AuthController::class, 'signup']);
     });
     Route::group(['prefix' => 'common'], function () {
-        Route::group(['prefix' => 'product'], function () {
+        Route::group(['prefix' => 'products'], function () {
             Route::get('/', [ProductController::class, 'commonIndex']);
             Route::get('/{product}', [ProductController::class, 'show']);
         });
