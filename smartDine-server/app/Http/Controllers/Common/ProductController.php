@@ -72,10 +72,10 @@ class ProductController extends Controller
     /**
      * (Owner) PUT /api/v0.1/owner/product/{product}
      */
-    public function update(CreateOrUpdateProductRequest $request)
+    public function update(CreateOrUpdateProductRequest $request, int $id)
     {
         $data = $request->validated();
-
+        $data['id'] = $id;
 
         $updated = ProductService::upsert($data);
 
