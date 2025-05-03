@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Common;
 
-use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Http\Resources\Owner\ProductResource;
+use App\Services\COmmon\ProductService;
+use App\Http\Requests\Common\ProductRequest;
 use App\Http\Requests\Owner\CreateProductRequest;
 use App\Http\Requests\Owner\UpdateProductRequest;
-use App\Services\Owner\ProductService;
 use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
     /**
-     * (Common) GET  /api/v0.1/common/product
-     * Any logged-in user: fetch products for a branch,
-     * filter by category or search, always include overrides.
+     * (Common) GET /api/v0.1/common/products
+     * — any logged-in user may call this to fetch/filter/search by branch.
      */
-    public function commonIndex(Request $request)
+    public function commonIndex(ProductRequest $request)
     {
         $data = $request->validate([
             'restaurant_location_id' => 'required|exists:restaurant_locations,id',
@@ -26,43 +26,21 @@ class ProductController extends Controller
             'search'                 => 'sometimes|string',
         ]);
 
-        $branchId   = $data['restaurant_location_id'];
-        $categoryId = $data['category_id'] ?? null;
-        $searchTerm = $data['search']      ?? null;
-
-        $products = Product::select([
-                'products.*',
-                'loc.override_price',
-                'loc.override_description',
-            ])
-            ->join('locationables as loc', function($join) use ($branchId) {
-                $join->on('loc.locationable_id', '=', 'products.id')
-                     ->where('loc.locationable_type',       'Product')
-                     ->where('loc.restaurant_location_id', $branchId);
-            })
-            ->when($categoryId, fn($q) =>
-                $q->where('products.category_id', $categoryId)
-            )
-            ->when($searchTerm, function($q) use ($searchTerm) {
-                $q->where('products.name', 'like', "%{$searchTerm}%")
-                  ->orWhereIn('products.id', function($sub) use ($searchTerm) {
-                      $sub->select('product_id')
-                          ->from('product_tags')
-                          ->join('tags', 'tags.id', '=', 'product_tags.tag_id')
-                          ->where('tags.name', 'like', "%{$searchTerm}%");
-                  });
-            })
-            ->get();
+        $products = ProductService::forBranch(
+            $data['restaurant_location_id'],
+            $data['category_id'] ?? null,
+            $data['search']      ?? null
+        );
 
         return $this->success(
-            'Products fetched successfully (common)',
+            'Products fetched',
             ProductResource::collection($products)
         );
     }
 
     /**
-     * (Owner)   GET  /api/v0.1/owner/product
-     * Only owners: fetch all products for one of their restaurants.
+     * (Owner) GET /api/v0.1/owner/product
+     * — owner may list *all* products for one of their restaurants.
      */
     public function ownerIndex(Request $request)
     {
@@ -70,14 +48,13 @@ class ProductController extends Controller
         $restaurantId = $request->query('restaurant_id');
 
         if (!$owner->restaurants()->where('id', $restaurantId)->exists()) {
-            return $this->error('Unauthorized access to this restaurant', 403);
+            return $this->error('Forbidden', 403);
         }
 
-        $products = Product::where('restaurant_id', $restaurantId)
-                           ->get();
+        $products = ProductService::forOwner($restaurantId);
 
         return $this->success(
-            'Products fetched successfully (owner)',
+            'Products fetched',
             ProductResource::collection($products)
         );
     }
@@ -87,43 +64,35 @@ class ProductController extends Controller
      */
     public function store(CreateProductRequest $request)
     {
-        $data = ProductService::createProduct($request->validated());
-
-        if (! $data) {
-            return $this->error('Product creation failed', 500);
-        }
+        $product = ProductService::createProduct($request->validated());
 
         return $this->success(
-            'Product created successfully',
-            ProductResource::collection($data)
+            'Product created',
+            new ProductResource($product)
         );
     }
 
     /**
-     * (Owner) GET   /api/v0.1/owner/product/{product}
+     * (Owner) GET /api/v0.1/owner/product/{product}
      */
     public function show(Product $product)
     {
         return $this->success(
-            'Product fetched successfully',
-            ProductResource::collection($product)
+            'Product details',
+            new ProductResource($product)
         );
     }
 
     /**
-     * (Owner) PUT   /api/v0.1/owner/product/{product}
+     * (Owner) PUT /api/v0.1/owner/product/{product}
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
         $updated = ProductService::updateProduct($product, $request->validated());
 
-        if (!$updated) {
-            return $this->error('Product update failed', 500);
-        }
-
         return $this->success(
-            'Product updated successfully',
-            ProductResource::collection($updated)
+            'Product updated',
+            new ProductResource($updated)
         );
     }
 
@@ -132,10 +101,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        if (! $product->delete()) {
-            return $this->error('Product deletion failed', 500);
-        }
-
-        return $this->success('Product deleted successfully');
+        $product->delete();
+        return $this->success('Product deleted');
     }
 }
