@@ -17,6 +17,10 @@ class RestaurantController extends Controller
     public function index()
     {
         $all = RestaurantService::getAllRestaurants();
+
+        if ($all->isEmpty()) {
+            return $this->error('No restaurants found', 404);
+        }
         return $this->success(
             'Restaurants fetched',
             RestaurantResource::collection($all)
@@ -50,6 +54,10 @@ class RestaurantController extends Controller
     public function store(CreateOrUpdateRestaurantRequest $request)
     {
         $restaurant = RestaurantService::upsert($request->validated());
+
+        if (!$restaurant) {
+            return $this->error('Restaurant creation failed', 500);
+        }
 
         return $this->success(
             'Restaurant saved',
