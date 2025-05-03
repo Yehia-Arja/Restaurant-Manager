@@ -31,11 +31,11 @@ Route::group(['prefix' => 'v0.1'], function () {
         });
 
         // Owner endpoints (only owners hit these)
-        Route::group(['prefix' => 'owner/product'], function () {
-            Route::post('/',          [ProductController::class, 'store']);
-            Route::get('{product}',   [ProductController::class, 'show']);
-            Route::put('{product}',   [ProductController::class, 'update']);
-            Route::delete('{product}',[ProductController::class, 'destroy']);
+        Route::group(['prefix' => 'owner'], function () {
+            Route::post('product/store',      [ProductController::class, 'store']);
+            Route::get('product/{id}',         [ProductController::class, 'show']);
+            Route::put('product/{id}',        [ProductController::class, 'update']);
+            Route::delete('product/{id}',      [ProductController::class, 'destroy']);
         });
 
         // Admin endpoints (only admins hit these)
