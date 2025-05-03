@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Common;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Common\RestaurantService;
-use App\Http\Resources\Owner\RestaurantResource;
-use App\Http\Resources\Owner\BranchResource;
-use App\Http\Resources\Owner\ProductResource;
+use App\Http\Resources\Common\RestaurantResource;
+use App\Http\Resources\Common\BranchResource;
+use App\Http\Resources\Common\ProductResource;
 
 class RestaurantController extends Controller
 {
