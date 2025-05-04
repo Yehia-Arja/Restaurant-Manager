@@ -1,107 +1,88 @@
 <?php
 
-namespace App\Http\Controllers\Common;
+namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Owner\OrderRequest;
-use App\Http\Requests\Client\CreateOrderRequest;
-use App\Http\Requests\Common\OrderStatusRequest;
-use App\Http\Resources\Common\OrderResource;
-use App\Services\Common\OrderService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Order;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Requests\Client\CreateOrderRequest;
+use App\Http\Requests\Client\OrderStatusRequest;
+use App\Http\Resources\Common\OrderResource;
+use App\Services\Client\OrderService;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
     /**
-     * GET /api/v0.1/common/orders
-     * - Clients get only their own
-     * - Owners/Admins may pass branch_id or restaurant_id
+     * GET  /api/v0.1/common/orders
+     * Clients see only their own (optionally scoped to branch).
      */
-    public function index(OrderRequest $request)
+    public function index(Request $request)
     {
-        $user        = Auth::user();
-        $isClient    = $user->user_type_id === 4;
+        $clientId  = Auth::id();
+        $branchId  = $request->query('restaurant_location_id');
 
-        $orders = OrderService::list(
-            $isClient ? $user->id : null,
-            $request->query('restaurant_location_id'),
-            $request->query('restaurant_id')
-        );
+        $orders = OrderService::listOwn($clientId, $branchId);
 
         if ($orders->isEmpty()) {
-            return $this->error('No orders found', 404);
+            return $this->error('No orders found', Response::HTTP_NOT_FOUND);
         }
 
         return $this->success(
-            'Orders fetched',
+            'Your orders',
             OrderResource::collection($orders)
         );
     }
 
     /**
      * POST /api/v0.1/common/orders
-     * (clients place orders)
+     * (clients place new orders)
      */
     public function store(CreateOrderRequest $request)
     {
-        $data = array_merge(
-            $request->validated(),
-            ['user_id' => Auth::id()]
-        );
+        $data = $request->validated();
+        $data['user_id'] = Auth::id();
 
-        $order = OrderService::create($data);
+        $order = OrderService::place($data);
 
         return $this->success(
             'Order placed',
-            new OrderResource($order)
+            new OrderResource($order),
+            Response::HTTP_CREATED
         );
     }
 
     /**
      * PUT /api/v0.1/common/orders/{order}/status
-     * (for complete or cancel)
+     * (clients may only cancel within window)
      */
-    public function status($orderId, OrderStatusRequest $request)
+    public function status(int $orderId, OrderStatusRequest $request)
     {
+        $clientId = Auth::id();
+        $action   = $request->validated()['action'];
+
         try {
-            $order = Order::findOrFail($orderId);
-
-            // authorize here or via middleware
-
-            $action = $request->validated()['action'];
-
-            if ($action === 'cancel') {
-                $order = OrderService::cancel($order);
-            } else {
-                $order = OrderService::updateStatus($order, $action);
-            }
+            $order = OrderService::changeStatus($orderId, $clientId, $action);
 
             return $this->success(
                 'Order status updated',
                 new OrderResource($order)
             );
-        } catch (ModelNotFoundException $e) {
-            return $this->error('Order not found', 404);
         } catch (\RuntimeException $e) {
-            return $this->error($e->getMessage(), 422);
+            return $this->error($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
     /**
      * DELETE /api/v0.1/common/orders/{order}
-     * (soft-delete from user history)
+     * (soft‐remove from client history)
      */
-    public function destroy($orderId)
+    public function destroy(int $orderId)
     {
-        try {
-            $order = Order::findOrFail($orderId);
-            OrderService::remove($order);
+        $clientId = Auth::id();
 
-            return $this->success('Order removed');
-        } catch (ModelNotFoundException $e) {
-            return $this->error('Order not found', 404);
-        }
+        OrderService::remove($orderId, $clientId);
+
+        return $this->success('Order removed from your history');
     }
 }

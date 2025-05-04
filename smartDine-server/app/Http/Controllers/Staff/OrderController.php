@@ -35,12 +35,14 @@ class OrderController extends Controller
      * PUT  /api/v0.1/staff/orders/{order}/status
      * @uses StaffOrderStatusRequest for validation
      */
-    public function changeStatus(StaffOrderStatusRequest $request, int $order)
+    public function changeStatus(StaffOrderStatusRequest $request, int $orderId)
     {
+        $data = $request->validated();
+        
         try {
             $updated = OrderService::acceptOrReject(
-                $order,
-                $request->action
+                $orderId,
+                $data['action']
             );
 
             return $this->success(

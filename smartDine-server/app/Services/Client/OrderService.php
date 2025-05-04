@@ -13,9 +13,11 @@ class OrderService
         return Order::create($data);
     }
 
-    public static function listOwn(int $clientId): Collection
+    public static function listOwn(int $clientId, int $branchId): Collection
     {
-        return Order::where('user_id', $clientId)
+        return Order::with('product')
+                    ->where('user_id', $clientId)
+                    ->where('restaurant_location_id', $branchId)
                     ->whereNull('deleted_at')
                     ->get();
     }
