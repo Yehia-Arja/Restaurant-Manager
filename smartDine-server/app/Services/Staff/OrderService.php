@@ -17,7 +17,8 @@ class OrderService
      */
     public static function listByTable(int $branchId, int $tableId): Collection
     {
-        return Order::where('restaurant_location_id', $branchId)
+        return Order::with('product')
+            ->where('restaurant_location_id', $branchId)
             ->where('table_id', $tableId)
             ->whereNull('deleted_at')
             ->whereIn('status', ['pending', 'accepted'])
