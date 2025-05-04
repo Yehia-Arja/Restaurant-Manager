@@ -8,7 +8,6 @@ class OrderStatsRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // middleware already ensures only owners reach this endpoint
         return true;
     }
 
