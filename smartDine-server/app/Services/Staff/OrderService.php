@@ -28,7 +28,7 @@ class OrderService
      * Move a single order from 'pending' to 'accepted' or 'rejected'.
      *
      * @param  int     $orderId
-     * @param  string  $action    // must be exactly 'accepted' or 'rejected'
+     * @param  string  $action 
      * @return Order
      *
      * @throws ModelNotFoundException
