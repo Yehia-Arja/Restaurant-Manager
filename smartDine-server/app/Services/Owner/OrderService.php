@@ -20,7 +20,7 @@ class OrderService
         if ($branchId) {
             $base->where('restaurant_location_id', $branchId);
         } else {
-            $base->whereHas('restaurantLocation', fn($q) =>
+            $base->whereHas('location', fn($q) =>
                 $q->where('restaurant_id', $restaurantId)
             );
         }
