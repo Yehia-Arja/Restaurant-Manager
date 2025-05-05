@@ -16,15 +16,19 @@ class RestaurantController extends Controller
      */
     public function index()
     {
-        $all = RestaurantService::getAllRestaurants();
+        try {
+            $all = RestaurantService::getAllRestaurants();
 
-        if ($all->isEmpty()) {
-            return $this->error('No restaurants found', 404);
+            if ($all->isEmpty()) {
+                return $this->error('No restaurants found', 404);
+            }
+            return $this->success(
+                'Restaurants fetched',
+                RestaurantResource::collection($all)
+            );
+        }catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
         }
-        return $this->success(
-            'Restaurants fetched',
-            RestaurantResource::collection($all)
-        );
     }
 
     /**
@@ -32,17 +36,21 @@ class RestaurantController extends Controller
      */
     public function show(Request $request, int $id)
     {
-        $branchOverride = $request->query('restaurant_location_id');
-        $payload = RestaurantService::getRestaurantHomepage($id, $branchOverride);
+        try {
+            $branchOverride = $request->query('restaurant_location_id');
+            $payload = RestaurantService::getRestaurantHomepage($id, $branchOverride);
 
-        if (!$payload) {
-            return $this->error('Not found', 404);
+            if (!$payload) {
+                return $this->error('Not found', 404);
+            }
+
+            return $this->success(
+                'Homepage data',
+                new RestaurantHomepageResource($payload)
+            );
+        }catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
         }
-
-        return $this->success(
-            'Homepage data',
-            new RestaurantHomepageResource($payload)
-        );
     }
 
     /**
@@ -53,29 +61,39 @@ class RestaurantController extends Controller
      */
     public function store(CreateOrUpdateRestaurantRequest $request)
     {
-        $restaurant = RestaurantService::upsert($request->validated());
+        try {
+            $restaurant = RestaurantService::upsert($request->validated());
 
-        if (!$restaurant) {
-            return $this->error('Restaurant creation failed', 500);
+            if (!$restaurant) {
+                return $this->error('Restaurant creation failed', 500);
+            }
+
+            return $this->success(
+                'Restaurant saved',
+                new RestaurantResource($restaurant)
+            );
+        }catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
         }
-
-        return $this->success(
-            'Restaurant saved',
-            new RestaurantResource($restaurant)
-        );
+        
     }
 
     public function update(CreateOrUpdateRestaurantRequest $request, int $id)
     {
-        $data = $request->validated();
-        $data['id'] = $id;
+        try {
+            $data = $request->validated();
+            $data['id'] = $id;
 
-        $restaurant = RestaurantService::upsert($data);
+            $restaurant = RestaurantService::upsert($data);
 
-        return $this->success(
-            'Restaurant saved',
-            new RestaurantResource($restaurant)
-        );
+            return $this->success(
+                'Restaurant saved',
+                new RestaurantResource($restaurant)
+            );
+        }catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
+        }
+        
     }
 
     /**
@@ -83,10 +101,15 @@ class RestaurantController extends Controller
      */
     public function destroy(int $id)
     {
-        if (!RestaurantService::deleteRestaurant($id)) {
-            return $this->error('Not found', 404);
-        }
+        try {       
+            if (!RestaurantService::deleteRestaurant($id)) {
+                return $this->error('Not found', 404);
+            }
 
-        return $this->success('Restaurant deleted');
+            return $this->success('Restaurant deleted');
+        }catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
+        }
+        
     }
 }
