@@ -1,5 +1,6 @@
 <?php
-namespace App\Services\Common;
+
+namespace App\Services\Client;
 
 use App\Models\Review;
 use App\Models\Product;
@@ -12,22 +13,23 @@ use RuntimeException;
 class ReviewService
 {
     /**
-     * @param  int         $userId
-     * @param  string      $type 
-     * @param  int         $id
-     * @param  int         $rating
-     * @param  string|null $comment
+     * Create a new review for any reviewable type.
+     *
+     * @param  array  $data  [
+     *     'user_id'          => int,
+     *     'reviewable_type'  => string,   // one of: product, restaurant, branch, waiter
+     *     'reviewable_id'    => int,
+     *     'rating'           => int,      // 1–5
+     *     'comment'          => string|null,
+     * ]
      * @return Review
      *
      * @throws ModelNotFoundException
+     * @throws RuntimeException
      */
-    public static function createReview(
-        int $userId,
-        string $type,
-        int $id,
-        int $rating,
-        ?string $comment
-    ): Review {
+    public static function createReview(array $data): Review
+    {
+        // map the incoming type to an Eloquent class
         $map = [
             'product'    => Product::class,
             'restaurant' => Restaurant::class,
@@ -35,20 +37,25 @@ class ReviewService
             'waiter'     => User::class,
         ];
 
-        if (!isset($map[$type])) {
-            throw new RuntimeException("Invalid reviewable type “{$type}”.");
+        $type = strtolower($data['reviewable_type'] ?? '');
+        $id   = $data['reviewable_id']   ?? null;
+
+        if (! isset($map[$type]) || ! $id) {
+            throw new RuntimeException("Invalid or missing reviewable_type/ID.");
         }
 
         $class = $map[$type];
 
+        // make sure the thing exists
         $class::findOrFail($id);
 
+        // persist the review
         return Review::create([
-            'user_id'          => $userId,
+            'user_id'          => $data['user_id'],
             'reviewable_type'  => $class,
             'reviewable_id'    => $id,
-            'rating'           => $rating,
-            'comment'          => $comment,
+            'rating'           => $data['rating'],
+            'comment'          => $data['comment'] ?? null,
         ]);
     }
 }
