@@ -13,45 +13,61 @@ class ProductController extends Controller
 {
     public function store(ProductRequest $request)
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
 
-        $product = ProductService::upsert($data);
+            $product = ProductService::upsert($data);
 
-        if (!$product) {
-            return $this->error('Failed to save product', 500);
+            if (!$product) {
+                return $this->error('Failed to save product', 500);
+            }
+
+            return $this->success(
+                'Product saved',
+                new ProductResource($product)
+            );
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
         }
-
-        return $this->success(
-            'Product saved',
-            new ProductResource($product)
-        );
+        
     }
 
     public function update(ProductRequest $request, int $id)
     {
-        $data = $request->validated();
-        $data['id'] = $id; // Ensure the ID is included in the data
-        
-        $product = ProductService::upsert($data);
+        try {
+            $data = $request->validated();
+            $data['id'] = $id;
 
-        if (!$product) {
-            return $this->error('Failed to update product', 500);
+            $product = ProductService::upsert($data);
+
+            if (!$product) {
+                return $this->error('Failed to update product', 500);
+            }
+
+            return $this->success(
+                'Product updated',
+                new ProductResource($product)
+            );
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
         }
-
-        return $this->success(
-            'Product updated',
-            new ProductResource($product)
-        );
+        
     }
 
     public function destroy(int $id)
     {
-        $deleted = ProductService::delete($id);
+        try {
+            $deleted = ProductService::delete($id);
 
-        if (!$deleted) {
-            return $this->error('Failed to delete product', 500);
+            if (!$deleted) {
+                return $this->error('Failed to delete product', 500);
+            }
+
+            return $this->success('Product deleted');
+            
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
         }
-
-        return $this->success('Product deleted');
+        
     }
 }
