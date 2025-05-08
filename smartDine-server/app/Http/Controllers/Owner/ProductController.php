@@ -4,16 +4,24 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\CreateOrUpdateProductRequest;
-use Illuminate\Http\Request;
+use App\Services\Common\MediaService;
 use App\Services\Owner\ProductService;
 use App\Http\Resources\Common\ProductResource;
 
 class ProductController extends Controller
 {
-    public function store(CreateOrUpdateProductRequest $request)
+    public function store(CreateOrUpdateProductRequest $request,  MediaService $media) 
     {
-        $data = $request->validated();
-        
+        // Upload image and get back the stored filename
+        $filename = $media->upload($request->file('image'));
+
+        // Merge filename into validated data
+        $data = array_merge(
+            $request->validated(),
+            ['file_name' => $filename]
+        );
+
+        // Create the product
         $product = ProductService::upsert($data);
 
         if (!$product) {
@@ -26,11 +34,18 @@ class ProductController extends Controller
         );
     }
 
-    public function update(CreateOrUpdateProductRequest $request, int $id)
+    public function update(CreateOrUpdateProductRequest $request,int $id,MediaService $media) 
     {
-        $data = $request->validated();
-        $data['id'] = $id; // Ensure the ID is included in the data
-        
+        // Upload new image
+        $filename = $media->upload($request->file('image'));
+
+        // Merge id + filename into data
+        $data = array_merge(
+            $request->validated(),
+            ['id' => $id, 'file_name' => $filename]
+        );
+
+        // Update the product
         $product = ProductService::upsert($data);
 
         if (!$product) {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
@@ -27,4 +28,21 @@ class Product extends Model
         'avg_rating',
         'rating_count',
     ];
+
+     public function getImageUrlAttribute(): string
+    {
+        return Storage::disk('s3')
+                      ->url("products/{$this->file_name}");
+    }
+
+    /**
+     * If you have AR models, same pattern for the 3D asset:
+     */
+    public function getArModelUrlAttribute(): ?string
+    {
+        return $this->ar_model_file
+            ? Storage::disk('s3')
+                     ->url("ar-models/{$this->ar_model_file}")
+            : null;
+    }
 }
