@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     /**
      * GET  /api/v0.1/common/products
-     * — any logged-in user may fetch (and filter/search) products,
+     * any logged-in user may fetch (and filter/search) products,
      *    see branch overrides, etc.
      */
     public function index(ProductRequest $request)
@@ -39,7 +39,7 @@ class ProductController extends Controller
 
     /**
      * GET  /api/v0.1/common/products/{id}
-     * — fetch a single product by its ID
+     * fetch a single product by its ID
      */
     public function show(int $id)
     {

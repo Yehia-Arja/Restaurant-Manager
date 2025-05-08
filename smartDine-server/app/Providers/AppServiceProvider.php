@@ -1,27 +1,21 @@
 <?php
-
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use App\Models\Product;
-use App\Models\Category;
+use App\Services\Common\MediaService;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    public function register()
     {
-        //
+        // Bind MediaService as a singleton, preconfigured for S3/products
+        $this->app->singleton(MediaService::class, function ($app) {
+            return new MediaService('s3', 'products');
+        });
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-     public function boot(): void
+    public function boot()
     {
-
+        //
     }
 }
