@@ -3,37 +3,65 @@
 namespace App\Services\Owner;
 
 use App\Models\Product;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
+use App\Services\Common\MediaService;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 
 class ProductService
 {
     /**
-     * Create a new or update product.
+     * Create a product and upload its image in one atomic transaction.
+     *
+     * @param  array         $data
+     * @param  UploadedFile  $file
+     * @return Product
      */
-    public static function upsert(array $data): Product
+    public static function createWithImage(array $data, UploadedFile $file): Product
     {
-        // Create or update the product
-        return Product::updateOrCreate(
-            ['id' => $data['id'] ?? null],
-            [
-                'restaurant_id'    => $data['restaurant_id'],
-                'name'             => $data['name'],
-                'description'      => $data['description'] ?? null,
-                'time_to_deliver'  => $data['time_to_deliver'] ?? null,
-                'ingredients'      => $data['ingredients'] ?? null,
-                'file_name'        => $data['file_name'] ?? null,
-                'category_id'      => $data['category_id'] ?? null,
-                'price'            => $data['price'],
-            ]
-        );
+        return DB::transaction(function() use ($data, $file) {
+            $filename = MediaService::upload($file, 'products');
+            $data['file_name'] = $filename;
+            return Product::create($data);
+        });
     }
 
-    
-    public static function delete(int $id): bool
+    /**
+     * Update a product (by ID) and replace its image.
+     *
+     * @param  int           $id
+     * @param  array         $data
+     * @param  UploadedFile  $file
+     * @return Product
+     */
+    public static function updateWithImage(int $id, array $data, UploadedFile $file): Product
     {
-        // Delete the product by ID
-        return Product::destroy($id) > 0;
+        return DB::transaction(function() use ($id, $data, $file) {
+            $product = Product::findOrFail($id);
+
+            // delete old image
+            MediaService::delete($product->file_name, 'products');
+
+            // upload new
+            $filename = MediaService::upload($file, 'products');
+            $data['file_name'] = $filename;
+
+            $product->update($data);
+            return $product;
+        });
     }
 
+    /**
+     * Delete a product (by ID) and its image.
+     *
+     * @param  int  $id
+     * @return bool
+     */
+    public static function deleteWithImage(int $id): bool
+    {
+        return DB::transaction(function() use ($id) {
+            $product = Product::findOrFail($id);
+            MediaService::delete($product->file_name, 'products');
+            return $product->delete();
+        });
+    }
 }

@@ -3,72 +3,104 @@
 namespace App\Services\Common;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class MediaService
 {
-    protected string $disk;
-    protected string $prefix;
-
     /**
-     * MediaService constructor.
+     * Upload a file to the given folder on the given disk,
+     * using a slugged, timestamped filename.
      *
-     * @param string $disk   The filesystem disk to use (e.g., 's3')
-     * @param string $prefix The folder prefix inside the disk (e.g., 'products')
-     */
-    public function __construct(string $disk = 's3', string $prefix = 'products')
-    {
-        $this->disk   = $disk;
-        $this->prefix = trim($prefix, '/');
-    }
-
-    /**
-     * Upload an UploadedFile to the configured disk with a slugged, timestamped filename.
+     * @param  UploadedFile  $file
+     * @param  string        $folder  e.g. 'products' or 'ar-models'
+     * @param  string        $disk    filesystem disk (default: 's3')
+     * @return string                 The stored filename (no folder prefix)
      *
-     * @param UploadedFile $file
-     * @return string             The stored filename (without prefix)
-     * @throws \Exception        If the upload fails
+     * @throws RuntimeException       If the upload fails
      */
-    public function upload(UploadedFile $file): string
+    public static function upload(UploadedFile $file, string $folder, string $disk = 's3'): string
     {
-        $name = time()
-              . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))
-              . '.' . $file->getClientOriginalExtension();
-
-        $path = ($this->prefix ? $this->prefix . '/' : '') . $name;
-
-        // Store the file on the chosen disk
-        Storage::disk($this->disk)->putFileAs(
-            $this->prefix,
-            $file,
-            $name
+        $base = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $filename = sprintf(
+            '%s_%s.%s',
+            time(),
+            Str::slug($base),
+            $file->getClientOriginalExtension()
         );
 
-        return $name;
+        $path = trim($folder, '/').'/'.$filename;
+
+        try {
+            Storage::disk($disk)
+                   ->putFileAs(trim($folder, '/'), $file, $filename);
+        } catch (\Throwable $e) {
+            Log::error('MediaService::upload failed', [
+                'disk'     => $disk,
+                'folder'   => $folder,
+                'filename' => $filename,
+                'error'    => $e->getMessage(),
+            ]);
+
+            throw new RuntimeException('Failed to upload file.');
+        }
+
+        return $filename;
     }
 
     /**
-     * Delete a file by its filename from the configured disk.
+     * Delete a file by filename from the given folder on the given disk.
      *
-     * @param string $filename  The filename to delete (without prefix)
-     * @return bool             True if deletion succeeded
+     * @param  string  $filename  The filename to delete (no folder prefix)
+     * @param  string  $folder    The folder where the file lives
+     * @param  string  $disk      filesystem disk (default: 's3')
+     * @return bool               True if deletion succeeded
      */
-    public function delete(string $filename): bool
+    public static function delete(string $filename, string $folder, string $disk = 's3'): bool
     {
-        $path = ($this->prefix ? $this->prefix . '/' : '') . $filename;
-        return Storage::disk($this->disk)->delete($path);
+        $path = trim($folder, '/').'/'.$filename;
+
+        try {
+            return Storage::disk($disk)->delete($path);
+        } catch (\Throwable $e) {
+            Log::warning('MediaService::delete failed', [
+                'disk'     => $disk,
+                'folder'   => $folder,
+                'filename' => $filename,
+                'error'    => $e->getMessage(),
+            ]);
+
+            return false;
+        }
     }
 
     /**
-     * Generate a publicly accessible URL for a stored file.
+     * Generate a public URL for a file in the given folder on the given disk.
      *
-     * @param string $filename  The filename to generate a URL for
-     * @return string           The full URL to the resource
+     * @param  string  $filename  The filename to link to (no folder prefix)
+     * @param  string  $folder    The folder where the file lives
+     * @param  string  $disk      filesystem disk (default: 's3')
+     * @return string             The full HTTPS URL
+     *
+     * @throws RuntimeException   If URL generation fails
      */
-    public function url(string $filename): string
+    public static function url(string $filename, string $folder, string $disk = 's3'): string
     {
-        $path = ($this->prefix ? $this->prefix . '/' : '') . $filename;
-        return Storage::disk($this->disk)->url($path);
+        $path = trim($folder, '/').'/'.$filename;
+
+        try {
+            return Storage::disk($disk)->url($path);
+        } catch (\Throwable $e) {
+            Log::error('MediaService::url failed', [
+                'disk'     => $disk,
+                'folder'   => $folder,
+                'filename' => $filename,
+                'error'    => $e->getMessage(),
+            ]);
+
+            throw new RuntimeException('Failed to generate file URL.');
+        }
     }
 }
