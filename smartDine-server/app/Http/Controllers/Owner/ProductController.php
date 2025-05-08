@@ -4,68 +4,112 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\CreateOrUpdateProductRequest;
-use App\Services\Common\MediaService;
 use App\Services\Owner\ProductService;
 use App\Http\Resources\Common\ProductResource;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class ProductController extends Controller
 {
-    public function store(CreateOrUpdateProductRequest $request,  MediaService $media) 
+    /**
+     * Create a new product (with image).
+     */
+    public function store(CreateOrUpdateProductRequest $request)
     {
-        // Upload image and get back the stored filename
-        $filename = $media->upload($request->file('image'));
+        try {
+            $product = ProductService::createWithImage(
+                $request->validated(),
+                $request->file('image')
+            );
 
-        // Merge filename into validated data
-        $data = array_merge(
-            $request->validated(),
-            ['file_name' => $filename]
-        );
+            if (!$product) {
+                return $this->error(
+                    'Failed to save product',
+                    500
+                );
+            }
 
-        // Create the product
-        $product = ProductService::upsert($data);
+            return $this->success(
+                'Product saved',
+                new ProductResource($product)
+            );
 
-        if (!$product) {
-            return $this->error('Failed to save product', 500);
+        } catch (Exception $e) {
+            Log::error('Error in ProductController@store', [
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ]);
+            return $this->error(
+                'Failed to save product',
+                500
+            );
         }
-
-        return $this->success(
-            'Product saved',
-            new ProductResource($product)
-        );
     }
 
-    public function update(CreateOrUpdateProductRequest $request,int $id,MediaService $media) 
+    /**
+     * Update an existing product (with image).
+     */
+    public function update(CreateOrUpdateProductRequest $request, int $id)
     {
-        // Upload new image
-        $filename = $media->upload($request->file('image'));
+        try {
+            $product = ProductService::updateWithImage(
+                $id,
+                $request->validated(),
+                $request->file('image')
+            );
 
-        // Merge id + filename into data
-        $data = array_merge(
-            $request->validated(),
-            ['id' => $id, 'file_name' => $filename]
-        );
+            if (!$product) {
+                return $this->error(
+                    'Failed to update product',
+                    500
+                );
+            }
+            
+            return $this->success(
+                'Product updated',
+                new ProductResource($product)
+            );
 
-        // Update the product
-        $product = ProductService::upsert($data);
-
-        if (!$product) {
-            return $this->error('Failed to update product', 500);
+        } catch (Exception $e) {
+            Log::error('Error in ProductController@update', [
+                'product_id' => $id,
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
+            ]);
+            return $this->error(
+                'Failed to update product',
+                500
+            );
         }
-
-        return $this->success(
-            'Product updated',
-            new ProductResource($product)
-        );
     }
 
+    /**
+     * Delete a product and its image.
+     */
     public function destroy(int $id)
     {
-        $deleted = ProductService::delete($id);
+        try {
+            $deleted = ProductService::deleteWithImage($id);
 
-        if (!$deleted) {
-            return $this->error('Failed to delete product', 500);
+            if (!$deleted) {
+                return $this->error(
+                    'Failed to delete product',
+                    500
+                );
+            }
+
+            return $this->success('Product deleted');
+
+        } catch (Exception $e) {
+            Log::error('Error in ProductController@destroy', [
+                'product_id' => $id,
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
+            ]);
+            return $this->error(
+                'Failed to delete product',
+                500
+            );
         }
-
-        return $this->success('Product deleted');
     }
 }
