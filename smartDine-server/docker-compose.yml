@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Your Laravel app
   laravel:
     image: bitnami/laravel:latest
     ports:
@@ -13,9 +14,14 @@ services:
       - DB_USERNAME=laravel_user
       - DB_PASSWORD=laravel_pass
       - DB_DATABASE=restaurant_db
+      - CACHE_DRIVER=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - mysql
+      - redis
 
+  # MySQL for your database
   mysql:
     image: mysql:8.0
     restart: always
@@ -29,6 +35,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+  # phpMyAdmin for DB management
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     restart: always
@@ -37,6 +44,24 @@ services:
     environment:
       - PMA_HOST=mysql
       - MYSQL_ROOT_PASSWORD=root
+
+  # Redis for cache
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+  # Scheduler: runs Laravel's task scheduler every minute
+  scheduler:
+    image: bitnami/laravel:latest
+    command: sh -c "php artisan schedule:run --verbose --no-interaction"
+    volumes:
+      - ./:/app:cached
+    depends_on:
+      - laravel
+      - redis
+      - mysql
 
 volumes:
   mysql_data:
