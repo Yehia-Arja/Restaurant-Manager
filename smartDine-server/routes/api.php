@@ -3,56 +3,80 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// alias the two ProductController classes
-use App\Http\Controllers\Common\ProductController as CommonProductController;
-use App\Http\Controllers\Owner\ProductController  as OwnerProductController;
-
-// other controllers
+// Common (no alias needed for Auth)
 use App\Http\Controllers\Common\AuthController;
-use App\Http\Controllers\Common\RestaurantController;
-use App\Http\Controllers\Common\CategoryController;
+use App\Http\Controllers\Common\RestaurantController   as CommonRestaurantController;
+use App\Http\Controllers\Common\ProductController      as CommonProductController;
+use App\Http\Controllers\Common\CategoryController     as CommonCategoryController;
 
-Route::group(['prefix' => 'v0.1'], function () {
+// Owner
+use App\Http\Controllers\Owner\ProductController       as OwnerProductController;
+use App\Http\Controllers\Owner\CategoryController      as OwnerCategoryController;
 
-    // Guest (no auth) 
-    Route::group(['prefix' => 'guest'], function () {
-        Route::post('login',  [AuthController::class,   'login']);
-        Route::post('signup', [AuthController::class,   'signup']);
+// Admin
+use App\Http\Controllers\Admin\RestaurantController           as AdminRestaurantController;
+use App\Http\Controllers\Admin\RestaurantLocationController   as AdminLocationController;
+
+Route::prefix('v0.1')->group(function () {
+
+    // Guest (no auth)
+    Route::prefix('guest')->group(function () {
+        Route::post('login',  [AuthController::class, 'login']);
+        Route::post('signup', [AuthController::class, 'signup']);
     });
 
-    // Authenticated 
-    Route::group(['middleware' => ['auth:api']], function () {
+    // Authenticated
+    Route::middleware('auth:api')->group(function () {
 
+        // Get current user
         Route::get('user', function (Request $request) {
             return $request->user();
         });
 
-        //  Common endpoints (any logged-in user)
-        Route::group(['prefix' => 'common'], function () {
-            Route::get('restaurants',              [RestaurantController::class,   'index']);
-            Route::get('restaurant/{id}/homepage', [RestaurantController::class,   'show']);
-            Route::get('products',                 [CommonProductController::class, 'index']);
-            Route::get('products/{id}',            [CommonProductController::class, 'show']);
-            Route::get('categories',               [CategoryController::class,      'index']);
+        // Common endpoints
+        Route::prefix('common')->group(function () {
+            Route::get('restaurants',               [CommonRestaurantController::class, 'index']);
+            Route::get('restaurant/{id}/homepage',  [CommonRestaurantController::class, 'show']);
+            Route::get('products',                  [CommonProductController::class,  'index']);
+            Route::get('products/{id}',             [CommonProductController::class,  'show']);
+            Route::get('categories',                [CommonCategoryController::class, 'index']);
         });
 
-        // Owner endpoints (only owners hit these)
-        Route::group(['prefix' => 'owner/product'], function () {
-            Route::post('/',      [OwnerProductController::class,  'store']);    // you can alias here too
-            Route::get('{id}',    [OwnerProductController::class,  'show']);
-            Route::put('{id}',    [OwnerProductController::class,  'update']);
-            Route::delete('{id}', [OwnerProductController::class,  'destroy']);
+        // Owner endpoints
+        Route::prefix('owner')->group(function () {
 
-            Route::post('categories',                 [CategoryController::class, 'store']);
-            Route::put('categories/{id}',             [CategoryController::class, 'update']);
-            Route::delete('categories/{id}',          [CategoryController::class, 'destroy']);
+            // Products
+            Route::prefix('product')->group(function () {
+                Route::post('/',      [OwnerProductController::class, 'store']);
+                Route::get('{id}',    [OwnerProductController::class, 'show']);
+                Route::put('{id}',    [OwnerProductController::class, 'update']);
+                Route::delete('{id}', [OwnerProductController::class, 'destroy']);
+            });
+
+            // Categories
+            Route::prefix('categories')->group(function () {
+                Route::post('/',           [OwnerCategoryController::class, 'store']);
+                Route::put('{id}',         [OwnerCategoryController::class, 'update']);
+                Route::delete('{id}',      [OwnerCategoryController::class, 'destroy']);
+            });
         });
 
-        // Admin endpoints (only admins)
-        Route::group(['prefix' => 'admin'], function () {
-            Route::post('restaurants',          [RestaurantController::class, 'store']);
-            Route::put('restaurants/{id}',      [RestaurantController::class, 'update']);
-            Route::delete('restaurants/{id}',   [RestaurantController::class, 'destroy']);
+        // Admin endpoints
+        Route::prefix('admin')->group(function () {
+
+            // Restaurants
+            Route::prefix('restaurants')->group(function () {
+                Route::post('/',        [AdminRestaurantController::class,         'store']);
+                Route::put('{id}',      [AdminRestaurantController::class,         'update']);
+                Route::delete('{id}',   [AdminRestaurantController::class,         'destroy']);
+            });
+
+            // Branches (Restaurant Locations)
+            Route::prefix('restaurant-locations')->group(function () {
+                Route::post('/',        [AdminLocationController::class,           'store']);
+                Route::put('{id}',      [AdminLocationController::class,           'update']);
+                Route::delete('{id}',   [AdminLocationController::class,           'destroy']);
+            });
         });
     });
 });
