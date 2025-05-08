@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Common;
+namespace App\Services\Owner;
 
 use App\Models\Product;
 use Illuminate\Support\Collection;
@@ -20,6 +20,8 @@ class ProductService
                 'restaurant_id'    => $data['restaurant_id'],
                 'name'             => $data['name'],
                 'description'      => $data['description'] ?? null,
+                'time_to_deliver'  => $data['time_to_deliver'] ?? null,
+                'ingredients'      => $data['ingredients'] ?? null,
                 'file_name'        => $data['file_name'] ?? null,
                 'category_id'      => $data['category_id'] ?? null,
                 'price'            => $data['price'],
