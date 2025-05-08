@@ -19,6 +19,8 @@ class RestaurantController extends Controller
     {
         try {
             $all = RestaurantService::getAllRestaurants();
+        try {
+            $all = RestaurantService::getAllRestaurants();
 
             if ($all->isEmpty()) {
                 return $this->error('No restaurants found', 404);
@@ -42,6 +44,9 @@ class RestaurantController extends Controller
      */
     public function show(Request $request, int $id)
     {
+        try {
+            $branchOverride = $request->query('restaurant_location_id');
+            $payload = RestaurantService::getRestaurantHomepage($id, $branchOverride);
         try {
             $branchOverride = $request->query('restaurant_location_id');
             $payload = RestaurantService::getRestaurantHomepage($id, $branchOverride);
