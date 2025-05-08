@@ -1,20 +1,19 @@
 <?php
-// app/Http/Controllers/Common/ProductController.php
 
-namespace App\Http\Controllers\Common;
+namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Owner\CreateOrUpdateProductRequest;
 use Illuminate\Http\Request;
-use App\Http\Requests\Common\ProductRequest;
-use App\Services\Common\ProductService;
+use App\Services\Owner\ProductService;
 use App\Http\Resources\Common\ProductResource;
 
 class ProductController extends Controller
 {
-    public function store(ProductRequest $request)
+    public function store(CreateOrUpdateProductRequest $request)
     {
         $data = $request->validated();
-
+        
         $product = ProductService::upsert($data);
 
         if (!$product) {
@@ -27,7 +26,7 @@ class ProductController extends Controller
         );
     }
 
-    public function update(ProductRequest $request, int $id)
+    public function update(CreateOrUpdateProductRequest $request, int $id)
     {
         $data = $request->validated();
         $data['id'] = $id; // Ensure the ID is included in the data
