@@ -23,26 +23,17 @@ class ProductController extends Controller
             );
 
             if (!$product) {
-                return $this->error(
-                    'Failed to save product',
-                    500
-                );
+                return $this->error('Failed to save product', 500);
             }
 
-            return $this->success(
-                'Product saved',
-                new ProductResource($product)
-            );
+            return $this->success('Product saved', new ProductResource($product));
 
         } catch (Exception $e) {
             Log::error('Error in ProductController@store', [
-                'error'   => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
-            return $this->error(
-                'Failed to save product',
-                500
-            );
+            return $this->error('Failed to save product', 500);
         }
     }
 
@@ -59,16 +50,10 @@ class ProductController extends Controller
             );
 
             if (!$product) {
-                return $this->error(
-                    'Failed to update product',
-                    500
-                );
+                return $this->error('Failed to update product', 500);
             }
-            
-            return $this->success(
-                'Product updated',
-                new ProductResource($product)
-            );
+
+            return $this->success('Product updated', new ProductResource($product));
 
         } catch (Exception $e) {
             Log::error('Error in ProductController@update', [
@@ -76,10 +61,7 @@ class ProductController extends Controller
                 'error'      => $e->getMessage(),
                 'trace'      => $e->getTraceAsString(),
             ]);
-            return $this->error(
-                'Failed to update product',
-                500
-            );
+            return $this->error('Failed to update product', 500);
         }
     }
 
@@ -92,10 +74,7 @@ class ProductController extends Controller
             $deleted = ProductService::deleteWithImage($id);
 
             if (!$deleted) {
-                return $this->error(
-                    'Failed to delete product',
-                    500
-                );
+                return $this->error('Failed to delete product', 500);
             }
 
             return $this->success('Product deleted');
@@ -106,10 +85,7 @@ class ProductController extends Controller
                 'error'      => $e->getMessage(),
                 'trace'      => $e->getTraceAsString(),
             ]);
-            return $this->error(
-                'Failed to delete product',
-                500
-            );
+            return $this->error('Failed to delete product', 500);
         }
     }
 }
