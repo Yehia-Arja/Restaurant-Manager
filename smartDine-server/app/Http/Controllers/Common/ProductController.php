@@ -18,23 +18,27 @@ class ProductController extends Controller
      */
     public function index(ProductRequest $request)
     {
-        $data = $request->validated();
+        try{
+            $data = $request->validated();
 
-        $products = ProductService::list(
-            $data['restaurant_location_id'] ?? null,
-            $data['restaurant_id']          ?? null,
-            $data['category_id']            ?? null,
-            $data['search']                 ?? null
-        );
+            $products = ProductService::list(
+                $data['restaurant_location_id'] ?? null,
+                $data['restaurant_id']          ?? null,
+                $data['category_id']            ?? null,
+                $data['search']                 ?? null
+            );
 
-        if ($products->isEmpty()) {
-            return $this->error('No products found', 404);
+            if ($products->isEmpty()) {
+                return $this->error('No products found', 404);
+            }
+
+            return $this->success(
+                'Products fetched',
+                ProductResource::collection($products)
+            );
+        }catch(\Throwable $e){
+            return $this->error($e->getMessage(), 500);
         }
-
-        return $this->success(
-            'Products fetched',
-            ProductResource::collection($products)
-        );
     }
 
     /**
@@ -43,15 +47,20 @@ class ProductController extends Controller
      */
     public function show(int $id)
     {
-        $product = ProductService::getById($id);
+        try{
+            $product = ProductService::getById($id);
 
-        if (!$product) {
-            return $this->error('Product not found', 404);
+            if (!$product) {
+                return $this->error('Product not found', 404);
+            }
+
+            return $this->success(
+                'Product details',
+                new ProductResource($product)
+            );
+        }catch(\Throwable $e){
+            return $this->error($e->getMessage(), 500);
         }
-
-        return $this->success(
-            'Product details',
-            new ProductResource($product)
-        );
+        
     }
 }
