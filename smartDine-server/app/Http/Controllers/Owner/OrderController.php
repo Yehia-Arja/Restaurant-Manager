@@ -23,16 +23,21 @@ class OrderController extends Controller
      */
     public function stats(OrderStatsRequest $request)
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
 
-        $restaurantId = $data['restaurant_id']            ?? null;
-        $branchId     = $data['restaurant_location_id']   ?? null;
+            $restaurantId = $data['restaurant_id']            ?? null;
+            $branchId     = $data['restaurant_location_id']   ?? null;
 
-        $counts = OrderService::stats($restaurantId, $branchId);
+            $counts = OrderService::stats($restaurantId, $branchId);
 
-        return $this->success(
-            'Order statistics fetched successfully',
-            $counts
-        );
+            return $this->success(
+                'Order statistics fetched successfully',
+                $counts
+            );
+        }catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
+        }
+        
     }
 }
