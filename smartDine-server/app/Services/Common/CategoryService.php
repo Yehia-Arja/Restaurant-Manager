@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 class CategoryService
 {
 
+
     /**
      * List categories, filtered optionally by branch or by restaurant.
      *
