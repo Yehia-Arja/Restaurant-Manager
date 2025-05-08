@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Common;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Services\Common\MediaService;
 
 class RestaurantResource extends JsonResource
 {
@@ -15,7 +16,7 @@ class RestaurantResource extends JsonResource
             'id'          => $this->id,
             'owner_id'    => $this->owner_id,
             'name'        => $this->name,
-            'file_name'   => $this->file_name,
+            'image_url'   => MediaService::url($this->file_name, 'restaurants'),
             'description' => $this->description,
         ];
     }
