@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CreateOrUpdateRestaurantLocationRequest;
 use App\Services\Admin\RestaurantLocationService;
 use App\Http\Resources\Common\RestaurantLocationResource;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
@@ -68,7 +69,7 @@ class RestaurantLocationController extends Controller
             if (!$deleted) {
                 return $this->error('Branch not found', 404);
             }
-            
+
             return $this->success('Branch deleted');
         } catch (Exception $e) {
             Log::error('Admin\RestaurantLocationController@destroy error', [
