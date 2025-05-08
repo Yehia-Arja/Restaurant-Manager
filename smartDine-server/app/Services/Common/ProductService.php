@@ -8,24 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class ProductService
 {
+   
     /**
-     * Create a new product for the current owner's first restaurant.
+     * Fetch a product by ID.
      */
-    public static function createProduct(array $data): Product
+    public static function getById(int $id)
     {
-        return Product::create($data);
+        return Product::find($id);
     }
-
-    /**
-     * Update an existing product.
-     */
-    public static function updateProduct(Product $product, array $data): Product
-    {
-        $product->update($data);
-        return $product;
-    }
-
-    
 
     /**
      * Fetch products at a restaurant or available at a branch, with optional category & search filters.
@@ -37,9 +27,7 @@ class ProductService
         ?int $categoryId = null,
         ?string $search     = null
     ): Collection {
-        if (!$branchId && !$restaurantId) {
-            return collect(); 
-        }
+        
         $q = Product::query();
 
         // Branch‐specific (with overrides)
