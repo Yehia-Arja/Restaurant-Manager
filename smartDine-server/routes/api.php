@@ -9,6 +9,7 @@ use App\Http\Controllers\Common\RestaurantController   as CommonRestaurantContro
 use App\Http\Controllers\Common\ProductController      as CommonProductController;
 use App\Http\Controllers\Common\CategoryController     as CommonCategoryController;
 use App\Http\Controllers\Common\RestaurantLocationController as CommonRestaurantLocationController;
+use App\Http\Controllers\Common\RecommendationController as CommonRecommendationController;
 
 // Owner
 use App\Http\Controllers\Owner\ProductController       as OwnerProductController;
@@ -42,6 +43,10 @@ Route::prefix('v0.1')->group(function () {
             Route::get('products',                  [CommonProductController::class,  'index']);
             Route::get('products/{id}',             [CommonProductController::class,  'show']);
             Route::get('categories',                [CommonCategoryController::class, 'index']);
+
+            // Recommendations
+            Route::get('recommendations',          [CommonRecommendationController::class, 'index']);
+
         });
 
         // Owner endpoints
