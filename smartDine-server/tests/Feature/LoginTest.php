@@ -14,6 +14,7 @@ class LoginTest extends TestCase
 
     public function test_user_can_login_and_get_token_and_user_type_id(): void
     {
+        $this->withoutExceptionHandling();
         // Seed required FK data (user_types)
         $this->seed(UserTypeSeeder::class);
 
