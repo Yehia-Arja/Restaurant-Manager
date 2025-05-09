@@ -20,7 +20,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Prepare Buildx cache
         run: mkdir -p /tmp/.buildx-cache
@@ -46,18 +47,23 @@ jobs:
     needs: build
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Build & start containers
+      # Copy your .env so artisan (and serve) can run
+      - name: Copy environment file
+        working-directory: smartDine-server
+        run: cp .env.example .env
+
+      - name: Start containers
+        working-directory: smartDine-server
+        run: docker compose up -d --remove-orphans
+
+      - name: Wait for MySQL to be ready
         working-directory: smartDine-server
         run: |
-          docker compose build --pull
-          docker compose up -d --remove-orphans
-
-      - name: Wait for MySQL
-        working-directory: smartDine-server
-        run: |
-          docker compose exec -T mysql sh -c "until mysqladmin ping -h localhost -uroot -proot --silent; do sleep 1; done"
+          docker compose exec -T mysql \
+            sh -c "until mysqladmin ping -h localhost -uroot -proot --silent; do sleep 1; done"
 
       - name: Run migrations
         working-directory: smartDine-server
@@ -77,14 +83,15 @@ jobs:
       BRANCH: main
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.EC2_DEPLOY_KEY }}
 
-      - name: SSH & deploy to staging
+      - name: Deploy to staging
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@"${EC2_HOST}" << 'EOF'
             cd ~/Restaurant-Manager/smartDine-server
@@ -103,14 +110,15 @@ jobs:
       BRANCH: production
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.EC2_DEPLOY_KEY }}
 
-      - name: SSH & deploy to production
+      - name: Deploy to production
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@"${EC2_HOST}" << 'EOF'
             cd ~/Restaurant-Manager/smartDine-server
