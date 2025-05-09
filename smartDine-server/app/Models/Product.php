@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
+use App\Models\RestaurantLocation;
 
 class Product extends Model
 {
@@ -29,20 +30,31 @@ class Product extends Model
         'rating_count',
     ];
 
-     public function getImageUrlAttribute(): string
+    public function getImageUrlAttribute(): string
     {
         return Storage::disk('s3')
                       ->url("products/{$this->file_name}");
     }
 
-    /**
-     * If you have AR models, same pattern for the 3D asset:
-     */
     public function getArModelUrlAttribute(): ?string
     {
         return $this->ar_model_file
             ? Storage::disk('s3')
                      ->url("ar-models/{$this->ar_model_file}")
             : null;
+    }
+
+    /**
+     * The branches (restaurant locations) this product is available at.
+     */
+    public function locations()
+    {
+        return $this->morphToMany(
+            RestaurantLocation::class,
+            'locationable',
+            'locationables',
+            'locationable_id',
+            'restaurant_location_id'
+        );
     }
 }

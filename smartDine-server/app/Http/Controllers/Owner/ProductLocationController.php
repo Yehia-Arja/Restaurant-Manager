@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AttachBranchesRequest;
+use App\Http\Requests\Owner\AttachBranchesRequest;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 
