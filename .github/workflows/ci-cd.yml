@@ -50,10 +50,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Copy your .env so artisan (and serve) can run
       - name: Copy environment file
         working-directory: smartDine-server
         run: cp .env.example .env
+
+      - name: Generate APP_KEY
+        working-directory: smartDine-server
+        run: docker compose run --rm laravel php artisan key:generate --ansi
 
       - name: Start containers
         working-directory: smartDine-server
