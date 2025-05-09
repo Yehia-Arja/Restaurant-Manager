@@ -1,7 +1,7 @@
 # Dockerfile
 
-# 1. Base image
-FROM bitnami/laravel:12.0.7-0
+# 1. Base image (matches Docker Hub tag)
+FROM bitnami/laravel:12.0.7-debian-12-r0
 
 # 2. Switch to root to install extra packages
 USER root
@@ -15,24 +15,19 @@ RUN install_packages --assume-yes \
     && pecl install redis \
     && docker-php-ext-enable redis
 
-# 4. (Optional) Install Node.js if you build assets in-container
-# RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
-#   && apt-get update \
-#   && apt-get install -y nodejs
-
-# 5. Switch back to non-root user
+# 4. Switch back to non-root user
 USER 1001
 
-# 6. Set working directory
+# 5. Set working directory
 WORKDIR /app
 
-# 7. Copy composer files & install dependencies
+# 6. Copy composer files & install dependencies
 COPY composer.json composer.lock /app/
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# 8. Copy the rest of your application code
+# 7. Copy the rest of your application code
 COPY . /app
 
-# 9. Expose port and set default command
+# 8. Expose port and set default command
 EXPOSE 8000
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
