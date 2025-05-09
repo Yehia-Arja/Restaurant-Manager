@@ -52,13 +52,13 @@ jobs:
 
       - name: Start containers
         working-directory: smartDine-server
-        run: docker compose up -d
+        run: docker compose up -d --remove-orphans --wait
 
-      - name: Run migrations
+      - name: Run migrations inside container
         working-directory: smartDine-server
         run: docker compose exec -T laravel php artisan migrate --force
 
-      - name: Run PHPUnit inside Laravel container
+      - name: Run tests inside container
         working-directory: smartDine-server
         run: docker compose exec -T laravel php artisan test --verbose
 
