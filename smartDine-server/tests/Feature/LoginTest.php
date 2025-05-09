@@ -27,6 +27,7 @@ class LoginTest extends TestCase
         ]);
 
         // Validate response
+        $response->dump();
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'success',
