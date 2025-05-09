@@ -15,15 +15,14 @@ permissions:
   id-token: write
 
 jobs:
-  ci:
-    name: Build → Test
+  build:
+    name: Build Docker Images
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Prepare Docker Buildx cache
+      - name: Prepare Buildx cache
         run: mkdir -p /tmp/.buildx-cache
 
       - name: Set up Docker Buildx
@@ -37,16 +36,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Build images
+        working-directory: smartDine-server
+        run: docker compose build --pull --progress=plain
+
+  test:
+    name: Run Tests Inside Container
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v3
+
       - name: Build & start containers
         working-directory: smartDine-server
         run: |
           docker compose build --pull
-          docker compose up -d
+          docker compose up -d --remove-orphans
 
-      - name: Wait for MySQL to be healthy
+      - name: Wait for MySQL
         working-directory: smartDine-server
         run: |
-          docker compose exec -T mysql sh -c "until mysqladmin ping -h localhost --silent; do sleep 1; done"
+          docker compose exec -T mysql sh -c "until mysqladmin ping -h localhost -uroot -proot --silent; do sleep 1; done"
 
       - name: Run migrations
         working-directory: smartDine-server
@@ -59,7 +70,7 @@ jobs:
   deploy-staging:
     name: Deploy to Staging EC2
     runs-on: ubuntu-latest
-    needs: ci
+    needs: test
     if: github.ref == 'refs/heads/main'
     env:
       EC2_HOST: ${{ secrets.EC2_STAGING_HOST }}
@@ -85,7 +96,7 @@ jobs:
   deploy-production:
     name: Deploy to Production EC2
     runs-on: ubuntu-latest
-    needs: ci
+    needs: test
     if: github.ref == 'refs/heads/production'
     env:
       EC2_HOST: ${{ secrets.EC2_PRODUCTION_HOST }}
