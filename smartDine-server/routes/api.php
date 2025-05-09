@@ -15,6 +15,10 @@ use App\Http\Controllers\Common\RecommendationController as CommonRecommendation
 use App\Http\Controllers\Owner\ProductController       as OwnerProductController;
 use App\Http\Controllers\Owner\CategoryController      as OwnerCategoryController;
 
+// Owner linking controllers
+use App\Http\Controllers\ProductLocationController;
+use App\Http\Controllers\CategoryLocationController;
+
 // Admin
 use App\Http\Controllers\Admin\RestaurantController           as AdminRestaurantController;
 use App\Http\Controllers\Admin\RestaurantLocationController   as AdminLocationController;
@@ -54,17 +58,25 @@ Route::prefix('v0.1')->group(function () {
 
             // Products
             Route::prefix('product')->group(function () {
-                Route::post('/',      [OwnerProductController::class, 'store']);
-                Route::get('{id}',    [OwnerProductController::class, 'show']);
-                Route::put('{id}',    [OwnerProductController::class, 'update']);
-                Route::delete('{id}', [OwnerProductController::class, 'destroy']);
+                Route::post('/',            [OwnerProductController::class, 'store']);
+                Route::get('{id}',          [OwnerProductController::class, 'show']);
+                Route::put('{id}',          [OwnerProductController::class, 'update']);
+                Route::delete('{id}',       [OwnerProductController::class, 'destroy']);
+
+                // Link/unlink branches
+                Route::post('{product}/locations',               [ProductLocationController::class, 'store']);
+                Route::delete('{product}/locations/{branch}',    [ProductLocationController::class, 'destroy']);
             });
 
             // Categories
             Route::prefix('categories')->group(function () {
-                Route::post('/',           [OwnerCategoryController::class, 'store']);
-                Route::put('{id}',         [OwnerCategoryController::class, 'update']);
-                Route::delete('{id}',      [OwnerCategoryController::class, 'destroy']);
+                Route::post('/',            [OwnerCategoryController::class, 'store']);
+                Route::put('{id}',          [OwnerCategoryController::class, 'update']);
+                Route::delete('{id}',       [OwnerCategoryController::class, 'destroy']);
+
+                // Link/unlink branches
+                Route::post('{category}/locations',             [CategoryLocationController::class, 'store']);
+                Route::delete('{category}/locations/{branch}',  [CategoryLocationController::class, 'destroy']);
             });
         });
 
@@ -73,16 +85,16 @@ Route::prefix('v0.1')->group(function () {
 
             // Restaurants
             Route::prefix('restaurants')->group(function () {
-                Route::post('/',        [AdminRestaurantController::class,         'store']);
-                Route::put('{id}',      [AdminRestaurantController::class,         'update']);
-                Route::delete('{id}',   [AdminRestaurantController::class,         'destroy']);
+                Route::post('/',        [AdminRestaurantController::class,       'store']);
+                Route::put('{id}',      [AdminRestaurantController::class,       'update']);
+                Route::delete('{id}',   [AdminRestaurantController::class,       'destroy']);
             });
 
             // Branches (Restaurant Locations)
             Route::prefix('restaurant-locations')->group(function () {
-                Route::post('/',        [AdminLocationController::class,           'store']);
-                Route::put('{id}',      [AdminLocationController::class,           'update']);
-                Route::delete('{id}',   [AdminLocationController::class,           'destroy']);
+                Route::post('/',        [AdminLocationController::class,         'store']);
+                Route::put('{id}',      [AdminLocationController::class,         'update']);
+                Route::delete('{id}',   [AdminLocationController::class,         'destroy']);
             });
         });
     });
