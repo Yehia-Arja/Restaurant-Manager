@@ -98,7 +98,7 @@ jobs:
 
       - name: Run PHPUnit
         working-directory: smartDine-server
-        run: php artisan test --no-interaction --verbose
+        run: php artisan test
 
   deploy-staging:
     name: Deploy to Staging EC2
