@@ -29,7 +29,7 @@ class LocationableSeeder extends Seeder
 
             DB::table('locationables')->insert([
                 'locationable_id' => $categoryId,
-                'locationable_type' => 'Category',
+                'locationable_type' => Category::class,
                 'restaurant_location_id' => $locationId,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -47,7 +47,7 @@ class LocationableSeeder extends Seeder
 
             DB::table('locationables')->insert([
                 'locationable_id' => $productId,
-                'locationable_type' => 'Product',
+                'locationable_type' => Product::class,
                 'restaurant_location_id' => $locationId,
                 'override_price' => rand(10, 50),
                 'override_description' => 'Custom description for this branch.',
