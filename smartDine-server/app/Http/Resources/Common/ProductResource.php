@@ -13,7 +13,7 @@ class ProductResource extends JsonResource
     public function toArray(Request $request): array
     {
         $price = $this->override_price != null ? $this->override_price : $this->price; 
-        $description = $this->description != null ? $this->override_description : $this->description;
+        $description = $this->override_description != null ? $this->override_description : $this->description;
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -25,8 +25,8 @@ class ProductResource extends JsonResource
             'avg_rating' => $this->avg_rating,
             'rating_count' => $this->rating_count,
 
-            'image_url' => $this->image_url,
-            'ar_model_url' => $this->ar_model_url,
+            'image_url' => 'jello',
+            'ar_model_url' => 'kll'
         ];
     }
 }
