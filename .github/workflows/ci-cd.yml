@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Build via docker compose
-        run: docker compose -f smartDine-server/docker-compose.yml build --pull --progress=plain
+        run: docker compose --progress=plain -f smartDine-server/docker-compose.yml build --pull
 
   test:
     name: Run Laravel Tests
