@@ -13,25 +13,32 @@ class ProductTagFactory extends Factory
 {
     /**
      * Define the model's default state.
+     * Ensures unique product-tag combinations.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
+        static $seen = [];
         static $productIds = null;
         static $tagIds = null;
 
-        if (is_null($productIds)) {
-            $productIds = Product::pluck('id')->toArray();
-        }
+        // Load IDs once
+        $productIds = $productIds ?? Product::pluck('id')->toArray();
+        $tagIds = $tagIds ?? Tag::pluck('id')->toArray();
 
-        if (is_null($tagIds)) {
-            $tagIds = Tag::pluck('id')->toArray();
-        }
+        do {
+            $productId = $this->faker->randomElement($productIds);
+            $tagId = $this->faker->randomElement($tagIds);
+            $key = "{$productId}-{$tagId}";
+        } while (in_array($key, $seen));
+
+        // Mark as used
+        $seen[] = $key;
 
         return [
-            'product_id' => $this->faker->randomElement($productIds),
-            'tag_id' => $this->faker->randomElement($tagIds),
+            'product_id' => $productId,
+            'tag_id'     => $tagId,
         ];
     }
 }
