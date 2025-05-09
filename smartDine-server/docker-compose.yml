@@ -1,19 +1,23 @@
+version: "3.8"
+
 services:
   laravel:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     volumes:
       - ./:/app:cached
     environment:
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USERNAME=laravel_user
-      - DB_PASSWORD=laravel_pass
-      - DB_DATABASE=restaurant_db
-      - CACHE_DRIVER=redis
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: laravel_user
+      DB_PASSWORD: laravel_pass
+      DB_DATABASE: restaurant_db
+      CACHE_DRIVER: redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - mysql
       - redis
@@ -24,21 +28,12 @@ services:
     ports:
       - "3307:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=restaurant_db
-      - MYSQL_USER=laravel_user
-      - MYSQL_PASSWORD=laravel_pass
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: restaurant_db
+      MYSQL_USER: laravel_user
+      MYSQL_PASSWORD: laravel_pass
     volumes:
       - mysql_data:/var/lib/mysql
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    restart: always
-    ports:
-      - "8081:80"
-    environment:
-      - PMA_HOST=mysql
-      - MYSQL_ROOT_PASSWORD=root
 
   redis:
     image: redis:alpine
@@ -46,15 +41,27 @@ services:
     ports:
       - "6379:6379"
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root
+
   scheduler:
-    build: .
-    command: sh -c "php artisan schedule:run --verbose --no-interaction"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
     volumes:
       - ./:/app:cached
     depends_on:
       - laravel
-      - redis
       - mysql
+      - redis
 
 volumes:
   mysql_data:
