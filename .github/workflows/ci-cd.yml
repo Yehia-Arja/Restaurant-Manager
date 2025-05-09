@@ -23,6 +23,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Prepare Docker layer cache dir
+        run: mkdir -p /tmp/.buildx-cache
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -36,7 +39,7 @@ jobs:
 
       - name: Build via Docker Compose
         working-directory: smartDine-server
-        run: docker compose build --pull
+        run: docker compose --progress=plain build --pull
 
   test:
     name: Run Laravel Tests
@@ -60,6 +63,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Prepare Composer cache dir
+        run: mkdir -p smartDine-server/vendor
 
       - name: Set up PHP 8.3
         uses: shivammathur/setup-php@v2
