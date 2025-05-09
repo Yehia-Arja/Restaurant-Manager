@@ -3,42 +3,78 @@
 namespace App\Services\Owner;
 
 use App\Models\Category;
-use Illuminate\Support\Collection;
+use App\Services\Common\MediaService;
+use Illuminate\Http\UploadedFile;
 
 class CategoryService
 {
     /**
-     * Create or update a category in one go.
-     *
-     * If 'id' is present in $data, it will update that record;
-     * otherwise it will insert a new one.
-     *
-     * @param  array  $data  [
-     *     'id'            => (int|null), 
-     *     'restaurant_id' => int,
-     *     'name'          => string,
-     *     'file_name'     => string,
-     * ]
-     * @return Category
+     * Create a new category with uploaded image.
      */
-    public static function upsert(array $data): Category
+    public static function create(array $data, UploadedFile $image): Category
     {
-        return Category::updateOrCreate(
-            // find by id if given, else create
-            ['id' => $data['id'] ?? null],
-            [
-                'restaurant_id' => $data['restaurant_id'],
-                'name'          => $data['name'],
-                'file_name'     => $data['file_name'],
-            ]
-        );
+        $filename = MediaService::upload($image, 'categories');
+
+        if (!$filename) {
+            throw new \Exception('Failed to upload image');
+        }
+        
+        return Category::create([
+            'restaurant_id' => $data['restaurant_id'],
+            'name'          => $data['name'],
+            'file_name'     => $filename,
+        ]);
     }
 
     /**
-     * Delete a category by ID.
+     * Update an existing category and replace image.
      */
-    public static function deleteCategory(int $id): bool
+    public static function update(int $id, array $data, UploadedFile $image)
     {
-        return Category::destroy($id) > 0;
+        $category = self::getById($id);
+        if (!$category) {
+            return null;
+        }
+
+        // delete old image
+        if ($category->file_name) {
+            MediaService::delete($category->file_name, 'categories');
+        }
+
+        // upload new image
+        $filename = MediaService::upload($image, 'categories');
+
+        $category->update([
+            'restaurant_id' => $data['restaurant_id'],
+            'name'          => $data['name'],
+            'file_name'     => $filename,
+        ]);
+
+        return $category;
+    }
+
+    /**
+     * Delete a category and its image.
+     */
+    public static function delete(int $id): bool
+    {
+        $category = self::getById($id);
+        if (! $category) {
+            return false;
+        }
+
+        if ($category->file_name) {
+            MediaService::delete($category->file_name, 'categories');
+        }
+
+        return $category->delete();
+    }
+
+    /**
+     * Fetch a single category by ID.
+     */
+    public static function getById(int $id)
+    {
+        return Category::find($id);
     }
 }
