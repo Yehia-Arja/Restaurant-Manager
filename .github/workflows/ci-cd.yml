@@ -7,7 +7,7 @@ on:
       - production
 
 concurrency:
-  group: ${{ github.ref }}
+  group: "${{ github.ref }}"
   cancel-in-progress: true
 
 permissions:
@@ -34,8 +34,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Build via docker-compose
-        run: docker-compose -f smartDine-server/docker-compose.yml build --pull --progress=plain
+      - name: Build via docker compose
+        run: docker compose -f smartDine-server/docker-compose.yml build --pull --progress=plain
 
   test:
     name: Run Laravel Tests
@@ -118,6 +118,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no ec2-user@"${EC2_HOST}" << 'EOF'
             cd ~/Restaurant-Manager/smartDine-server
             git pull origin "${BRANCH}"
-            docker-compose down
-            docker-compose up -d --build
+            docker compose down
+            docker compose up -d --build
           EOF
