@@ -7,9 +7,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    # mount your code and host-installed vendor into /app
     volumes:
       - ./:/app:cached
-      - /app/vendor
+      - ./vendor:/app/vendor:delegated
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
@@ -59,7 +60,7 @@ services:
       sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
     volumes:
       - ./:/app:cached
-      - /app/vendor
+      - ./vendor:/app/vendor:delegated
     depends_on:
       - laravel
       - mysql
