@@ -11,11 +11,17 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --prefer-dist
 
 COPY . .
-USER root
 
-RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs && mkdir -p bootstrap/cache && chown -R 1001:1001 storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
+RUN mkdir -p storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache \
+    storage/logs \
+    bootstrap/cache \
+    && chown -R 1001:1001 storage bootstrap/cache vendor \
+    && chmod -R 775 storage bootstrap/cache \
+    && composer dump-autoload --optimize --no-dev
 
 USER 1001
-RUN composer dump-autoload --optimize --no-dev
+
 EXPOSE 8000
 CMD ["php","artisan","serve","--host=0.0.0.0","--port=8000"]
