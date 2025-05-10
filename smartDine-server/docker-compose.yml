@@ -9,7 +9,6 @@ services:
       - "8000:8000"
     volumes:
       - ./:/app:cached
-      - ./vendor:/app/vendor:delegated
     environment:
       DB_CONNECTION: mysql
       DB_HOST: mysql
