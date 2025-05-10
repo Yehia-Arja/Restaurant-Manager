@@ -149,6 +149,6 @@ jobs:
             docker-compose down
             docker-compose pull
             docker-compose up -d --build
-            docker-compose exec laravel php artisan migrate --force
-            docker-compose exec laravel php artisan optimize:clear
+            docker-compose exec -T laravel php artisan migrate --force
+            docker-compose exec -T laravel php artisan optimize:clear
           EOSSH
