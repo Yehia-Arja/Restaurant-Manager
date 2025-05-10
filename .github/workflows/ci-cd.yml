@@ -142,7 +142,7 @@ jobs:
           HOST=$(echo "${{ env.server }}" | cut -d'@' -f2)
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
 
-          scp -r docker-compose.yml Dockerfile ${{ env.envfile }} ${{ env.server }}:~/app
+          scp -r . ${{ env.server }}:~/app
 
           ssh ${{ env.server }} << 'EOSSH'
             cd ~/app
