@@ -76,15 +76,21 @@ jobs:
       - name: Configure environment
         working-directory: smartDine-server
         run: |
-          cp .env.example .env.test
-          echo "APP_ENV=testing" >> .env.test
-          echo "DB_HOST=127.0.0.1" >> .env.test
-          echo "DB_DATABASE=test_db" >> .env.test
-          echo "DB_USERNAME=root" >> .env.test
-          echo "DB_PASSWORD=root" >> .env.test
+          cp .env.example .env
+          echo "APP_ENV=testing" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_DATABASE=test_db" >> .env
+          echo "DB_USERNAME=root" >> .env
+          echo "DB_PASSWORD=root" >> .env
+
+      - name: Debug Environment File
+        working-directory: smartDine-server
+        run: ls -la .env
 
       - name: Run tests
         working-directory: smartDine-server
+        env:
+          ENV_FILE_PATH: /home/runner/work/Restaurant-Manager/smartDine-server/.env
         run: |
           php artisan key:generate --env=testing
           php artisan migrate:fresh --env=testing
