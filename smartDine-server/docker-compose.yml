@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   laravel:
     build:
@@ -8,26 +7,21 @@ services:
     container_name: smartdine_laravel_app
     ports:
       - "${APP_PORT:-8000}:8000"
-    volumes:
-      - ./:/app:cached
     environment:
       APP_ENV: ${APP_ENV:-local}
       APP_DEBUG: ${APP_DEBUG:-true}
       APP_KEY: ${APP_KEY}
       APP_URL: ${APP_URL:-http://localhost:8000}
-
       DB_CONNECTION: mysql
       DB_HOST: mysql_db
       DB_PORT: 3306
       DB_DATABASE: ${DB_DATABASE:-restaurant_db}
       DB_USERNAME: ${DB_USERNAME:-laravel_user}
       DB_PASSWORD: ${DB_PASSWORD:-laravel_pass}
-
       CACHE_DRIVER: redis
       REDIS_HOST: redis_cache
       REDIS_PORT: 6379
       SESSION_DRIVER: ${SESSION_DRIVER:-redis}
-
     depends_on:
       mysql_db:
         condition: service_healthy
@@ -36,7 +30,6 @@ services:
     restart: unless-stopped
     networks:
       - smartdine_network
-
   mysql_db:
     image: mysql:8.0
     container_name: smartdine_mysql
@@ -51,13 +44,12 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${DB_USERNAME:-laravel_user} -p${DB_PASSWORD:-laravel_pass} --silent || mysqladmin ping -h localhost -uroot -p${MYSQL_ROOT_PASSWORD:-root} --silent"]
+      test: ["CMD-SHELL","mysqladmin ping -h localhost -u${DB_USERNAME:-laravel_user} -p${DB_PASSWORD:-laravel_pass} --silent || mysqladmin ping -h localhost -uroot -p${MYSQL_ROOT_PASSWORD:-root} --silent"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - smartdine_network
-
   redis_cache:
     image: redis:7-alpine
     container_name: smartdine_redis
@@ -66,11 +58,9 @@ services:
       - "${REDIS_FORWARD_PORT:-63790}:6379"
     networks:
       - smartdine_network
-
 volumes:
   mysql_data:
     driver: local
-
 networks:
   smartdine_network:
     driver: bridge
