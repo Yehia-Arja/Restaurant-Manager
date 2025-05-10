@@ -97,25 +97,30 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set deployment variables
-        id: set-vars
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "SERVER=${{ secrets.STAGING_SERVER }}" >> $GITHUB_ENV
-            echo "PRIVATE_KEY=${{ secrets.SSH_STAGING_PRIVATE_KEY }}" >> $GITHUB_ENV
+            echo "PRIVATE_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.SSH_STAGING_PRIVATE_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
             echo "KNOWN_HOSTS=${{ secrets.SSH_STAGING_KNOWN_HOSTS }}" >> $GITHUB_ENV
             echo "ENV_FILE=.env.staging" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/production" ]]; then
             echo "SERVER=${{ secrets.PRODUCTION_SERVER }}" >> $GITHUB_ENV
-            echo "PRIVATE_KEY=${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}" >> $GITHUB_ENV
+            echo "PRIVATE_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
             echo "KNOWN_HOSTS=${{ secrets.SSH_PRODUCTION_KNOWN_HOSTS }}" >> $GITHUB_ENV
             echo "ENV_FILE=.env.production" >> $GITHUB_ENV
           fi
 
-      - name: Setup SSH and Deploy
+      - name: Deploy via SSH
         run: |
           mkdir -p ~/.ssh
-          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
           echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat <<EOF > ~/.ssh/id_rsa
+          $PRIVATE_KEY
+          EOF
           chmod 600 ~/.ssh/id_rsa
           scp -r smartDine-server/docker-compose.yml smartDine-server/$ENV_FILE $SERVER:/app
           ssh $SERVER "
