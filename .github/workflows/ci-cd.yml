@@ -34,7 +34,7 @@ jobs:
         run: docker-compose --version
 
       - name: Build containers
-        run: docker-compose -f docker-compose.yml build
+        run: docker-compose -f RestaurantManager/smartDine-server/docker-compose.yml build
 
   test:
     name: Run Tests
@@ -110,7 +110,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
-          scp -r docker-compose.yml .env.${{ matrix.environment }} ${{ env.STAGING_SERVER }}:/app
+          scp -r RestaurantManager/smartDine-server/docker-compose.yml .env.${{ matrix.environment }} ${{ env.STAGING_SERVER }}:/app
           ssh ${{ env.STAGING_SERVER }} "
             cd /app
             docker-compose down
@@ -129,7 +129,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
-          scp -r docker-compose.yml .env.${{ matrix.environment }} ${{ env.PRODUCTION_SERVER }}:/app
+          scp -r RestaurantManager/smartDine-server/docker-compose.yml .env.${{ matrix.environment }} ${{ env.PRODUCTION_SERVER }}:/app
           ssh ${{ env.PRODUCTION_SERVER }} "
             cd /app
             docker-compose down
