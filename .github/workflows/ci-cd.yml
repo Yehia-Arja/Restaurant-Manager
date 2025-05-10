@@ -12,16 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: docker/setup-qemu-action@v2
       - uses: docker/setup-buildx-action@v2
-
-      - name: Install Docker Compose
-        run: |
+      - run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-
+      - run: docker-compose --version
       - name: Build containers
         working-directory: smartDine-server
         run: docker-compose -f docker-compose.yml build
@@ -29,7 +25,6 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
-
     services:
       mysql:
         image: mysql:8.0
@@ -37,27 +32,20 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: test_db
         ports: ["3306:3306"]
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s --health-timeout=5s --health-retries=3
-
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
       redis:
         image: redis:7-alpine
         ports: ["6379:6379"]
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
-          extensions: mbstring,xml,ctype,json,tokenizer,bcmath,redis,pdo_mysql
-
-      - name: Install Composer deps
+          extensions: mbstring, xml, ctype, json, tokenizer, bcmath, redis, pdo_mysql
+      - name: Install dependencies
         working-directory: smartDine-server
         run: composer install --no-interaction --prefer-dist
-
-      - name: Configure .env (testing)
+      - name: Configure environment
         working-directory: smartDine-server
         run: |
           cp .env.example .env
@@ -68,8 +56,7 @@ jobs:
             echo "DB_USERNAME=root"
             echo "DB_PASSWORD=root"
           } >> .env
-
-      - name: Run PHPUnit
+      - name: Run tests
         working-directory: smartDine-server
         run: |
           php artisan key:generate --env=testing
@@ -79,49 +66,41 @@ jobs:
   deploy:
     needs: [build, test]
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      # 1) Decide target
       - id: pick
         run: |
           if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            echo "server=${{ secrets.STAGING_SERVER }}"            >> $GITHUB_OUTPUT
-            echo "envfile=.env.staging"                            >> $GITHUB_OUTPUT
-            echo "pkey=${{ secrets.SSH_STAGING_PRIVATE_KEY }}"     >> $GITHUB_OUTPUT
-            echo "kh=${{ secrets.SSH_STAGING_KNOWN_HOSTS }}"       >> $GITHUB_OUTPUT
+            echo "server=${{ secrets.STAGING_SERVER }}"   >> $GITHUB_OUTPUT
+            echo "envfile=.env.staging"                   >> $GITHUB_OUTPUT
+            { echo 'pkey<<EOF'; echo "${{ secrets.SSH_STAGING_PRIVATE_KEY }}"; echo 'EOF'; } >> $GITHUB_OUTPUT
+            { echo 'kh<<EOF';   echo "${{ secrets.SSH_STAGING_KNOWN_HOSTS }}";   echo 'EOF'; } >> $GITHUB_OUTPUT
           elif [[ "${GITHUB_REF}" == "refs/heads/production" ]]; then
-            echo "server=${{ secrets.PRODUCTION_SERVER }}"         >> $GITHUB_OUTPUT
-            echo "envfile=.env.production"                         >> $GITHUB_OUTPUT
-            echo "pkey=${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}"  >> $GITHUB_OUTPUT
-            echo "kh=${{ secrets.SSH_PRODUCTION_KNOWN_HOSTS }}"    >> $GITHUB_OUTPUT
+            echo "server=${{ secrets.PRODUCTION_SERVER }}" >> $GITHUB_OUTPUT
+            echo "envfile=.env.production"                 >> $GITHUB_OUTPUT
+            { echo 'pkey<<EOF'; echo "${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}"; echo 'EOF'; } >> $GITHUB_OUTPUT
+            { echo 'kh<<EOF';   echo "${{ secrets.SSH_PRODUCTION_KNOWN_HOSTS }}";   echo 'EOF'; } >> $GITHUB_OUTPUT
           fi
 
-      # 2) Write SSH material & deploy
       - name: Deploy via SSH
         env:
           SERVER: ${{ steps.pick.outputs.server }}
+          PRIVATE_KEY: ${{ steps.pick.outputs.pkey }}
+          KNOWN_HOSTS: ${{ steps.pick.outputs.kh }}
           ENV_FILE: ${{ steps.pick.outputs.envfile }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ steps.pick.outputs.kh }}"  > ~/.ssh/known_hosts
-          printf '%s\n' "${{ steps.pick.outputs.pkey }}" > ~/.ssh/id_rsa
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
-          # copy compose + env
-          scp -q -o StrictHostKeyChecking=yes \
-              -r smartDine-server/docker-compose.yml \
-                 smartDine-server/$ENV_FILE \
-                 "$SERVER:/app"
-
-          # remote commands
-          ssh -o StrictHostKeyChecking=yes "$SERVER" <<'REMOTE'
-            set -e
+          scp -o StrictHostKeyChecking=yes -r smartDine-server/docker-compose.yml smartDine-server/$ENV_FILE $SERVER:/app
+          ssh -o StrictHostKeyChecking=yes $SERVER "
             cd /app
-            docker-compose down || true
+            docker-compose down
             docker-compose pull
             docker-compose up -d --build
             docker-compose exec laravel php artisan migrate --force
             docker-compose exec laravel php artisan optimize:clear
-          REMOTE
+          "
