@@ -99,24 +99,26 @@ jobs:
 
       - name: Generate .env.staging file
         if: github.ref == 'refs/heads/main'
+        working-directory: smartDine-server
         run: |
-          echo "APP_ENV=staging" > smartDine-server/.env.staging
-          echo "DB_HOST=127.0.0.1" >> smartDine-server/.env.staging
-          echo "DB_DATABASE=staging_db" >> smartDine-server/.env.staging
-          echo "DB_USERNAME=${{ secrets.STAGING_DB_USERNAME }}" >> smartDine-server/.env.staging
-          echo "DB_PASSWORD=${{ secrets.STAGING_DB_PASSWORD }}" >> smartDine-server/.env.staging
+          echo "APP_ENV=staging" > .env.staging
+          echo "DB_HOST=127.0.0.1" >> .env.staging
+          echo "DB_DATABASE=staging_db" >> .env.staging
+          echo "DB_USERNAME=${{ secrets.STAGING_DB_USERNAME }}" >> .env.staging
+          echo "DB_PASSWORD=${{ secrets.STAGING_DB_PASSWORD }}" >> .env.staging
 
       - name: Generate .env.production file
         if: github.ref == 'refs/heads/production'
+        working-directory: smartDine-server
         run: |
-          echo "APP_ENV=production" > smartDine-server/.env.production
-          echo "DB_HOST=127.0.0.1" >> smartDine-server/.env.production
-          echo "DB_DATABASE=production_db" >> smartDine-server/.env.production
-          echo "DB_USERNAME=${{ secrets.PRODUCTION_DB_USERNAME }}" >> smartDine-server/.env.production
-          echo "DB_PASSWORD=${{ secrets.PRODUCTION_DB_PASSWORD }}" >> smartDine-server/.env.production
+          echo "APP_ENV=production" > .env.production
+          echo "DB_HOST=127.0.0.1" >> .env.production
+          echo "DB_DATABASE=production_db" >> .env.production
+          echo "DB_USERNAME=${{ secrets.PRODUCTION_DB_USERNAME }}" >> .env.production
+          echo "DB_PASSWORD=${{ secrets.PRODUCTION_DB_PASSWORD }}" >> .env.production
 
       - name: Set deployment variables
-        id: set-vars
+        working-directory: smartDine-server
         run: |
           if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
             echo "server=${{ secrets.STAGING_SERVER }}" >> $GITHUB_ENV
@@ -130,6 +132,7 @@ jobs:
           chmod 600 private_key.pem
 
       - name: Deploy via SSH
+        working-directory: smartDine-server
         run: |
           mkdir -p ~/.ssh
           echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
@@ -139,7 +142,7 @@ jobs:
           HOST=$(echo "${{ env.server }}" | cut -d'@' -f2)
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
 
-          scp -r smartDine-server/docker-compose.yml smartDine-server/${{ env.envfile }} ${{ env.server }}:~/app
+          scp -r docker-compose.yml Dockerfile ${{ env.envfile }} ${{ env.server }}:~/app
 
           ssh ${{ env.server }} << 'EOSSH'
             cd ~/app
