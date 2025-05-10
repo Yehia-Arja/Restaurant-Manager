@@ -98,7 +98,7 @@ jobs:
         working-directory: smartDine-server
         run: |
           php artisan migrate --force
-          php artisan test --verbose
+          php artisan test
 
   deploy-staging:
     runs-on: ubuntu-latest
