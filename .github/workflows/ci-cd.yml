@@ -96,6 +96,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Generate .env.staging file
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "APP_ENV=staging" > smartDine-server/.env.staging
+          echo "DB_HOST=127.0.0.1" >> smartDine-server/.env.staging
+          echo "DB_DATABASE=staging_db" >> smartDine-server/.env.staging
+          echo "DB_USERNAME=${{ secrets.STAGING_DB_USERNAME }}" >> smartDine-server/.env.staging
+          echo "DB_PASSWORD=${{ secrets.STAGING_DB_PASSWORD }}" >> smartDine-server/.env.staging
+
+      - name: Generate .env.production file
+        if: github.ref == 'refs/heads/production'
+        run: |
+          echo "APP_ENV=production" > smartDine-server/.env.production
+          echo "DB_HOST=127.0.0.1" >> smartDine-server/.env.production
+          echo "DB_DATABASE=production_db" >> smartDine-server/.env.production
+          echo "DB_USERNAME=${{ secrets.PRODUCTION_DB_USERNAME }}" >> smartDine-server/.env.production
+          echo "DB_PASSWORD=${{ secrets.PRODUCTION_DB_PASSWORD }}" >> smartDine-server/.env.production
+
       - name: Set deployment variables
         id: set-vars
         run: |
