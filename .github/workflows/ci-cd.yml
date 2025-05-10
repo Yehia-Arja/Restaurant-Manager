@@ -100,27 +100,29 @@ jobs:
         id: set-vars
         run: |
           if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            echo "server=${{ secrets.STAGING_SERVER }}" >> $GITHUB_OUTPUT
-            echo "envfile=.env.staging" >> $GITHUB_OUTPUT
-            echo "pkey=${{ secrets.SSH_STAGING_PRIVATE_KEY }}" >> $GITHUB_OUTPUT
+            echo "server=${{ secrets.STAGING_SERVER }}" >> $GITHUB_ENV
+            echo "envfile=.env.staging" >> $GITHUB_ENV
+            echo "${{ secrets.SSH_STAGING_PRIVATE_KEY }}" > private_key.pem
           elif [[ "${GITHUB_REF}" == "refs/heads/production" ]]; then
-            echo "server=${{ secrets.PRODUCTION_SERVER }}" >> $GITHUB_OUTPUT
-            echo "envfile=.env.production" >> $GITHUB_OUTPUT
-            echo "pkey=${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}" >> $GITHUB_OUTPUT
+            echo "server=${{ secrets.PRODUCTION_SERVER }}" >> $GITHUB_ENV
+            echo "envfile=.env.production" >> $GITHUB_ENV
+            echo "${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}" > private_key.pem
           fi
+          chmod 600 private_key.pem
 
       - name: Deploy via SSH
         run: |
           mkdir -p ~/.ssh
-          printf "%s\n" "${{ steps.set-vars.outputs.pkey }}" > ~/.ssh/id_rsa
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          mv private_key.pem ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          HOST=$(echo "${{ steps.set-vars.outputs.server }}" | cut -d'@' -f2)
+          HOST=$(echo "${{ env.server }}" | cut -d'@' -f2)
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
 
-          scp -r smartDine-server/docker-compose.yml smartDine-server/${{ steps.set-vars.outputs.envfile }} ${{ steps.set-vars.outputs.server }}:~/app
+          scp -r smartDine-server/docker-compose.yml smartDine-server/${{ env.envfile }} ${{ env.server }}:~/app
 
-          ssh ${{ steps.set-vars.outputs.server }} << 'EOSSH'
+          ssh ${{ env.server }} << 'EOSSH'
             cd ~/app
             docker-compose down
             docker-compose pull
