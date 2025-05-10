@@ -1,139 +1,316 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline for SmartDine
 
 on:
   push:
+    branches:
+      - main # For staging
+      - production # For production
+  pull_request: # Also run on pull requests to main/production for validation
     branches:
       - main
       - production
 
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
-  build:
+  lint:
+    name: Lint Code
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./smartDine-server
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Prepare buildx cache
-        run: mkdir -p /tmp/.buildx-cache
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, redis # Add extensions needed by linters/tools
+          tools: composer
+      - name: Install Composer dependencies (including dev)
+        run: composer install --prefer-dist --no-interaction --optimize-autoloader
+
+      - name: Run PHP CodeSniffer (example linter)
+        run: ./vendor/bin/phpcs --standard=PSR12 app/ tests/
+
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: lint
+    defaults:
+      run:
+        working-directory: ./smartDine-server
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (for multi-platform builds, optional if only building for linux/amd64)
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+          images: your_dockerhub_username/smartdine
+          tags: |
+            type=sha,prefix=
+            type=ref,event=branch
+            type=ref,event=pr
 
-      - name: Build images
-        working-directory: smartDine-server
-        run: docker compose build --pull --progress=plain
+      # Login to Docker Hub (or other registry) - uncomment and configure if you push images
+      # - name: Login to Docker Hub
+      #   if: github.event_name != 'pull_request' # Don't push on PRs typically
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image (or just build for PRs)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./smartDine-server
+          file: ./smartDine-server/Dockerfile
+          push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production') }} # Push only on merges to main/production
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   test:
+    name: Run Tests
     runs-on: ubuntu-latest
     needs: build
+    defaults:
+      run:
+        working-directory: ./smartDine-server
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: restaurant_test_db
+      DB_USERNAME: laravel_user_test
+      DB_PASSWORD: laravel_pass_test
+      MYSQL_ROOT_PASSWORD: test_root_password
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+      APP_ENV: testing
+      APP_KEY: ${{ secrets.TEST_APP_KEY }}
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Copy .env & generate key
-        working-directory: smartDine-server
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql, bcmath, intl, redis # Ensure pdo_mysql for runner
+          tools: composer
+
+      - name: Copy .env.example to .env for Docker Compose
+        run: cp .env.example .env
+
+      - name: Update .env for testing
         run: |
-          cp .env.example .env
-          docker compose run --rm laravel php artisan key:generate --ansi
+          sed -i "s/^DB_HOST=.*/DB_HOST=mysql_db/" .env
+          sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE}/" .env
+          sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/" .env
+          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD}/" .env
+          sed -i "s/^REDIS_HOST=.*/REDIS_HOST=redis_cache/" .env
+          sed -i "s/^APP_KEY=.*/APP_KEY=${APP_KEY}/" .env
+          sed -i "s/^APP_ENV=.*/APP_ENV=testing/" .env
+          echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}" >> .env # For docker-compose to pick up
 
-      - name: Install Composer deps on the runner
-        working-directory: smartDine-server
-        run: composer install --ansi --no-interaction --prefer-dist
+      - name: Install Composer dependencies (including dev) on runner
+        run: composer install --prefer-dist --no-interaction --optimize-autoloader
 
-      - name: Start services & wait
-        working-directory: smartDine-server
+      - name: Start services (MySQL, Redis, Laravel App)
+        run: docker compose -f docker-compose.yml up -d mysql_db redis_cache laravel
+
+      - name: Wait for MySQL to be ready
         run: |
-          docker compose up -d mysql redis laravel
-          until docker compose exec -T mysql mysqladmin ping -h localhost -uroot -proot --silent; do
-            sleep 2
-          done
+          echo "Waiting for MySQL..."
+          timeout 60s bash -c 'until docker compose exec -T mysql_db mysqladmin ping -h localhost -u${{ env.DB_USERNAME }} -p${{ env.DB_PASSWORD }} --silent || docker compose exec -T mysql_db mysqladmin ping -h localhost -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} --silent; do sleep 2; done'
+          echo "MySQL is ready."
 
-      - name: Run migrations & tests
-        working-directory: smartDine-server
+      - name: Wait for Laravel app to be ready (optional, but good practice)
         run: |
-          docker compose exec -T laravel php artisan migrate --force
-          docker compose exec -T laravel sh -c "php artisan test --verbose"
+          echo "Waiting for Laravel app..."
+          timeout 60s bash -c 'until curl -sSf http://localhost:${APP_PORT:-8000}/api/health > /dev/null; do sleep 2; done'
+          echo "Laravel app is ready."
+
+      - name: Generate Laravel application key (if not set or to ensure it's correct for testing)
+        run: docker compose exec -T laravel php artisan key:generate --ansi
+
+      - name: Run database migrations
+        run: docker compose exec -T laravel php artisan migrate --force --seed --env=testing
+
+      - name: Run tests
+        run: docker compose exec -T -e DB_CONNECTION=mysql -e DB_DATABASE=${DB_DATABASE} -e DB_HOST=mysql_db laravel php artisan test --verbose
+
+      - name: Stop services
+        if: always() # Always run this step to clean up
+        run: docker compose -f docker-compose.yml down
 
   deploy-staging:
+    name: Deploy to Staging
     runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
+    needs: [build, test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' # Deploy on push to main
+    environment: staging
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup SSH key
-        uses: webfactory/ssh-agent@v0.7.0
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.EC2_DEPLOY_KEY }}
+          ssh-private-key: ${{ secrets.EC2_STAGING_DEPLOY_KEY }} # Specific key for staging
 
-      - name: Deploy to staging
+      - name: Deploy to Staging EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_STAGING_HOST }}
+          APP_KEY_STAGING: ${{ secrets.APP_KEY_STAGING }}
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_STAGING_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ec2-user@${EC2_HOST} << 'EOF'
+            set -e # Exit on error
+            echo "Starting deployment to Staging..."
             cd ~/Restaurant-Manager/smartDine-server
 
-            cat << 'EOT' > .env
-            APP_ENV=staging
-            APP_KEY=${{ secrets.APP_KEY }}
-            DB_CONNECTION=mysql
-            DB_HOST=mysql
-            DB_PORT=3306
-            DB_DATABASE=restaurant_db
-            DB_USERNAME=laravel_user
-            DB_PASSWORD=laravel_pass
-            CACHE_DRIVER=redis
-            REDIS_HOST=redis
-            REDIS_PORT=6379
-            EOT
+            echo "Pulling latest code from main branch..."
+            git checkout main
+            git fetch origin main
+            git reset --hard origin/main # Discard local changes and pull latest
 
-            docker compose down
-            docker compose up -d --build
+            echo "Creating .env file for staging..."
+            # This .env is for docker-compose on the server
+            cat <<EOT > .env
+          APP_NAME=SmartDineStaging
+          APP_ENV=staging
+          APP_KEY=${APP_KEY_STAGING}
+          APP_DEBUG=true
+          APP_URL=http://${EC2_HOST} # Or your staging domain
+
+          DB_CONNECTION=mysql
+          DB_HOST=mysql_db # Docker Compose service name
+          DB_PORT=3306
+          DB_DATABASE=restaurant_staging_db # Use a specific staging DB name
+          DB_USERNAME=laravel_staging_user
+          DB_PASSWORD=${{ secrets.DB_PASSWORD_STAGING }} # Store DB pass in secrets
+
+          CACHE_DRIVER=redis
+          REDIS_HOST=redis_cache # Docker Compose service name
+          REDIS_PORT=6379
+          SESSION_DRIVER=redis
+
+          # Add other necessary Laravel env vars for staging
+          EOT
+            
+            # Add passwords for docker-compose to pick up for service creation
+            echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD_STAGING }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD_STAGING }}" >> .env # For mysql_db service
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME_STAGING }}" >> .env # For mysql_db service
+
+            echo "Bringing down old services if any..."
+            docker compose down --remove-orphans
+
+            echo "Building and starting new services..."
+            docker compose up -d --build --force-recreate
+
+            echo "Waiting a few seconds for services to initialize..."
+            sleep 15
+
+            echo "Running Laravel migrations and optimizations..."
+            docker compose exec -T laravel php artisan migrate --force --seed # Seed if necessary
+            docker compose exec -T laravel php artisan optimize:clear
+            docker compose exec -T laravel php artisan optimize
+            # docker compose exec -T laravel php artisan queue:restart # If using queues
+
+            echo "Staging deployment completed successfully!"
           EOF
 
   deploy-production:
+    name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/production'
+    needs: [build, test]
+    if: github.ref == 'refs/heads/production' && github.event_name == 'push' # Deploy on push to production
+    environment: production
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup SSH key
-        uses: webfactory/ssh-agent@v0.7.0
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.EC2_DEPLOY_KEY }}
+          ssh-private-key: ${{ secrets.EC2_PRODUCTION_DEPLOY_KEY }}
 
-      - name: Deploy to production
+      - name: Deploy to Production EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_PRODUCTION_HOST }}
+          APP_KEY_PRODUCTION: ${{ secrets.APP_KEY_PRODUCTION }}
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PRODUCTION_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ec2-user@${EC2_HOST} << 'EOF'
+            set -e
+            echo "Starting deployment to Production..."
             cd ~/Restaurant-Manager/smartDine-server
 
-            cat << 'EOT' > .env
-            APP_ENV=production
-            APP_KEY=${{ secrets.APP_KEY }}
-            DB_CONNECTION=mysql
-            DB_HOST=mysql
-            DB_PORT=3306
-            DB_DATABASE=restaurant_db
-            DB_USERNAME=laravel_user
-            DB_PASSWORD=laravel_pass
-            CACHE_DRIVER=redis
-            REDIS_HOST=redis
-            REDIS_PORT=6379
-            EOT
+            echo "Pulling latest code from production branch..."
+            git checkout production
+            git fetch origin production
+            git reset --hard origin/production
 
-            docker compose down
-            docker compose up -d --build
+            echo "Creating .env file for production..."
+            cat <<EOT > .env
+          APP_NAME=SmartDine
+          APP_ENV=production
+          APP_KEY=${APP_KEY_PRODUCTION}
+          APP_DEBUG=false
+          APP_URL=http://${EC2_HOST} # Or your production domain
+
+          DB_CONNECTION=mysql
+          DB_HOST=mysql_db
+          DB_PORT=3306
+          DB_DATABASE=restaurant_production_db # Use a specific production DB name
+          DB_USERNAME=laravel_production_user
+          DB_PASSWORD=${{ secrets.DB_PASSWORD_PRODUCTION }}
+
+          CACHE_DRIVER=redis
+          REDIS_HOST=redis_cache
+          REDIS_PORT=6379
+          SESSION_DRIVER=redis
+          EOT
+
+            echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD_PRODUCTION }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD_PRODUCTION }}" >> .env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME_PRODUCTION }}" >> .env
+
+            echo "Bringing down old services..."
+            docker compose down --remove-orphans
+
+            echo "Building and starting new services..."
+            docker compose up -d --build --force-recreate
+
+            echo "Waiting a few seconds for services to initialize..."
+            sleep 15
+
+            echo "Running Laravel migrations and optimizations..."
+            docker compose exec -T laravel php artisan migrate --force
+            docker compose exec -T laravel php artisan optimize:clear
+            docker compose exec -T laravel php artisan optimize
+
+            echo "Production deployment completed successfully!"
           EOF
