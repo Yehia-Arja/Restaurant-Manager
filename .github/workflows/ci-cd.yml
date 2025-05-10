@@ -8,8 +8,6 @@ on:
 
 env:
   DOCKER_COMPOSE_VERSION: "3.8"
-  STAGING_SERVER: user@staging-server-ip
-  PRODUCTION_SERVER: user@production-server-ip
 
 jobs:
   build:
@@ -98,22 +96,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set Deployment Variables
-        id: vars
+      - name: Set deployment variables
+        id: set-vars
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "SERVER=${{ env.STAGING_SERVER }}" >> $GITHUB_ENV
+            echo "SERVER=${{ secrets.STAGING_SERVER }}" >> $GITHUB_ENV
             echo "PRIVATE_KEY=${{ secrets.SSH_STAGING_PRIVATE_KEY }}" >> $GITHUB_ENV
             echo "KNOWN_HOSTS=${{ secrets.SSH_STAGING_KNOWN_HOSTS }}" >> $GITHUB_ENV
             echo "ENV_FILE=.env.staging" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/production" ]]; then
-            echo "SERVER=${{ env.PRODUCTION_SERVER }}" >> $GITHUB_ENV
+            echo "SERVER=${{ secrets.PRODUCTION_SERVER }}" >> $GITHUB_ENV
             echo "PRIVATE_KEY=${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}" >> $GITHUB_ENV
             echo "KNOWN_HOSTS=${{ secrets.SSH_PRODUCTION_KNOWN_HOSTS }}" >> $GITHUB_ENV
             echo "ENV_FILE=.env.production" >> $GITHUB_ENV
           fi
 
-      - name: Deploy via SSH
+      - name: Setup SSH and Deploy
         run: |
           mkdir -p ~/.ssh
           echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
