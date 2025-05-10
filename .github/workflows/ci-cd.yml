@@ -70,9 +70,11 @@ jobs:
           extensions: mbstring, xml, ctype, json, tokenizer, bcmath, redis, pdo_mysql
 
       - name: Install dependencies
+        working-directory: smartDine-server
         run: composer install --no-interaction --prefer-dist
 
       - name: Configure environment
+        working-directory: smartDine-server
         run: |
           cp .env.example .env.test
           echo "APP_ENV=testing" >> .env.test
@@ -82,6 +84,7 @@ jobs:
           echo "DB_PASSWORD=root" >> .env.test
 
       - name: Run tests
+        working-directory: smartDine-server
         run: |
           php artisan key:generate --env=testing
           php artisan migrate:fresh --env=testing
@@ -108,7 +111,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
-          scp -r smartDine-server/docker-compose.yml .env.staging ${{ env.STAGING_SERVER }}:/app
+          scp -r smartDine-server/docker-compose.yml smartDine-server/.env.staging ${{ env.STAGING_SERVER }}:/app
           ssh ${{ env.STAGING_SERVER }} "
             cd /app
             docker-compose down
@@ -127,7 +130,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
-          scp -r smartDine-server/docker-compose.yml .env.production ${{ env.PRODUCTION_SERVER }}:/app
+          scp -r smartDine-server/docker-compose.yml smartDine-server/.env.production ${{ env.PRODUCTION_SERVER }}:/app
           ssh ${{ env.PRODUCTION_SERVER }} "
             cd /app
             docker-compose down
