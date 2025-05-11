@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class RestaurantModel {
   final int id;
   final String name;
