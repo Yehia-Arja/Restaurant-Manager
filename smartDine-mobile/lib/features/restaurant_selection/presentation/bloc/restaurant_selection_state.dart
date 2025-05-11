@@ -8,7 +8,14 @@ class RestaurantSelectionLoading extends RestaurantSelectionState {}
 
 class RestaurantSelectionLoaded extends RestaurantSelectionState {
   final List<Restaurant> restaurants;
-  RestaurantSelectionLoaded(this.restaurants);
+  final int currentPage;
+  final bool hasReachedEnd;
+
+  RestaurantSelectionLoaded({
+    required this.restaurants,
+    required this.currentPage,
+    required this.hasReachedEnd,
+  });
 }
 
 class RestaurantSelectionError extends RestaurantSelectionState {

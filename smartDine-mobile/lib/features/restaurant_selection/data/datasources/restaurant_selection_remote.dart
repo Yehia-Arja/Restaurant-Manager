@@ -5,9 +5,18 @@ class RestaurantSelectionRemote {
   final Dio _dio;
   RestaurantSelectionRemote(this._dio);
 
-  Future<List<RestaurantModel>> getRestaurants(String endpoint) async {
+  Future<List<RestaurantModel>> getRestaurants({
+    required String endpoint,
+    String? query,
+    bool favoritesOnly = false,
+    int page = 1,
+  }) async {
     try {
-      final response = await _dio.get(endpoint);
+      final response = await _dio.get(
+        endpoint,
+        queryParameters: {'query': query, 'favorites_only': favoritesOnly, 'page': page},
+      );
+
       final data = response.data['data'] as List<dynamic>;
 
       return data.map((e) => RestaurantModel.fromJson(e as Map<String, dynamic>)).toList();
