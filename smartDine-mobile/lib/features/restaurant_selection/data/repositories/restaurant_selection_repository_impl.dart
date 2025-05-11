@@ -27,6 +27,7 @@ class RestaurantSelectionRepositoryImpl extends RestaurantSelectionRepository {
             name: model.name,
             imageUrl: model.imageUrl,
             description: model.description,
+            isFavorite: model.isFavorite,
           ),
         )
         .toList();
