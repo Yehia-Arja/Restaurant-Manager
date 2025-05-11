@@ -32,6 +32,8 @@ services:
     networks:
       - smartdine_network
     restart: unless-stopped
+    volumes:
+      - ./smartDine-server/.env:/app/.env 
 
   mysql_db:
     image: bitnami/mysql:8.0
