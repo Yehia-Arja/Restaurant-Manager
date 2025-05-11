@@ -10,6 +10,7 @@ class AuthRemote {
   Future<UserModel> _authenticate(String endpoint, Map<String, dynamic> payload) async {
     try {
       final response = await _dio.post(endpoint, data: payload);
+
       final data = response.data['data'] as Map<String, dynamic>;
       final token = data['access_token'] as String;
 
