@@ -11,18 +11,26 @@ class RestaurantService
     public static function filterRestaurants(?string $search = null, bool $favoritesOnly = false)
     {
         $query = Restaurant::whereHas('locations');
-
+    
         if ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
         }
-
+    
         if ($favoritesOnly && Auth::check()) {
             $userId = Auth::id();
-            $query->whereHas('favorites', fn ($q) => $q->where('user_id', $userId));
+    
+            $query->whereHas('favorites', function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                  ->where('favoritable_type', Restaurant::class);
+            });
         }
-
+    
         return $query->get();
     }
+    
     public static function getRestaurantHomepage(int $restaurantId, ?int $branchId = null): ?array
     {
         $restaurant = Restaurant::with('locations')->find($restaurantId);
