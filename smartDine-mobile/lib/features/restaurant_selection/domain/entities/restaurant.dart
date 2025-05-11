@@ -3,6 +3,13 @@ class Restaurant {
   final String name;
   final String imageUrl;
   final String? description;
+  final bool isFavorite;
 
-  Restaurant({required this.id, required this.name, required this.imageUrl, this.description});
+  Restaurant({
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+    this.description,
+    this.isFavorite = false,
+  });
 }
