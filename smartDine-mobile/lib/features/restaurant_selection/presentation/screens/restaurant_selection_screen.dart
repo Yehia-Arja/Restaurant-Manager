@@ -16,22 +16,39 @@ class RestaurantSelectionScreen extends StatefulWidget {
 
 class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List _allRestaurants = [];
+  bool _favoritesOnly = false;
 
   @override
   void initState() {
     super.initState();
-    context.read<RestaurantSelectionBloc>().add(FetchRestaurantsRequested());
+    _fetchRestaurants(); // Initial fetch
+  }
+
+  void _fetchRestaurants({int page = 1}) {
+    context.read<RestaurantSelectionBloc>().add(
+      FetchRestaurantsRequested(
+        page: page,
+        query: _searchController.text,
+        favoritesOnly: _favoritesOnly,
+      ),
+    );
+  }
+
+  void _onSearchChanged(String query) {
+    _fetchRestaurants(page: 1);
+  }
+
+  void _toggleFavoritesFilter() {
+    setState(() {
+      _favoritesOnly = !_favoritesOnly;
+    });
+    _fetchRestaurants(page: 1);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  void _onSearchChanged(String query) {
-    setState(() {});
   }
 
   @override
@@ -50,30 +67,44 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
           ),
           const SizedBox(height: 16),
 
-          // Search bar
-          TextField(
-            controller: _searchController,
-            onChanged: _onSearchChanged,
-            decoration: InputDecoration(
-              hintText: 'Search restaurants...',
-              prefixIcon: const Icon(Icons.search, color: AppColors.placeholder),
-              filled: true,
-              fillColor: AppColors.primary,
-              contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+          // Search bar with heart
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: _onSearchChanged,
+                  decoration: InputDecoration(
+                    hintText: 'Search restaurants...',
+                    prefixIcon: const Icon(Icons.search, color: AppColors.placeholder),
+                    filled: true,
+                    fillColor: AppColors.primary,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.accent),
+                    ),
+                  ),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: _toggleFavoritesFilter,
+                icon: Icon(
+                  _favoritesOnly ? Icons.favorite : Icons.favorite_border,
+                  color: Colors.red,
+                ),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.accent),
-              ),
-            ),
-            style: Theme.of(context).textTheme.bodyMedium,
+            ],
           ),
           const SizedBox(height: 16),
 
@@ -85,32 +116,19 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
                 } else if (state is RestaurantSelectionError) {
                   return Center(child: Text(state.message));
                 } else if (state is RestaurantSelectionLoaded) {
-                  _allRestaurants = state.restaurants;
+                  final restaurants = state.restaurants;
 
-                  final filtered =
-                      _searchController.text.isEmpty
-                          ? _allRestaurants
-                          : _allRestaurants
-                              .where(
-                                (r) => r.name.toLowerCase().contains(
-                                  _searchController.text.toLowerCase(),
-                                ),
-                              )
-                              .toList();
-
-                  if (filtered.isEmpty) {
+                  if (restaurants.isEmpty) {
                     return const Center(child: Text("No matching restaurants."));
                   }
 
                   return ListView.separated(
-                    itemCount: filtered.length,
+                    itemCount: restaurants.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 16),
                     itemBuilder: (context, index) {
                       return RestaurantCard(
-                        restaurant: filtered[index],
-                        onFavoritePressed: () {
-                          // TODO: Implement favorite toggle
-                        },
+                        restaurant: restaurants[index],
+                        onFavoritePressed: () {},
                       );
                     },
                   );
