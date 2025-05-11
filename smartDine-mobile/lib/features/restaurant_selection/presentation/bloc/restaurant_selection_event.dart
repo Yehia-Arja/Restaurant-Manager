@@ -7,3 +7,9 @@ class FetchRestaurantsRequested extends RestaurantSelectionEvent {
 
   FetchRestaurantsRequested({required this.page, this.query, this.favoritesOnly = false});
 }
+
+class ToggleFavoriteRequested extends RestaurantSelectionEvent {
+  final int restaurantId;
+
+  ToggleFavoriteRequested(this.restaurantId);
+}

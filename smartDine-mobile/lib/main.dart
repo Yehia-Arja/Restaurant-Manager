@@ -15,8 +15,11 @@ import 'package:mobile/features/auth/presentation/screens/signup_screen.dart';
 
 // Restaurant Selection
 import 'package:mobile/features/restaurant_selection/data/datasources/restaurant_selection_remote.dart';
+import 'package:mobile/features/restaurant_selection/data/datasources/favorite_remote.dart';
 import 'package:mobile/features/restaurant_selection/data/repositories/restaurant_selection_repository_impl.dart';
+import 'package:mobile/features/restaurant_selection/data/repositories/favorite_repository_impl.dart';
 import 'package:mobile/features/restaurant_selection/domain/usecases/get_restaurants_usecase.dart';
+import 'package:mobile/features/restaurant_selection/domain/usecases/toggle_favorite_usecase.dart';
 import 'package:mobile/features/restaurant_selection/presentation/bloc/restaurant_selection_bloc.dart';
 import 'package:mobile/features/restaurant_selection/presentation/screens/restaurant_selection_screen.dart';
 
@@ -34,11 +37,18 @@ void main() {
   final restaurantRepo = RestaurantSelectionRepositoryImpl(restaurantRemote);
   final getRestaurantsUseCase = GetRestaurantsUseCase(restaurantRepo);
 
+  // Favorite setup
+  final favoriteRemote = FavoriteRemote(DioService.dio);
+  final favoriteRepo = FavoriteRepositoryImpl(favoriteRemote);
+  final toggleFavoriteUseCase = ToggleFavoriteUseCase(favoriteRepo);
+
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => AuthBloc(loginUseCase, signupUseCase)),
-        BlocProvider(create: (_) => RestaurantSelectionBloc(getRestaurantsUseCase)),
+        BlocProvider(
+          create: (_) => RestaurantSelectionBloc(getRestaurantsUseCase, toggleFavoriteUseCase),
+        ),
       ],
       child: const MyApp(),
     ),
