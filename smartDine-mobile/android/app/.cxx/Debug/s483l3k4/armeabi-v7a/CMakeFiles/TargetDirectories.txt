@@ -1,0 +1,2 @@
+C:/Users/yehia/Desktop/Restaurant-Manager/frontend/mobile/android/app/.cxx/Debug/s483l3k4/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/yehia/Desktop/Restaurant-Manager/frontend/mobile/android/app/.cxx/Debug/s483l3k4/armeabi-v7a/CMakeFiles/rebuild_cache.dir
