@@ -14,7 +14,7 @@ class RestaurantSelectionRemote {
     try {
       final response = await _dio.get(
         endpoint,
-        queryParameters: {'query': query, 'favorites_only': favoritesOnly, 'page': page},
+        queryParameters: {'search': query, 'favorites': favoritesOnly, 'page': page},
       );
 
       final data = response.data['data'] as List<dynamic>;
