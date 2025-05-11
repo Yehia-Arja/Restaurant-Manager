@@ -10,6 +10,7 @@ import 'package:mobile/features/auth/domain/usecases/login_usecase.dart';
 import 'package:mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mobile/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:mobile/features/auth/presentation/screens/login_screen.dart';
+import 'package:mobile/features/restaurant_selection/presentation/screens/restaurant_selection_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,9 +42,7 @@ class MyApp extends StatelessWidget {
         '/': (_) => const OnboardingScreen(),
         '/login': (_) => const LoginScreen(),
         '/signup': (_) => const SignupScreen(),
-        '/home': (_) {
-          return Scaffold(body: Center(child: Text('Home')));
-        },
+        '/restaurant_selection': (_) => const RestaurantSelectionScreen(),
       },
     );
   }

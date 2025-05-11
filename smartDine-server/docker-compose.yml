@@ -68,6 +68,20 @@ services:
       - smartdine_network
     restart: always
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: smartdine_phpmyadmin
+    depends_on:
+      - mysql_db
+    environment:
+      PMA_HOST: mysql_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    ports:
+      - "8082:80"
+    networks:
+      - smartdine_network
+    restart: unless-stopped
+
 volumes:
   mysql_data:
     driver: local
