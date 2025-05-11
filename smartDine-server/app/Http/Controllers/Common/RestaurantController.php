@@ -9,19 +9,21 @@ use Exception;
 use App\Services\Common\RestaurantService;
 use App\Http\Resources\Common\RestaurantResource;
 use App\Http\Resources\Common\RestaurantHomepageResource;
+use App\Http\Requests\Common\ListRestaurantsRequest;
 
 class RestaurantController extends Controller
 {
     /**
      * GET  /api/v0.1/common/restaurants
      */
-    public function index(Request $request)
+    public function index(ListRestaurantsRequest $request)
     {
         try {
             $search = $request->query('search');
             $favoritesOnly = $request->boolean('favorites');
+            $perPage = $request->validated()['per_page'] ?? 10;
 
-            $restaurants = RestaurantService::filterRestaurants($search, $favoritesOnly);
+            $restaurants = RestaurantService::filterRestaurants($search, $favoritesOnly, $perPage);
 
             if ($restaurants->isEmpty()) {
                 return $this->error('No restaurants found', 404);

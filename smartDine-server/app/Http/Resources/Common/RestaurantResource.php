@@ -14,10 +14,10 @@ class RestaurantResource extends JsonResource
     {
         return [
             'id'          => $this->id,
-            'owner_id'    => $this->owner_id,
             'name'        => $this->name,
             'image_url'   => 'https://placehold.co/150x150',
             'description' => $this->description,
+            'is_favorite' => $this->is_favorite ?? false,
         ];
     }
 }
