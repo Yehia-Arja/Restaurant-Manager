@@ -5,63 +5,43 @@ namespace App\Services\Client;
 use App\Models\Favorite;
 use App\Models\Product;
 use App\Models\Restaurant;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class FavoriteService
 {
-    protected static array $allowedTypes = [
-        'product' => Product::class,
-        'restaurant' => Restaurant::class,
-    ];
-
-    public static function addFavorite(int $userId, int $favoritableId, string $favoritableType): void
+    public static function toggleFavorite(int $userId, int $favoritableId, string $favoritableType): bool
     {
-        $model = self::resolveType($favoritableType);
+        $typeClass = match ($favoritableType) {
+            'product'    => Product::class,
+            'restaurant' => Restaurant::class,
+            default      => throw new Exception('Invalid favoritable type'),
+        };
 
-        if (!$model::find($favoritableId)) {
-            throw new Exception('Item not found');
+        // Check existence
+        $model = $typeClass::find($favoritableId);
+        if (!$model) {
+            throw new Exception('Favoritable item not found');
         }
 
-        $exists = Favorite::where([
-            'user_id' => $userId,
-            'favoritable_id' => $favoritableId,
-            'favoritable_type' => $model,
-        ])->exists();
+        // Toggle logic
+        $existing = Favorite::where('user_id', $userId)
+            ->where('favoritable_type', $typeClass)
+            ->where('favoritable_id', $favoritableId)
+            ->first();
 
-        if ($exists) {
-            throw new Exception('Item already favorited');
+        if ($existing) {
+            $existing->delete();
+            return false; // was removed
         }
 
         Favorite::create([
-            'user_id' => $userId,
-            'favoritable_id' => $favoritableId,
-            'favoritable_type' => $model,
+            'user_id'         => $userId,
+            'favoritable_id'  => $favoritableId,
+            'favoritable_type'=> $typeClass,
         ]);
-    }
 
-    public static function removeFavorite(int $userId, int $favoritableId, string $favoritableType): void
-    {
-        $model = self::resolveType($favoritableType);
-
-        $favorite = Favorite::where([
-            'user_id' => $userId,
-            'favoritable_id' => $favoritableId,
-            'favoritable_type' => $model,
-        ])->first();
-
-        if (!$favorite) {
-            throw new Exception('Item not favorited');
-        }
-
-        $favorite->delete();
-    }
-
-    private static function resolveType(string $type): string
-    {
-        if (!isset(self::$allowedTypes[$type])) {
-            throw new Exception('Invalid favoritable type');
-        }
-
-        return self::$allowedTypes[$type];
+        return true; // was added
     }
 }

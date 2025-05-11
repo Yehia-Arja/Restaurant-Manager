@@ -69,8 +69,7 @@ Route::group(["prefix" => "v0.1"], function () {
 
         // Favorites (Client)
         Route::group(["prefix" => "favorites"], function () {
-            Route::post("/", [FavoriteController::class, "store"]);
-            Route::delete("/", [FavoriteController::class, "destroy"]);
+            Route::post("/", [FavoriteController::class, "toggle"]);
         });
     });
 
