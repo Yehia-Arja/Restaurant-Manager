@@ -1,26 +1,29 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
-// Common (no alias needed for Auth)
+// Common
 use App\Http\Controllers\Common\AuthController;
-use App\Http\Controllers\Common\RestaurantController   as CommonRestaurantController;
-use App\Http\Controllers\Common\ProductController      as CommonProductController;
-use App\Http\Controllers\Common\CategoryController     as CommonCategoryController;
+use App\Http\Controllers\Common\RestaurantController as CommonRestaurantController;
+use App\Http\Controllers\Common\ProductController as CommonProductController;
+use App\Http\Controllers\Common\CategoryController as CommonCategoryController;
 use App\Http\Controllers\Common\RestaurantLocationController as CommonRestaurantLocationController;
 use App\Http\Controllers\Common\RecommendationController as CommonRecommendationController;
 
+// Client
+use App\Http\Controllers\Client\FavoriteController;
+
 // Owner
-use App\Http\Controllers\Owner\ProductController       as OwnerProductController;
-use App\Http\Controllers\Owner\CategoryController      as OwnerCategoryController;
+use App\Http\Controllers\Owner\ProductController as OwnerProductController;
+use App\Http\Controllers\Owner\CategoryController as OwnerCategoryController;
 
 // Linking
 use App\Http\Controllers\ProductLocationController;
 use App\Http\Controllers\CategoryLocationController;
 
 // Admin
-use App\Http\Controllers\Admin\RestaurantController         as AdminRestaurantController;
+use App\Http\Controllers\Admin\RestaurantController as AdminRestaurantController;
 use App\Http\Controllers\Admin\RestaurantLocationController as AdminLocationController;
 
 Route::group(["prefix" => "v0.1"], function () {
@@ -37,31 +40,37 @@ Route::group(["prefix" => "v0.1"], function () {
     ], function () {
         // Products
         Route::group(["prefix" => "products"], function () {
-            Route::get("/",    [CommonProductController::class, "index"]);
-            Route::get("/{id}",[CommonProductController::class, "show"]);
+            Route::get("/",     [CommonProductController::class, "index"]);
+            Route::get("/{id}", [CommonProductController::class, "show"]);
         });
 
         // Categories
         Route::group(["prefix" => "categories"], function () {
-            Route::get("/",    [CommonCategoryController::class, "index"]);
-            Route::get("/{id}",[CommonCategoryController::class, "show"]);
+            Route::get("/",     [CommonCategoryController::class, "index"]);
+            Route::get("/{id}", [CommonCategoryController::class, "show"]);
         });
 
         // Restaurants
         Route::group(["prefix" => "restaurants"], function () {
-            Route::get("/",    [CommonRestaurantController::class, "index"]);
-            Route::get("/{id}",[CommonRestaurantController::class, "show"]);
+            Route::get("/",     [CommonRestaurantController::class, "index"]);
+            Route::get("/{id}", [CommonRestaurantController::class, "show"]);
         });
 
         // Restaurant Locations
         Route::group(["prefix" => "restaurant-locations"], function () {
-            Route::get("/",    [CommonRestaurantLocationController::class, "index"]);
-            Route::get("/{id}",[CommonRestaurantLocationController::class, "show"]);
+            Route::get("/",     [CommonRestaurantLocationController::class, "index"]);
+            Route::get("/{id}", [CommonRestaurantLocationController::class, "show"]);
         });
 
         // Recommendations
         Route::group(["prefix" => "recommendations"], function () {
-            Route::get("/",    [CommonRecommendationController::class, "index"]);
+            Route::get("/", [CommonRecommendationController::class, "index"]);
+        });
+
+        // Favorites (Client)
+        Route::group(["prefix" => "favorites"], function () {
+            Route::post("/", [FavoriteController::class, "store"]);
+            Route::delete("/", [FavoriteController::class, "destroy"]);
         });
     });
 
@@ -72,25 +81,23 @@ Route::group(["prefix" => "v0.1"], function () {
     ], function () {
         // Products
         Route::group(["prefix" => "product"], function () {
-            Route::post("/",          [OwnerProductController::class, "store"]);
-            Route::get("/{id}",       [OwnerProductController::class, "show"]);
-            Route::put("/{id}",       [OwnerProductController::class, "update"]);
-            Route::delete("/{id}",    [OwnerProductController::class, "destroy"]);
+            Route::post("/",           [OwnerProductController::class, "store"]);
+            Route::get("/{id}",        [OwnerProductController::class, "show"]);
+            Route::put("/{id}",        [OwnerProductController::class, "update"]);
+            Route::delete("/{id}",     [OwnerProductController::class, "destroy"]);
 
-            // Link/unlink branches
             Route::post("/{product}/locations",            [ProductLocationController::class, 'store']);
             Route::delete("/{product}/locations/{branch}",[ProductLocationController::class, 'destroy']);
         });
 
         // Categories
         Route::group(["prefix" => "categories"], function () {
-            Route::post("/",          [OwnerCategoryController::class, "store"]);
-            Route::put("/{id}",       [OwnerCategoryController::class, "update"]);
-            Route::delete("/{id}",    [OwnerCategoryController::class, "destroy"]);
+            Route::post("/",           [OwnerCategoryController::class, "store"]);
+            Route::put("/{id}",        [OwnerCategoryController::class, "update"]);
+            Route::delete("/{id}",     [OwnerCategoryController::class, "destroy"]);
 
-            // Link/unlink branches
-            Route::post("/{category}/locations",           [CategoryLocationController::class, 'store']);
-            Route::delete("/{category}/locations/{branch}",[CategoryLocationController::class, 'destroy']);
+            Route::post("/{category}/locations",            [CategoryLocationController::class, 'store']);
+            Route::delete("/{category}/locations/{branch}", [CategoryLocationController::class, 'destroy']);
         });
     });
 
@@ -101,16 +108,16 @@ Route::group(["prefix" => "v0.1"], function () {
     ], function () {
         // Restaurants
         Route::group(["prefix" => "restaurants"], function () {
-            Route::post("/",        [AdminRestaurantController::class, "store"]);
-            Route::put("/{id}",     [AdminRestaurantController::class, "update"]);
-            Route::delete("/{id}",  [AdminRestaurantController::class, "destroy"]);
+            Route::post("/",       [AdminRestaurantController::class, "store"]);
+            Route::put("/{id}",    [AdminRestaurantController::class, "update"]);
+            Route::delete("/{id}", [AdminRestaurantController::class, "destroy"]);
         });
 
-        // Branches (Restaurant Locations)
+        // Branches
         Route::group(["prefix" => "restaurant-locations"], function () {
-            Route::post("/",        [AdminLocationController::class, "store"]);
-            Route::put("/{id}",     [AdminLocationController::class, "update"]);
-            Route::delete("/{id}",  [AdminLocationController::class, "destroy"]);
+            Route::post("/",       [AdminLocationController::class, "store"]);
+            Route::put("/{id}",    [AdminLocationController::class, "update"]);
+            Route::delete("/{id}", [AdminLocationController::class, "destroy"]);
         });
     });
 });
