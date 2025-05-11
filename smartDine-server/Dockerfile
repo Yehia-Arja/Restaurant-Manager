@@ -1,6 +1,7 @@
 FROM bitnami/laravel:12.0.7-debian-12-r0
 
 USER root
+
 RUN install_packages --assume-yes \
     git \
     unzip \
@@ -17,8 +18,10 @@ RUN install_packages --assume-yes \
 
 WORKDIR /app
 
+COPY .env .env
+
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --prefer-dist
+RUN composer install --optimize-autoloader --no-interaction --no-scripts --prefer-dist
 
 COPY . .
 
@@ -27,7 +30,7 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
     bootstrap/cache \
     && chown -R 1001:1001 storage bootstrap/cache vendor \
     && chmod -R 775 storage bootstrap/cache \
-    && composer dump-autoload --optimize --no-dev
+    && composer dump-autoload --optimize --no-scripts
 
 USER 1001
 

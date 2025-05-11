@@ -13,6 +13,7 @@ class AuthRepositoryImpl implements AuthRepository {
     return _mapToEntity(userModel);
   }
 
+  @override
   Future<User> signup({
     required String firstName,
     required String lastName,
@@ -25,10 +26,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   User _mapToEntity(UserModel model) => User(
-    id: model.id,
-    name: model.name,
+    firstName: model.firstName,
+    lastName: model.lastName,
     email: model.email,
-    dateOfBirth: model.dateOfBirth,
-    phoneNumber: model.phoneNumber,
+    userTypeId: model.userTypeId,
   );
 }
