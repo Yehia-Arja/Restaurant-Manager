@@ -12,46 +12,24 @@ use Exception;
 class FavoriteController extends Controller
 {
     /**
-     * POST /api/v0.1/client/favorites
+     * POST /api/v0.1/client/favorites/toggle
      */
-    public function store(FavoriteRequest $request)
+    public function toggle(FavoriteRequest $request)
     {
         try {
             $userId = Auth::id();
 
-            FavoriteService::addFavorite(
+            $wasFavorited = FavoriteService::toggleFavorite(
                 $userId,
                 $request->validated()['favoritable_id'],
                 $request->validated()['favoritable_type']
             );
 
-            return $this->success('Added to favorites');
-        } catch (Exception $e) {
-            Log::error('FavoriteController@store error', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return $this->error($e->getMessage(), 400);
-        }
-    }
-
-    /**
-     * DELETE /api/v0.1/client/favorites
-     */
-    public function destroy(FavoriteRequest $request)
-    {
-        try {
-            $userId = Auth::id();
-
-            FavoriteService::removeFavorite(
-                $userId,
-                $request->validated()['favoritable_id'],
-                $request->validated()['favoritable_type']
+            return $this->success(
+                $wasFavorited ? 'Added to favorites' : 'Removed from favorites'
             );
-
-            return $this->success('Removed from favorites');
         } catch (Exception $e) {
-            Log::error('FavoriteController@destroy error', [
+            Log::error('FavoriteController@toggle error', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
