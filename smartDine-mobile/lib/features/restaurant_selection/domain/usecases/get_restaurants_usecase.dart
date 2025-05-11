@@ -1,4 +1,3 @@
-import '../entities/restaurant.dart';
 import '../repositories/restaurant_selection_repository.dart';
 
 class GetRestaurantsUseCase {
