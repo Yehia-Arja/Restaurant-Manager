@@ -114,7 +114,14 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
         itemCount: restaurants.length,
         separatorBuilder: (_, __) => const SizedBox(height: 16),
         itemBuilder: (context, index) {
-          return RestaurantCard(restaurant: restaurants[index]);
+          return RestaurantCard(
+            restaurant: restaurants[index],
+            onFavoritePressed: () {
+              context.read<RestaurantSelectionBloc>().add(
+                ToggleFavoriteRequested(restaurants[index].id),
+              );
+            },
+          );
         },
       );
     }

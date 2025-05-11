@@ -46,7 +46,6 @@ class RestaurantCard extends StatelessWidget {
                   ),
             ),
           ),
-
           const SizedBox(width: 12),
 
           // Info
@@ -77,7 +76,7 @@ class RestaurantCard extends StatelessWidget {
             ),
           ),
 
-          // Heart icon
+          // Heart
           IconButton(
             icon: Icon(
               restaurant.isFavorite ? Icons.favorite : Icons.favorite_border,
