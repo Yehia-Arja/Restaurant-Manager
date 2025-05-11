@@ -21,6 +21,6 @@ class Restaurant extends Model
 
     public function favorites()
     {
-        return $this->hasMany(Favorite::class, 'restaurant_id', 'id');
+        return $this->morphMany(Favorite::class, 'favoritable');
     }
 }
