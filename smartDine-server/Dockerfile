@@ -2,6 +2,7 @@ FROM bitnami/laravel:12.0.7-debian-12-r0
 
 USER root
 
+# Install additional packages required by Laravel
 RUN install_packages --assume-yes \
     git \
     unzip \
@@ -18,13 +19,14 @@ RUN install_packages --assume-yes \
 
 WORKDIR /app
 
-COPY .env .env
-
+# Copy composer files and install dependencies
 COPY composer.json composer.lock ./
 RUN composer install --optimize-autoloader --no-interaction --no-scripts --prefer-dist
 
+# Copy the application source code
 COPY . .
 
+# Prepare storage and cache directories
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     storage/logs \
     bootstrap/cache \
