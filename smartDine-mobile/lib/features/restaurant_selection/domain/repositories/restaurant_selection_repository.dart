@@ -1,9 +1,16 @@
-import 'package:mobile/features/restaurant_selection/domain/entities/restaurant.dart';
+import '../entities/restaurant.dart';
 
 abstract class RestaurantSelectionRepository {
-  Future<List<Restaurant>> getRestaurants({
+  Future<PaginatedRestaurants> getRestaurants({
     String? query,
     bool favoritesOnly = false,
     int page = 1,
   });
+}
+
+class PaginatedRestaurants {
+  final List<Restaurant> restaurants;
+  final int totalPages;
+
+  PaginatedRestaurants({required this.restaurants, required this.totalPages});
 }
