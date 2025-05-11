@@ -23,16 +23,20 @@ class RestaurantController extends Controller
             $favoritesOnly = $request->boolean('favorites');
             $perPage = $request->validated()['per_page'] ?? 10;
 
-            $restaurants = RestaurantService::filterRestaurants($search, $favoritesOnly, $perPage);
+            $paginator = RestaurantService::filterRestaurants($search, $favoritesOnly, $perPage);
 
-            if ($restaurants->isEmpty()) {
+            if ($paginator->isEmpty()) {
                 return $this->error('No restaurants found', 404);
             }
 
-            return $this->success(
+            $resourceCollection = RestaurantResource::collection($paginator->items());
+
+            return $this->paginatedResponse(
                 'Restaurants fetched',
-                RestaurantResource::collection($restaurants)
+                $resourceCollection,
+                $paginator
             );
+            
         } catch (Exception $e) {
             Log::error('Error fetching restaurants', [
                 'error' => $e->getMessage(),

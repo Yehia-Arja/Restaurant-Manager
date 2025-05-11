@@ -1,6 +1,7 @@
-import '../../domain/entities/restaurant.dart';
-import '../../domain/repositories/restaurant_selection_repository.dart';
-import '../datasources/restaurant_selection_remote.dart';
+import 'package:mobile/features/restaurant_selection/data/models/restaurant_model.dart';
+import 'package:mobile/features/restaurant_selection/domain/entities/restaurant.dart';
+import 'package:mobile/features/restaurant_selection/domain/repositories/restaurant_selection_repository.dart';
+import 'package:mobile/features/restaurant_selection/data/datasources/restaurant_selection_remote.dart';
 
 class RestaurantSelectionRepositoryImpl extends RestaurantSelectionRepository {
   final RestaurantSelectionRemote _remote;
@@ -13,29 +14,31 @@ class RestaurantSelectionRepositoryImpl extends RestaurantSelectionRepository {
     bool favoritesOnly = false,
     int page = 1,
   }) async {
-    final Map<String, dynamic> result = await _remote.getRestaurants(
+    // 1) Fetch raw response
+    final result = await _remote.getRestaurants(
       endpoint: 'common/restaurants',
       query: query,
       favoritesOnly: favoritesOnly,
       page: page,
     );
 
-    final dataList = result['data'] as List<dynamic>? ?? [];
-    final meta = result['meta'] as Map<String, dynamic>? ?? {};
+    final models = result['data'] as List<RestaurantModel>;
+    final pagination = result['meta'] as Map<String, dynamic>;
 
     final restaurants =
-        dataList.map<Restaurant>((dynamic item) {
-          final map = Map<String, dynamic>.from(item as Map);
-          return Restaurant(
-            id: int.parse(map['id'].toString()),
-            name: map['name']?.toString() ?? '',
-            imageUrl: map['image_url']?.toString() ?? '',
-            description: map['description']?.toString(),
-            isFavorite: map['is_favorite'] == true,
-          );
-        }).toList();
+        models
+            .map(
+              (m) => Restaurant(
+                id: m.id,
+                name: m.name,
+                imageUrl: m.imageUrl,
+                description: m.description,
+                isFavorite: m.isFavorite,
+              ),
+            )
+            .toList();
 
-    final totalPages = int.tryParse(meta['last_page']?.toString() ?? '') ?? 1;
+    final totalPages = int.tryParse(pagination['last_page'].toString()) ?? 1;
 
     return PaginatedRestaurants(restaurants: restaurants, totalPages: totalPages);
   }
