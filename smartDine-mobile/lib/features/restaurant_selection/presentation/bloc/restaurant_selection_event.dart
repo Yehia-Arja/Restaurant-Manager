@@ -10,6 +10,5 @@ class FetchRestaurantsRequested extends RestaurantSelectionEvent {
 
 class ToggleFavoriteRequested extends RestaurantSelectionEvent {
   final int restaurantId;
-
   ToggleFavoriteRequested(this.restaurantId);
 }
