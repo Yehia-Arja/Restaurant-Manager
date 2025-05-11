@@ -2,31 +2,34 @@ FROM bitnami/laravel:12.0.7-debian-12-r0
 
 USER root
 
-# Install additional packages required by Laravel
-RUN install_packages --assume-yes \
+# Install dependencies and PHP extensions
+RUN install_packages \
     git \
     unzip \
     php-zip \
-    php-redis \
     php-mbstring \
     php-xml \
     php-curl \
     php-bcmath \
     php-intl \
     php-mysql \
+    autoconf \
+    build-essential \
+    pkg-config \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Install PhpRedis manually via PECL
+RUN pecl install redis \
+    && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini
+
 WORKDIR /app
 
-# Copy composer files and install dependencies
 COPY composer.json composer.lock ./
 RUN composer install --optimize-autoloader --no-interaction --no-scripts --prefer-dist
 
-# Copy the application source code
 COPY . .
 
-# Prepare storage and cache directories
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     storage/logs \
     bootstrap/cache \
