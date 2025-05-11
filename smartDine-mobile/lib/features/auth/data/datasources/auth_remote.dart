@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/features/auth/data/models/user_model.dart';
 
 class AuthRemote {
   final Dio _dio;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
   AuthRemote(this._dio);
 
-  // General method to handle both login and signup requests
   Future<UserModel> _authenticate(String endpoint, Map<String, dynamic> payload) async {
     try {
       final response = await _dio.post(endpoint, data: payload);
@@ -14,26 +15,20 @@ class AuthRemote {
       final data = response.data['data'] as Map<String, dynamic>;
       final token = data['access_token'] as String;
 
-      // Persist token once
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
+      await _secureStorage.write(key: 'access_token', value: token);
 
-      // Return parsed user model
       return UserModel.fromJson(data['user'] as Map<String, dynamic>);
     } on DioException catch (error) {
-      // Extract error message and rethrow
       final message =
           (error.response?.data['message'] as String?) ?? error.message ?? 'Unknown error';
       throw Exception(message);
     }
   }
 
-  // Calls login endpoint
   Future<UserModel> login(String email, String password) {
     return _authenticate('guest/login', {'email': email, 'password': password});
   }
 
-  // Calls signup endpoint
   Future<UserModel> signup(
     String name,
     String lastName,
