@@ -21,7 +21,7 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchRestaurants(); // Initial fetch
+    _fetchRestaurants();
   }
 
   void _fetchRestaurants({int page = 1}) {
@@ -34,41 +34,30 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
     );
   }
 
-  void _onSearchChanged(String query) {
-    _fetchRestaurants(page: 1);
-  }
-
   void _toggleFavoritesFilter() {
-    setState(() {
-      _favoritesOnly = !_favoritesOnly;
-    });
-    _fetchRestaurants(page: 1);
+    setState(() => _favoritesOnly = !_favoritesOnly);
+    _fetchRestaurants();
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
+  void _onSearchChanged(String query) => _fetchRestaurants();
 
-  @override
-  Widget build(BuildContext context) {
-    return BaseScaffold(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          Text(
-            'List of restaurants',
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        Center(
+          child: Text(
+            'List of Restaurants',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.secondary,
             ),
           ),
-          const SizedBox(height: 16),
-
-          // Search bar with heart
-          Row(
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
             children: [
               Expanded(
                 child: TextField(
@@ -81,10 +70,6 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
                     fillColor: AppColors.primary,
                     contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border),
-                    ),
-                    enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: AppColors.border),
                     ),
@@ -106,39 +91,73 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
 
-          Expanded(
-            child: BlocBuilder<RestaurantSelectionBloc, RestaurantSelectionState>(
-              builder: (context, state) {
-                if (state is RestaurantSelectionLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is RestaurantSelectionError) {
-                  return Center(child: Text(state.message));
-                } else if (state is RestaurantSelectionLoaded) {
-                  final restaurants = state.restaurants;
+  Widget _buildBody(RestaurantSelectionState state) {
+    if (state is RestaurantSelectionLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-                  if (restaurants.isEmpty) {
-                    return const Center(child: Text("No matching restaurants."));
-                  }
+    if (state is RestaurantSelectionLoaded) {
+      final restaurants = state.restaurants;
 
-                  return ListView.separated(
-                    itemCount: restaurants.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 16),
-                    itemBuilder: (context, index) {
-                      return RestaurantCard(
-                        restaurant: restaurants[index],
-                        onFavoritePressed: () {},
-                      );
-                    },
-                  );
-                } else {
-                  return const SizedBox(); // Initial state
-                }
-              },
+      if (restaurants.isEmpty) {
+        return const Center(child: Text("No matching restaurants."));
+      }
+
+      return ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: restaurants.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 16),
+        itemBuilder: (context, index) {
+          return RestaurantCard(restaurant: restaurants[index]);
+        },
+      );
+    }
+
+    return const SizedBox();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<RestaurantSelectionBloc, RestaurantSelectionState>(
+      listener: (context, state) {
+        if (state is RestaurantSelectionError) {
+          showDialog(
+            context: context,
+            builder:
+                (_) => AlertDialog(
+                  title: const Text('Error'),
+                  content: Text(state.message),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+                  ],
+                ),
+          );
+        }
+      },
+      child: BaseScaffold(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: BlocBuilder<RestaurantSelectionBloc, RestaurantSelectionState>(
+                builder: (context, state) => _buildBody(state),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

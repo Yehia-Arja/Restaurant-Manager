@@ -10,73 +10,83 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2))],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                restaurant.imageUrl.startsWith('http')
-                    ? restaurant.imageUrl
-                    : 'https://placehold.co/60x60.png',
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder:
-                    (_, __, ___) => Container(
-                      width: 60,
-                      height: 60,
-                      color: Colors.grey[200],
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.image_not_supported, color: Colors.grey),
-                    ),
-              ),
-            ),
-            const SizedBox(width: 12),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardHeight = screenWidth * 0.22;
 
-            // Info
-            Expanded(
+    return Container(
+      height: cardHeight,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2))],
+      ),
+      child: Row(
+        children: [
+          // Image
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(12),
+              bottomLeft: Radius.circular(12),
+            ),
+            child: Image.network(
+              restaurant.imageUrl.startsWith('http')
+                  ? restaurant.imageUrl
+                  : 'https://placehold.co/100x100.png',
+              width: cardHeight,
+              height: cardHeight,
+              fit: BoxFit.cover,
+              errorBuilder:
+                  (_, __, ___) => Container(
+                    width: cardHeight,
+                    height: cardHeight,
+                    color: Colors.grey[200],
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                  ),
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          // Info
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     restaurant.name,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
                       color: AppColors.secondary,
                     ),
                   ),
-                  const SizedBox(height: 4),
                   Text(
-                    restaurant.description ?? 'No description',
-                    maxLines: 1,
+                    restaurant.description ?? 'No description available.',
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.label),
                   ),
                 ],
               ),
             ),
+          ),
 
-            // Favorite icon
-            IconButton(
-              icon: Icon(
-                restaurant.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: Colors.red,
-              ),
-              onPressed: onFavoritePressed,
+          // Heart icon
+          IconButton(
+            icon: Icon(
+              restaurant.isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: Colors.red,
+              size: 20,
             ),
-          ],
-        ),
+            onPressed: onFavoritePressed,
+          ),
+        ],
       ),
     );
   }
