@@ -21,7 +21,7 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchRestaurants();
+    _fetchRestaurants(page: 1);
   }
 
   void _fetchRestaurants({int page = 1}) {
@@ -36,10 +36,10 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
 
   void _toggleFavoritesFilter() {
     setState(() => _favoritesOnly = !_favoritesOnly);
-    _fetchRestaurants();
+    _fetchRestaurants(page: 1);
   }
 
-  void _onSearchChanged(String query) => _fetchRestaurants();
+  void _onSearchChanged(String _) => _fetchRestaurants(page: 1);
 
   Widget _buildHeader() {
     return Column(
@@ -97,35 +97,51 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
     );
   }
 
+  Widget _buildList(RestaurantSelectionLoaded state) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollInfo) {
+        // When scrolled within 100px of bottom, fetch next page
+        if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 100 &&
+            state.hasReachedEnd == false) {
+          _fetchRestaurants(page: state.currentPage + 1);
+        }
+        return false;
+      },
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: state.restaurants.length + (state.hasReachedEnd ? 0 : 1),
+        separatorBuilder: (_, __) => const SizedBox(height: 16),
+        itemBuilder: (context, index) {
+          if (index < state.restaurants.length) {
+            final restaurant = state.restaurants[index];
+            return RestaurantCard(
+              restaurant: restaurant,
+              onFavoritePressed: () {
+                context.read<RestaurantSelectionBloc>().add(ToggleFavoriteRequested(restaurant.id));
+              },
+            );
+          } else {
+            // bottom loader
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
+      ),
+    );
+  }
+
   Widget _buildBody(RestaurantSelectionState state) {
     if (state is RestaurantSelectionLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-
     if (state is RestaurantSelectionLoaded) {
-      final restaurants = state.restaurants;
-
-      if (restaurants.isEmpty) {
+      if (state.restaurants.isEmpty) {
         return const Center(child: Text("No matching restaurants."));
       }
-
-      return ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: restaurants.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 16),
-        itemBuilder: (context, index) {
-          return RestaurantCard(
-            restaurant: restaurants[index],
-            onFavoritePressed: () {
-              context.read<RestaurantSelectionBloc>().add(
-                ToggleFavoriteRequested(restaurants[index].id),
-              );
-            },
-          );
-        },
-      );
+      return _buildList(state);
     }
-
     return const SizedBox();
   }
 
