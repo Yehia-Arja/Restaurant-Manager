@@ -85,24 +85,32 @@ jobs:
           php-version: "8.2"
           extensions: mbstring, xml, ctype, json, tokenizer, bcmath, redis, pdo_mysql
 
+      - name: Verify composer.json
+        working-directory: smartDine-server
+        run: |
+          if [ ! -f "composer.json" ]; then
+            echo "composer.json not found in smartDine-server directory."
+            exit 1
+          fi
+
       - name: Install dependencies
         working-directory: smartDine-server
-        run: composer install --no-interaction --prefer-dist
+        run: |
+          composer install --no-interaction --prefer-dist --no-cache
+          if [ ! -d "vendor" ]; then
+            echo "Composer dependencies were not installed successfully."
+            exit 1
+          fi
 
       - name: Configure environment
         working-directory: smartDine-server
         run: |
           cp .env.example .env
-          echo "APP_ENV=testing" >> .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_DATABASE=test_db" >> .env
-          echo "DB_USERNAME=root" >> .env
-          echo "DB_PASSWORD=root" >> .env
+          php artisan key:generate
 
       - name: Run tests
         working-directory: smartDine-server
         run: |
-          php artisan key:generate --env=testing
           php artisan migrate:fresh --env=testing
           php artisan test
 
