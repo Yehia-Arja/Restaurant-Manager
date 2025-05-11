@@ -18,4 +18,9 @@ class Restaurant extends Model
     {
         return $this->hasMany(RestaurantLocation::class, 'restaurant_id', 'id');
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'restaurant_id', 'id');
+    }
 }
