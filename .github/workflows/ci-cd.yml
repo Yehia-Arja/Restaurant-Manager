@@ -32,6 +32,23 @@ jobs:
       - name: Verify Docker Compose Installation
         run: docker-compose --version
 
+      - name: Generate .env file
+        working-directory: smartDine-server
+        run: |
+          echo "APP_ENV=local" > .env
+          echo "APP_DEBUG=true" >> .env
+          echo "APP_KEY=base64:$(php -r "echo base64_encode(random_bytes(32));")" >> .env
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "DB_HOST=mysql_db" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=restaurant_db" >> .env
+          echo "DB_USERNAME=laravel_user" >> .env
+          echo "DB_PASSWORD=laravel_pass" >> .env
+          echo "CACHE_DRIVER=redis" >> .env
+          echo "REDIS_HOST=redis_cache" >> .env
+          echo "REDIS_PASSWORD=redispass" >> .env
+          echo "SESSION_DRIVER=redis" >> .env
+
       - name: Build containers
         working-directory: smartDine-server
         run: docker-compose -f docker-compose.yml build
