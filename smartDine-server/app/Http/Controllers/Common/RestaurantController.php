@@ -15,18 +15,21 @@ class RestaurantController extends Controller
     /**
      * GET  /api/v0.1/common/restaurants
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $all = RestaurantService::getAllRestaurants();
-            
-            if ($all->isEmpty()) {
+            $search = $request->query('search');
+            $favoritesOnly = $request->boolean('favorites');
+
+            $restaurants = RestaurantService::filterRestaurants($search, $favoritesOnly);
+
+            if ($restaurants->isEmpty()) {
                 return $this->error('No restaurants found', 404);
             }
 
             return $this->success(
                 'Restaurants fetched',
-                RestaurantResource::collection($all)
+                RestaurantResource::collection($restaurants)
             );
         } catch (Exception $e) {
             Log::error('Error fetching restaurants', [
