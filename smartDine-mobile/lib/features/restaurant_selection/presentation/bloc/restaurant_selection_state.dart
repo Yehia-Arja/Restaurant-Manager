@@ -9,11 +9,13 @@ class RestaurantSelectionLoading extends RestaurantSelectionState {}
 class RestaurantSelectionLoaded extends RestaurantSelectionState {
   final List<Restaurant> restaurants;
   final int currentPage;
+  final int totalPages;
   final bool hasReachedEnd;
 
   RestaurantSelectionLoaded({
     required this.restaurants,
     required this.currentPage,
+    required this.totalPages,
     required this.hasReachedEnd,
   });
 }

@@ -4,9 +4,12 @@ class FavoriteRemote {
   final Dio _dio;
   FavoriteRemote(this._dio);
 
-  Future<void> Favorite({required int id, required String type}) async {
+  Future<void> toggleFavorite({required int id, required String type}) async {
     try {
-      final response = await _dio.post('client/favorites/toggle', data: {'id': id, 'type': type});
+      final response = await _dio.post(
+        'common/favorites',
+        data: {'favoritable_id': id, 'favoritable_type': type},
+      );
 
       if (response.data['success'] != true) {
         throw Exception('Failed to toggle favorite');
