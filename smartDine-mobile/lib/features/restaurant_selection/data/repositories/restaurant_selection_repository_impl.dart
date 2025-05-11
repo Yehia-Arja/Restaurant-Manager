@@ -8,8 +8,18 @@ class RestaurantSelectionRepositoryImpl extends RestaurantSelectionRepository {
   RestaurantSelectionRepositoryImpl(this._remote);
 
   @override
-  Future<List<Restaurant>> getRestaurants() async {
-    final restaurantModels = await _remote.getRestaurants('common/restaurants');
+  Future<List<Restaurant>> getRestaurants({
+    String? query,
+    bool favoritesOnly = false,
+    int page = 1,
+  }) async {
+    final restaurantModels = await _remote.getRestaurants(
+      endpoint: 'common/restaurants',
+      query: query,
+      favoritesOnly: favoritesOnly,
+      page: page,
+    );
+
     return restaurantModels
         .map(
           (model) => Restaurant(
@@ -17,6 +27,7 @@ class RestaurantSelectionRepositoryImpl extends RestaurantSelectionRepository {
             name: model.name,
             imageUrl: model.imageUrl,
             description: model.description,
+            isFavorite: model.isFavorite,
           ),
         )
         .toList();
