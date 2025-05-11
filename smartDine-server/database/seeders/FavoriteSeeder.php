@@ -19,39 +19,35 @@ class FavoriteSeeder extends Seeder
         $usedProductKeys = [];
         $usedRestaurantKeys = [];
 
-        // Seed product favorites
+        // Product favorites
         for ($i = 0; $i < 50; $i++) {
             do {
                 $userId = $userIds[array_rand($userIds)];
                 $productId = $productIds[array_rand($productIds)];
-                $key = "$userId-$productId";
+                $key = "$userId-product-$productId";
             } while (in_array($key, $usedProductKeys));
             $usedProductKeys[] = $key;
 
             Favorite::create([
                 'user_id' => $userId,
-                'product_id' => $productId,
-                'restaurant_id' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'favoritable_id' => $productId,
+                'favoritable_type' => Product::class,
             ]);
         }
 
-        // Seed restaurant favorites
+        // Restaurant favorites
         for ($i = 0; $i < 30; $i++) {
             do {
                 $userId = $userIds[array_rand($userIds)];
                 $restaurantId = $restaurantIds[array_rand($restaurantIds)];
-                $key = "$userId-$restaurantId";
+                $key = "$userId-restaurant-$restaurantId";
             } while (in_array($key, $usedRestaurantKeys));
             $usedRestaurantKeys[] = $key;
 
             Favorite::create([
                 'user_id' => $userId,
-                'product_id' => null,
-                'restaurant_id' => $restaurantId,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'favoritable_id' => $restaurantId,
+                'favoritable_type' => Restaurant::class,
             ]);
         }
     }
