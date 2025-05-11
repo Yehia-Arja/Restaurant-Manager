@@ -8,7 +8,6 @@ import '../../domain/entities/restaurant.dart';
 class RestaurantSelectionBloc extends Bloc<RestaurantSelectionEvent, RestaurantSelectionState> {
   final GetRestaurantsUseCase _getRestaurantsUseCase;
   final ToggleFavoriteUseCase _toggleFavoriteUseCase;
-
   bool _isFetching = false;
 
   RestaurantSelectionBloc(this._getRestaurantsUseCase, this._toggleFavoriteUseCase)
@@ -26,28 +25,27 @@ class RestaurantSelectionBloc extends Bloc<RestaurantSelectionEvent, RestaurantS
 
     try {
       final currentState = state;
-      List<Restaurant> existingRestaurants = [];
-      int currentPage = event.page;
-
+      List<Restaurant> existing = [];
       if (currentState is RestaurantSelectionLoaded && event.page > 1) {
-        existingRestaurants = currentState.restaurants;
+        existing = currentState.restaurants;
       } else {
         emit(RestaurantSelectionLoading());
       }
 
-      final newRestaurants = await _getRestaurantsUseCase(
+      final paged = await _getRestaurantsUseCase(
         query: event.query,
         favoritesOnly: event.favoritesOnly,
         page: event.page,
       );
 
-      final combined = [...existingRestaurants, ...newRestaurants];
-      final hasReachedEnd = newRestaurants.isEmpty;
+      final combined = [...existing, ...paged.restaurants];
+      final hasReachedEnd = event.page >= paged.totalPages;
 
       emit(
         RestaurantSelectionLoaded(
           restaurants: combined,
-          currentPage: currentPage,
+          currentPage: event.page,
+          totalPages: paged.totalPages,
           hasReachedEnd: hasReachedEnd,
         ),
       );
@@ -64,13 +62,11 @@ class RestaurantSelectionBloc extends Bloc<RestaurantSelectionEvent, RestaurantS
   ) async {
     if (state is! RestaurantSelectionLoaded) return;
     final current = state as RestaurantSelectionLoaded;
+    final idx = current.restaurants.indexWhere((r) => r.id == event.restaurantId);
+    if (idx < 0) return;
 
-    final index = current.restaurants.indexWhere((r) => r.id == event.restaurantId);
-    if (index == -1) return;
-
-    // 1. Optimistically toggle favorite
-    final original = current.restaurants[index];
-    final updatedRestaurant = Restaurant(
+    final original = current.restaurants[idx];
+    final toggled = Restaurant(
       id: original.id,
       name: original.name,
       imageUrl: original.imageUrl,
@@ -78,29 +74,27 @@ class RestaurantSelectionBloc extends Bloc<RestaurantSelectionEvent, RestaurantS
       isFavorite: !original.isFavorite,
     );
 
-    final updatedList = List<Restaurant>.from(current.restaurants);
-    updatedList[index] = updatedRestaurant;
+    final updatedList = List<Restaurant>.from(current.restaurants)..[idx] = toggled;
 
     emit(
       RestaurantSelectionLoaded(
         restaurants: updatedList,
         currentPage: current.currentPage,
+        totalPages: current.totalPages,
         hasReachedEnd: current.hasReachedEnd,
       ),
     );
 
-    // Try posting to backend
     try {
       await _toggleFavoriteUseCase(id: original.id, type: 'restaurant');
     } catch (_) {
-      // Rollback on failure
-      final rollbackList = List<Restaurant>.from(current.restaurants);
-      rollbackList[index] = original;
-
+      // rollback
+      updatedList[idx] = original;
       emit(
         RestaurantSelectionLoaded(
-          restaurants: rollbackList,
+          restaurants: updatedList,
           currentPage: current.currentPage,
+          totalPages: current.totalPages,
           hasReachedEnd: current.hasReachedEnd,
         ),
       );
