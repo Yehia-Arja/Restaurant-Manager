@@ -5,7 +5,7 @@ class RestaurantSelectionRemote {
   final Dio _dio;
   RestaurantSelectionRemote(this._dio);
 
-  Future<List<RestaurantModel>> getRestaurants({
+  Future<Map<String, dynamic>> getRestaurants({
     required String endpoint,
     String? query,
     bool favoritesOnly = false,
@@ -14,12 +14,24 @@ class RestaurantSelectionRemote {
     try {
       final response = await _dio.get(
         endpoint,
-        queryParameters: {'search': query, 'favorites': favoritesOnly, 'page': page},
+        queryParameters: {
+          if (query != null) 'search': query,
+          'favorites': favoritesOnly,
+          'page': page,
+        },
       );
 
-      final data = response.data['data'] as List<dynamic>;
+      final raw = response.data as Map<String, dynamic>;
 
-      return data.map((e) => RestaurantModel.fromJson(e as Map<String, dynamic>)).toList();
+      final dataList =
+          (raw['data'] as List<dynamic>?)
+              ?.map((e) => RestaurantModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          <RestaurantModel>[];
+
+      final meta = (raw['meta'] as Map<String, dynamic>?) ?? {};
+
+      return {'data': dataList, 'meta': meta};
     } on DioException catch (error) {
       final message =
           (error.response?.data['message'] as String?) ?? error.message ?? 'Unknown error';
