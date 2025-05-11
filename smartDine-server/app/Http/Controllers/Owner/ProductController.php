@@ -1,73 +1,91 @@
 <?php
-// app/Http/Controllers/Common/ProductController.php
 
-namespace App\Http\Controllers\Common;
+namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Requests\Common\ProductRequest;
-use App\Services\Common\ProductService;
+use App\Http\Requests\Owner\CreateOrUpdateProductRequest;
+use App\Services\Owner\ProductService;
 use App\Http\Resources\Common\ProductResource;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class ProductController extends Controller
 {
-    public function store(ProductRequest $request)
+    /**
+     * Create a new product (with image).
+     */
+    public function store(CreateOrUpdateProductRequest $request)
     {
         try {
-            $data = $request->validated();
-
-            $product = ProductService::upsert($data);
+            $product = ProductService::createWithImage(
+                $request->validated(),
+                $request->file('image')
+            );
 
             if (!$product) {
                 return $this->error('Failed to save product', 500);
             }
 
-            return $this->success(
-                'Product saved',
-                new ProductResource($product)
-            );
-        } catch (\Throwable $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->success('Product saved', new ProductResource($product));
+
+        } catch (Exception $e) {
+            Log::error('Error in ProductController@store', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return $this->error('Failed to save product', 500);
         }
-        
     }
 
-    public function update(ProductRequest $request, int $id)
+    /**
+     * Update an existing product (with image).
+     */
+    public function update(CreateOrUpdateProductRequest $request, int $id)
     {
         try {
-            $data = $request->validated();
-            $data['id'] = $id;
-
-            $product = ProductService::upsert($data);
+            $product = ProductService::updateWithImage(
+                $id,
+                $request->validated(),
+                $request->file('image')
+            );
 
             if (!$product) {
                 return $this->error('Failed to update product', 500);
             }
 
-            return $this->success(
-                'Product updated',
-                new ProductResource($product)
-            );
-        } catch (\Throwable $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->success('Product updated', new ProductResource($product));
+
+        } catch (Exception $e) {
+            Log::error('Error in ProductController@update', [
+                'product_id' => $id,
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
+            ]);
+            return $this->error('Failed to update product', 500);
         }
-        
     }
 
+    /**
+     * Delete a product and its image.
+     */
     public function destroy(int $id)
     {
         try {
-            $deleted = ProductService::delete($id);
+            $deleted = ProductService::deleteWithImage($id);
 
             if (!$deleted) {
                 return $this->error('Failed to delete product', 500);
             }
 
             return $this->success('Product deleted');
-            
-        } catch (\Throwable $e) {
-            return $this->error($e->getMessage(), 500);
+
+        } catch (Exception $e) {
+            Log::error('Error in ProductController@destroy', [
+                'product_id' => $id,
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
+            ]);
+            return $this->error('Failed to delete product', 500);
         }
-        
     }
 }

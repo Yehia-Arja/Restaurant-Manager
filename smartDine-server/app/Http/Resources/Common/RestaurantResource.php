@@ -16,7 +16,7 @@ class RestaurantResource extends JsonResource
             'id'          => $this->id,
             'owner_id'    => $this->owner_id,
             'name'        => $this->name,
-            'image_url'   => MediaService::url($this->file_name, 'restaurants'),
+            'image_url'   => 'https://placehold.co/150x150',
             'description' => $this->description,
         ];
     }
