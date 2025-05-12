@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/theme/colors.dart';
 import 'package:mobile/features/products/domain/entities/product.dart';
-import 'package:mobile/features/products/presentation/widgets/product_detail_card.dart';
+import 'package:mobile/features/products/presentation/widgets/product_detail_page.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -23,27 +23,26 @@ class ProductCard extends StatelessWidget {
                 onTap ??
                 () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => ProductDetailPage(productId: product.id)),
+                    MaterialPageRoute(
+                      builder:
+                          (_) => ProductDetailPage(initialProduct: product, productId: product.id),
+                    ),
                   );
                 },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // IMAGE
                 Expanded(
                   child: Container(
                     color: AppColors.placeholder,
                     child: const Center(child: Icon(Icons.image, size: 32, color: Colors.white54)),
                   ),
                 ),
-
-                // INFO
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8).copyWith(bottom: 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Row 1: Title + Arrow
                       Row(
                         children: [
                           Expanded(
@@ -53,7 +52,6 @@ class ProductCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 fontSize: 12,
-                                fontWeight: FontWeight.normal,
                                 color: AppColors.secondary,
                               ),
                             ),
@@ -77,10 +75,7 @@ class ProductCard extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 8),
-
-                      // Row 2: Time, Price
                       Row(
                         children: [
                           const Icon(Icons.access_time, size: 12, color: AppColors.accent),

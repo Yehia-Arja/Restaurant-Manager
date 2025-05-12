@@ -55,4 +55,11 @@ class ProductService
 
         return $query->get();
     }
+
+    public static function getById(int $id): Product
+    {
+        return Product::with(['locations' => function ($q) {
+            $q->withPivot(['override_price', 'override_description']);
+        }])->findOrFail($id);
+    }
 }

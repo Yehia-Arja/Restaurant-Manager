@@ -123,8 +123,7 @@ class _HomePageState extends State<HomePage> {
                                 crossAxisSpacing: 12,
                                 childAspectRatio: 167 / 193,
                               ),
-                              itemBuilder:
-                                  (_, i) => ProductCard(product: data.products[i], onTap: () {}),
+                              itemBuilder: (_, i) => ProductCard(product: data.products[i]),
                             ),
                             const SizedBox(height: 20),
                           ],
