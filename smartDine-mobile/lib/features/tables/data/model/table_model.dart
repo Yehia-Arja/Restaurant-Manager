@@ -13,7 +13,7 @@ class TableModel extends TableEntity {
     final pos = json['position'] as Map<String, dynamic>;
     return TableModel(
       id: json['id'] as int,
-      isOccupied: (json['status'] as String).toLowerCase() == 'occupied',
+      isOccupied: (json['is_occupied'] as bool?) ?? false,
       floor: json['floor'] as int,
       x: (pos['x'] as num).toDouble(),
       y: (pos['y'] as num).toDouble(),
