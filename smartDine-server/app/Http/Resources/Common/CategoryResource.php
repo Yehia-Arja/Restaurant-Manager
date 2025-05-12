@@ -11,9 +11,8 @@ class CategoryResource extends JsonResource
     {
         return [
             'id'            => $this->id,
-            'restaurant_id' => $this->restaurant_id,
             'name'          => $this->name,
-            'image_url'     => MediaService::url($this->file_name, 'categories'),
+            'image_url'     => 'https://placehold.co/150x150',
         ];
     }
 }
