@@ -1,6 +1,7 @@
 class TableEntity {
   final int id;
-  final String label;
+  final bool isOccupied;
+  final int floor;
 
-  TableEntity({required this.id, required this.label});
+  TableEntity({required this.id, required this.isOccupied, required this.floor});
 }
