@@ -11,4 +11,9 @@ class TableModel extends TableEntity {
       floor: json['floor'] as int,
     );
   }
+
+  // Converts this data model into the pure domain entity
+  TableEntity toEntity() {
+    return TableEntity(id: id, isOccupied: isOccupied, floor: floor);
+  }
 }
