@@ -7,7 +7,7 @@ import 'package:mobile/features/restaurant_selection/presentation/bloc/restauran
 import 'package:mobile/features/restaurant_selection/presentation/bloc/restaurant_selection_event.dart';
 import 'package:mobile/features/restaurant_selection/presentation/bloc/restaurant_selection_state.dart';
 import 'package:mobile/features/restaurant_selection/presentation/widgets/restaurant_card.dart';
-import 'package:mobile/features/home/presentation/pages/home_page.dart';
+import 'package:mobile/features/home/presentation/screens/home_page.dart';
 
 class RestaurantSelectionScreen extends StatefulWidget {
   const RestaurantSelectionScreen({super.key});

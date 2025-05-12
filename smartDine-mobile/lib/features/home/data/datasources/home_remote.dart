@@ -9,12 +9,9 @@ class HomeRemote {
 
   Future<HomeData> fetchHomeData({required int restaurantId, int? branchId}) async {
     try {
-      final params = {
-        'restaurant_id': restaurantId,
-        if (branchId != null) 'restaurant_location_id': branchId,
-      };
+      final params = <String, dynamic>{if (branchId != null) 'restaurant_location_id': branchId};
 
-      final response = await _dio.get('common/homepage', queryParameters: params);
+      final response = await _dio.get('common/restaurants/$restaurantId', queryParameters: params);
 
       final model = HomeDataModel.fromJson(response.data as Map<String, dynamic>);
 
