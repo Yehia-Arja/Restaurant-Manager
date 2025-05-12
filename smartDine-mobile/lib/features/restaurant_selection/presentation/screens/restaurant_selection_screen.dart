@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/core/blocs/selected_restaurant_cubit.dart';
 import 'package:mobile/core/theme/colors.dart';
 import 'package:mobile/shared/widgets/base_scaffold.dart';
 import 'package:mobile/features/restaurant_selection/presentation/bloc/restaurant_selection_bloc.dart';
 import 'package:mobile/features/restaurant_selection/presentation/bloc/restaurant_selection_event.dart';
 import 'package:mobile/features/restaurant_selection/presentation/bloc/restaurant_selection_state.dart';
 import 'package:mobile/features/restaurant_selection/presentation/widgets/restaurant_card.dart';
+import 'package:mobile/features/home/presentation/pages/home_page.dart';
 
 class RestaurantSelectionScreen extends StatefulWidget {
   const RestaurantSelectionScreen({super.key});
@@ -100,7 +102,6 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
   Widget _buildList(RestaurantSelectionLoaded state) {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollInfo) {
-        // When scrolled within 100px of bottom, fetch next page
         if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 100 &&
             state.hasReachedEnd == false) {
           _fetchRestaurants(page: state.currentPage + 1);
@@ -116,12 +117,15 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
             final restaurant = state.restaurants[index];
             return RestaurantCard(
               restaurant: restaurant,
+              onTap: () {
+                context.read<SelectedRestaurantCubit>().select(restaurant.id);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const HomePage()));
+              },
               onFavoritePressed: () {
                 context.read<RestaurantSelectionBloc>().add(ToggleFavoriteRequested(restaurant.id));
               },
             );
           } else {
-            // bottom loader
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Center(child: CircularProgressIndicator()),
@@ -138,7 +142,7 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
     }
     if (state is RestaurantSelectionLoaded) {
       if (state.restaurants.isEmpty) {
-        return const Center(child: Text("No matching restaurants."));
+        return const Center(child: Text('No matching restaurants.'));
       }
       return _buildList(state);
     }
