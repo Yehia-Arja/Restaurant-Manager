@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/theme/colors.dart';
 import 'package:mobile/features/products/domain/entities/product.dart';
-import 'package:mobile/features/products/presentation/pages/product_detail_page.dart';
+import 'package:mobile/features/products/presentation/widgets/product_detail_card.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
