@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/services/dio_service.dart';
 import 'package:mobile/core/theme/theme.dart';
 
+// Cubits
+import 'package:mobile/core/blocs/selected_restaurant_cubit.dart';
+import 'package:mobile/core/blocs/selected_branch_cubit.dart';
+
 // Auth
 import 'package:mobile/features/auth/data/datasources/auth_remote.dart';
 import 'package:mobile/features/auth/data/repositories/auth_repository_impl.dart';
@@ -23,34 +27,58 @@ import 'package:mobile/features/restaurant_selection/domain/usecases/toggle_favo
 import 'package:mobile/features/restaurant_selection/presentation/bloc/restaurant_selection_bloc.dart';
 import 'package:mobile/features/restaurant_selection/presentation/screens/restaurant_selection_screen.dart';
 
+// Home
+import 'package:mobile/features/home/data/datasources/home_remote.dart';
+import 'package:mobile/features/home/data/repositories/home_repository_impl.dart';
+import 'package:mobile/features/home/domain/usecases/get_home_data_usecase.dart';
+import 'package:mobile/features/home/presentation/screens/home_page.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  final dio = DioService.dio;
 
   // Auth setup
-  final authRemote = AuthRemote(DioService.dio);
+  final authRemote = AuthRemote(dio);
   final authRepo = AuthRepositoryImpl(authRemote);
   final loginUseCase = LoginUseCase(authRepo);
   final signupUseCase = SignupUseCase(authRepo);
 
   // RestaurantSelection setup
-  final restaurantRemote = RestaurantSelectionRemote(DioService.dio);
+  final restaurantRemote = RestaurantSelectionRemote(dio);
   final restaurantRepo = RestaurantSelectionRepositoryImpl(restaurantRemote);
   final getRestaurantsUseCase = GetRestaurantsUseCase(restaurantRepo);
 
   // Favorite setup
-  final favoriteRemote = FavoriteRemote(DioService.dio);
+  final favoriteRemote = FavoriteRemote(dio);
   final favoriteRepo = FavoriteRepositoryImpl(favoriteRemote);
   final toggleFavoriteUseCase = ToggleFavoriteUseCase(favoriteRepo);
 
+  // Home setup
+  final homeRemote = HomeRemote(dio);
+  final homeRepo = HomeRepositoryImpl(homeRemote);
+  final getHomeDataUseCase = GetHomeDataUseCase(homeRepo);
+
   runApp(
-    MultiBlocProvider(
+    MultiRepositoryProvider(
       providers: [
-        BlocProvider(create: (_) => AuthBloc(loginUseCase, signupUseCase)),
-        BlocProvider(
-          create: (_) => RestaurantSelectionBloc(getRestaurantsUseCase, toggleFavoriteUseCase),
-        ),
+        RepositoryProvider.value(value: loginUseCase),
+        RepositoryProvider.value(value: signupUseCase),
+        RepositoryProvider.value(value: getRestaurantsUseCase),
+        RepositoryProvider.value(value: toggleFavoriteUseCase),
+        RepositoryProvider.value(value: getHomeDataUseCase),
       ],
-      child: const MyApp(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => SelectedRestaurantCubit()),
+          BlocProvider(create: (_) => SelectedBranchCubit()),
+          BlocProvider(create: (_) => AuthBloc(loginUseCase, signupUseCase)),
+          BlocProvider(
+            create: (_) => RestaurantSelectionBloc(getRestaurantsUseCase, toggleFavoriteUseCase),
+          ),
+          // HomeBloc is provided inside HomePage, so no need to register it here
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -69,6 +97,7 @@ class MyApp extends StatelessWidget {
         '/login': (_) => const LoginScreen(),
         '/signup': (_) => const SignupScreen(),
         '/restaurant_selection': (_) => const RestaurantSelectionScreen(),
+        '/home': (_) => const HomePage(),
       },
     );
   }
