@@ -9,7 +9,6 @@ class RestaurantHomepageResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'restaurant'      => new RestaurantResource($this->resource['restaurant']),
             'branches'        => LocationResource::collection($this->resource['branches']),
             'selected_branch' => new LocationResource($this->resource['selected_branch']),
             'categories'      => CategoryResource::collection($this->resource['categories']),

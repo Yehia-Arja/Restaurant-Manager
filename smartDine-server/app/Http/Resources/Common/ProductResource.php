@@ -17,15 +17,12 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'file_name' => $this->file_name,
             'description' => $description,
             'price' => '$' . $price,
             'time_to_deliver' => $this->time_to_deliver,
             'ingredients' => $this->ingredients,
-            'avg_rating' => $this->avg_rating,
-            'rating_count' => $this->rating_count,
 
-            'image_url' => 'jello',
+            'image_url' => 'https://placehold.co/150x150',
             'ar_model_url' => 'kll'
         ];
     }
