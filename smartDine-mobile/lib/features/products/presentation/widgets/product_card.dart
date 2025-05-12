@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/theme/colors.dart';
 import 'package:mobile/features/products/domain/entities/product.dart';
+import 'package:mobile/features/products/presentation/pages/product_detail_page.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -18,7 +19,13 @@ class ProductCard extends StatelessWidget {
           color: Colors.white,
           elevation: 2,
           child: InkWell(
-            onTap: onTap,
+            onTap:
+                onTap ??
+                () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => ProductDetailPage(productId: product.id)),
+                  );
+                },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -52,8 +59,6 @@ class ProductCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 4),
-
-                          // Arrow
                           Padding(
                             padding: const EdgeInsets.only(top: 30),
                             child: Container(
@@ -78,7 +83,7 @@ class ProductCard extends StatelessWidget {
                       // Row 2: Time, Price
                       Row(
                         children: [
-                          Icon(Icons.access_time, size: 12, color: AppColors.accent),
+                          const Icon(Icons.access_time, size: 12, color: AppColors.accent),
                           const SizedBox(width: 4),
                           Text(
                             product.timeToDeliver,
