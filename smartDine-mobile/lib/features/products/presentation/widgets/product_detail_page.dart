@@ -6,6 +6,7 @@ import 'package:mobile/features/products/domain/usecases/get_product_detail_usec
 import 'package:mobile/features/products/presentation/bloc/product_detail_bloc.dart';
 import 'package:mobile/features/products/presentation/bloc/product_detail_event.dart';
 import 'package:mobile/features/products/presentation/bloc/product_detail_state.dart';
+import 'package:mobile/features/products/presentation/screens/ar_view_screen.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final Product? initialProduct;
@@ -80,7 +81,13 @@ class ProductDetailPage extends StatelessWidget {
                         child: ActionChip(
                           backgroundColor: AppColors.accent,
                           label: const Text('View in AR', style: TextStyle(color: Colors.white)),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => ARViewScreen(modelUrl: p.arModelUrl),
+                              ),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -121,7 +128,12 @@ class ProductDetailPage extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         height: 48,
-                        child: ElevatedButton(onPressed: () {}, child: const Text('Confirm Order')),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // TODO: confirm order logic
+                          },
+                          child: const Text('Confirm Order'),
+                        ),
                       ),
                     ],
                   ),

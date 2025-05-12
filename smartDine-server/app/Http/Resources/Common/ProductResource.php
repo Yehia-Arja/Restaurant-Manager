@@ -23,7 +23,7 @@ class ProductResource extends JsonResource
             'ingredients' => $this->ingredients,
 
             'image_url' => 'https://placehold.co/150x150',
-            'ar_model_url' => 'kll'
+            'ar_model_url' => 'hello'
         ];
     }
 }
