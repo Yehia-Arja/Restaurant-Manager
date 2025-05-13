@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "d1f734f08907d454271b6f228b91636d",
+=======
+    "content-hash": "52a83a049d52d64aed4633266bf6b777",
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
     "packages": [
         {
             "name": "brick/math",
@@ -2884,6 +2888,72 @@
             "time": "2024-07-20T21:41:07+00:00"
         },
         {
+<<<<<<< HEAD
+=======
+            "name": "predis/predis",
+            "version": "v3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/predis/predis.git",
+                "reference": "7d86f7afb37940bfc7aaa2909147616881377667"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/predis/predis/zipball/7d86f7afb37940bfc7aaa2909147616881377667",
+                "reference": "7d86f7afb37940bfc7aaa2909147616881377667",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0",
+                "psr/http-message": "^1.0|^2.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.3",
+                "phpstan/phpstan": "^1.9",
+                "phpunit/phpcov": "^6.0 || ^8.0",
+                "phpunit/phpunit": "^8.0 || ~9.4.4"
+            },
+            "suggest": {
+                "ext-relay": "Faster connection with in-memory caching (>=0.6.2)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Predis\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Till Krüss",
+                    "homepage": "https://till.im",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "A flexible and feature-complete Redis/Valkey client for PHP.",
+            "homepage": "http://github.com/predis/predis",
+            "keywords": [
+                "nosql",
+                "predis",
+                "redis"
+            ],
+            "support": {
+                "issues": "https://github.com/predis/predis/issues",
+                "source": "https://github.com/predis/predis/tree/v3.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/tillkruss",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-05-02T23:18:59+00:00"
+        },
+        {
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
             "name": "psr/clock",
             "version": "1.0.0",
             "source": {
@@ -6341,6 +6411,7 @@
             "time": "2020-07-09T08:09:16+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "laravel/pail",
             "version": "v1.2.2",
             "source": {
@@ -6419,6 +6490,8 @@
             "time": "2025-01-28T15:15:15+00:00"
         },
         {
+=======
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
             "name": "laravel/pint",
             "version": "v1.22.0",
             "source": {
@@ -6485,6 +6558,7 @@
             "time": "2025-04-08T22:11:45+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "laravel/sail",
             "version": "v1.41.1",
             "source": {
@@ -6548,6 +6622,8 @@
             "time": "2025-04-22T13:39:39+00:00"
         },
         {
+=======
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
             "name": "mockery/mockery",
             "version": "1.6.12",
             "source": {
@@ -8266,6 +8342,93 @@
             "time": "2024-10-09T05:16:32+00:00"
         },
         {
+<<<<<<< HEAD
+=======
+            "name": "squizlabs/php_codesniffer",
+            "version": "3.12.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
+                "reference": "6d4cf6032d4b718f168c90a96e36c7d0eaacb2aa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/6d4cf6032d4b718f168c90a96e36c7d0eaacb2aa",
+                "reference": "6d4cf6032d4b718f168c90a96e36c7d0eaacb2aa",
+                "shasum": ""
+            },
+            "require": {
+                "ext-simplexml": "*",
+                "ext-tokenizer": "*",
+                "ext-xmlwriter": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4"
+            },
+            "bin": [
+                "bin/phpcbf",
+                "bin/phpcs"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Sherwood",
+                    "role": "Former lead"
+                },
+                {
+                    "name": "Juliette Reinders Folmer",
+                    "role": "Current lead"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer/graphs/contributors"
+                }
+            ],
+            "description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
+            "homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
+            "keywords": [
+                "phpcs",
+                "standards",
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPCSStandards/PHP_CodeSniffer/issues",
+                "security": "https://github.com/PHPCSStandards/PHP_CodeSniffer/security/policy",
+                "source": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
+                "wiki": "https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/PHPCSStandards",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/jrfnl",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/php_codesniffer",
+                    "type": "open_collective"
+                },
+                {
+                    "url": "https://thanks.dev/u/gh/phpcsstandards",
+                    "type": "thanks_dev"
+                }
+            ],
+            "time": "2025-04-13T04:10:18+00:00"
+        },
+        {
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
             "name": "staabm/side-effects-detector",
             "version": "1.0.5",
             "source": {
@@ -8318,6 +8481,7 @@
             "time": "2024-10-20T05:08:20+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "symfony/yaml",
             "version": "v7.2.5",
             "source": {
@@ -8390,6 +8554,8 @@
             "time": "2025-03-03T07:12:39+00:00"
         },
         {
+=======
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
             "name": "theseer/tokenizer",
             "version": "1.2.3",
             "source": {

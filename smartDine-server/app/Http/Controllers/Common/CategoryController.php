@@ -16,6 +16,7 @@ class CategoryController extends Controller
      */
     public function index(CategoryRequest $request)
     {
+<<<<<<< HEAD
         
         $data = $request->validated();
 
@@ -83,4 +84,28 @@ class CategoryController extends Controller
 
         return $this->success('Category deleted');
     }
+=======
+        try{
+            $data = $request->validated();
+
+            $categories = CategoryService::list(
+                $data['restaurant_id'],
+                $data['branch_id'],
+            );
+            
+            if ($categories->isEmpty()) {
+                return $this->error('No categories found', 404);
+            }
+
+            return $this->success(
+                'Categories fetched',
+                CategoryResource::collection($categories)
+            );
+        }catch(\Throwable $e){
+            return $this->error($e->getMessage(), 500);
+        }
+        
+    }
+
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
 }

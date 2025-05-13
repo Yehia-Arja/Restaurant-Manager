@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 
 namespace App\Providers;
 
@@ -24,4 +25,21 @@ class AppServiceProvider extends ServiceProvider
     {
 
     }
+=======
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use App\Services\Common\MediaService;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+    }
+
+    public function boot()
+    {
+        //
+    }
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
 }

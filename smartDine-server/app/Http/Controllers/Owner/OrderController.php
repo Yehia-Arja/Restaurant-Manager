@@ -23,6 +23,7 @@ class OrderController extends Controller
      */
     public function stats(OrderStatsRequest $request)
     {
+<<<<<<< HEAD
         $data = $request->validated();
 
         $restaurantId = $data['restaurant_id']            ?? null;
@@ -34,5 +35,23 @@ class OrderController extends Controller
             'Order statistics fetched successfully',
             $counts
         );
+=======
+        try {
+            $data = $request->validated();
+
+            $restaurantId = $data['restaurant_id']            ?? null;
+            $branchId     = $data['restaurant_location_id']   ?? null;
+
+            $counts = OrderService::stats($restaurantId, $branchId);
+
+            return $this->success(
+                'Order statistics fetched successfully',
+                $counts
+            );
+        }catch (\Throwable $e) {
+            return $this->error($e->getMessage(), 500);
+        }
+        
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
     }
 }

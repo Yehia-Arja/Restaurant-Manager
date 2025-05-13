@@ -18,6 +18,11 @@
         </include>
     </source>
     <php>
+<<<<<<< HEAD
+=======
+        <server name="DB_CONNECTION" value="sqlite"/>
+        <server name="DB_DATABASE"  value=":memory:"/>
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>

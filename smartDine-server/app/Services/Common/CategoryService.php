@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 
 class CategoryService
 {
+<<<<<<< HEAD
     /**
      * Create or update a category in one go.
      *
@@ -41,6 +42,9 @@ class CategoryService
     {
         return Category::destroy($id) > 0;
     }
+=======
+
+>>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
 
     /**
      * List categories, filtered optionally by branch or by restaurant.
