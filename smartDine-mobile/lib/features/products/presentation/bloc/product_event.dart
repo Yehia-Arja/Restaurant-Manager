@@ -9,9 +9,11 @@ abstract class ProductEvent extends Equatable {
 
 class LoadProducts extends ProductEvent {
   final int branchId;
+  final String? searchQuery;
+  final int? categoryId;
 
-  const LoadProducts(this.branchId);
+  const LoadProducts({required this.branchId, this.searchQuery, this.categoryId});
 
   @override
-  List<Object?> get props => [branchId];
+  List<Object?> get props => [branchId, searchQuery, categoryId];
 }
