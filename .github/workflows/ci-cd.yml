@@ -1,3 +1,5 @@
+name: CI/CD
+
 on:
   push:
     branches:
@@ -5,80 +7,50 @@ on:
       - production
 
 env:
-  DOCKER_COMPOSE_VERSION: "3.8"
+  PROJECT_DIR: smartDine-server
 
 jobs:
   build:
-    name: Build Docker Image
+    name: Build Docker Images
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker
-        uses: docker/setup-qemu-action@v2
+      - name: Install PHP & Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, xml, redis, pdo_mysql
+          tools: composer
 
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Install Laravel dependencies
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: composer install --no-interaction --optimize-autoloader
 
-      - name: Install Docker Compose
+      - name: Generate local .env
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          echo "PATH=$PATH:/usr/local/bin" >> $GITHUB_ENV
+          cp .env.example .env
+          php artisan key:generate
 
-      - name: Verify Docker Compose Installation
-        run: docker-compose --version
-
-      - name: Install PHP and Composer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y php-cli unzip
-          curl -sS https://getcomposer.org/installer | php
-          sudo mv composer.phar /usr/local/bin/composer
-
-      - name: Install Laravel Dependencies
-        working-directory: smartDine-server
-        run: |
-          composer install --no-dev --optimize-autoloader
-          if [ ! -d "vendor" ]; then
-            echo "Error: Composer dependencies not installed successfully."
-            exit 1
-          fi
-
-      - name: Generate .env file
-        working-directory: smartDine-server
-        run: |
-          echo "APP_ENV=local" > .env
-          echo "APP_DEBUG=true" >> .env
-          echo "APP_KEY=base64:$(php -r "echo base64_encode(random_bytes(32));")" >> .env
-          echo "DB_CONNECTION=mysql" >> .env
-          echo "DB_HOST=mysql_db" >> .env
-          echo "DB_PORT=3306" >> .env
-          echo "DB_DATABASE=restaurant_db" >> .env
-          echo "DB_USERNAME=laravel_user" >> .env
-          echo "DB_PASSWORD=laravel_pass" >> .env
-          echo "CACHE_DRIVER=redis" >> .env
-          echo "REDIS_HOST=redis_cache" >> .env
-          echo "REDIS_PASSWORD=redispass" >> .env
-          echo "SESSION_DRIVER=redis" >> .env
-
-      - name: Build containers
-        working-directory: smartDine-server
-        run: docker-compose -f docker-compose.yml build
+      - name: Build Docker Compose images
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: docker-compose build --parallel
 
   test:
-    name: Run Tests
+    name: Run Laravel Tests
     runs-on: ubuntu-latest
     needs: build
+
     services:
       mysql:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: test_db
-        ports:
-          - 3306:3306
+        ports: ["3306:3306"]
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
@@ -86,105 +58,86 @@ jobs:
           --health-retries=3
       redis:
         image: redis:7-alpine
-        ports:
-          - 6379:6379
+        ports: ["6379:6379"]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP & Composer
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
-          extensions: mbstring, xml, ctype, json, tokenizer, bcmath, redis, pdo_mysql
+          extensions: mbstring, xml, redis, pdo_mysql
+          tools: composer
 
-      - name: Install Laravel Dependencies
-        working-directory: smartDine-server
-        run: |
-          composer install --no-dev --optimize-autoloader
-          if [ ! -d "vendor" ]; then
-            echo "Error: Composer dependencies not installed successfully."
-            exit 1
-          fi
+      - name: Install Laravel dependencies
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: composer install --no-interaction --optimize-autoloader
 
-      - name: Configure environment
-        working-directory: smartDine-server
+      - name: Prepare testing environment
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
-          cp .env.example .env
-          php artisan key:generate
+          cp .env.example .env.testing
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=test_db/' .env.testing
+          sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env.testing
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env.testing
+          php artisan key:generate --env=testing
 
-      - name: Run tests
-        working-directory: smartDine-server
+      - name: Migrate & run tests
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
-          php artisan migrate:fresh --env=testing
+          php artisan migrate:fresh --env=testing --force
           php artisan test
 
-  deploy:
-    name: Deploy
-    needs: [build, test]
+  deploy-staging:
+    name: Deploy to Staging
     runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Laravel Dependencies
-        working-directory: smartDine-server
-        run: |
-          composer install --no-dev --optimize-autoloader
-
-      - name: Generate .env.staging file
-        if: github.ref == 'refs/heads/main'
-        working-directory: smartDine-server
-        run: |
-          echo "APP_ENV=staging" > .env.staging
-          echo "DB_HOST=127.0.0.1" >> .env.staging
-          echo "DB_DATABASE=staging_db" >> .env.staging
-          echo "DB_USERNAME=${{ secrets.STAGING_DB_USERNAME }}" >> .env.staging
-          echo "DB_PASSWORD=${{ secrets.STAGING_DB_PASSWORD }}" >> .env.staging
-
-      - name: Generate .env.production file
-        if: github.ref == 'refs/heads/production'
-        working-directory: smartDine-server
-        run: |
-          echo "APP_ENV=production" > .env.production
-          echo "DB_HOST=127.0.0.1" >> .env.production
-          echo "DB_DATABASE=production_db" >> .env.production
-          echo "DB_USERNAME=${{ secrets.PRODUCTION_DB_USERNAME }}" >> .env.production
-          echo "DB_PASSWORD=${{ secrets.PRODUCTION_DB_PASSWORD }}" >> .env.production
-
-      - name: Set deployment variables
-        working-directory: smartDine-server
-        run: |
-          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            echo "server=${{ secrets.STAGING_SERVER }}" >> $GITHUB_ENV
-            echo "envfile=.env.staging" >> $GITHUB_ENV
-            echo "${{ secrets.SSH_STAGING_PRIVATE_KEY }}" > private_key.pem
-          elif [[ "${GITHUB_REF}" == "refs/heads/production" ]]; then
-            echo "server=${{ secrets.PRODUCTION_SERVER }}" >> $GITHUB_ENV
-            echo "envfile=.env.production" >> $GITHUB_ENV
-            echo "${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}" > private_key.pem
-          fi
-          chmod 600 private_key.pem
-
-      - name: Deploy via SSH
-        working-directory: smartDine-server
-        run: |
-          mkdir -p ~/.ssh
-          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-          mv private_key.pem ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-          HOST=$(echo "${{ env.server }}" | cut -d'@' -f2)
-          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
-
-          scp -r . ${{ env.server }}:~/app
-
-          ssh ${{ env.server }} << 'EOSSH'
-            cd ~/app
+      - name: Install SSH Action
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USERNAME }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          port: 22
+          script: |
+            cd ~/app/${{ env.PROJECT_DIR }}
             docker-compose down
             docker-compose pull
             docker-compose up -d --build
+            # run migrations & clear cache
             docker-compose exec -T laravel php artisan migrate --force
             docker-compose exec -T laravel php artisan optimize:clear
-          EOSSH
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/production'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SSH Action
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USERNAME }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          port: 22
+          script: |
+            cd ~/app/${{ env.PROJECT_DIR }}
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d --build
+            # run migrations & clear cache
+            docker-compose exec -T laravel php artisan migrate --force
+            docker-compose exec -T laravel php artisan optimize:clear
