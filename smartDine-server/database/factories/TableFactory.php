@@ -24,11 +24,13 @@ class TableFactory extends Factory
         }
 
         return [
-            'position' => json_encode([
+            'position'               => json_encode([
                 'x' => $this->faker->numberBetween(0, 1000),
                 'y' => $this->faker->numberBetween(0, 1000),
             ]),
-            'floor' => $this->faker->numberBetween(0, 3),
+            // unique table number per location
+            'number'                 => $this->faker->unique()->numberBetween(1, 50),
+            'floor'                  => $this->faker->numberBetween(0, 3),
             'restaurant_location_id' => $this->faker->randomElement($locationIds),
         ];
     }
