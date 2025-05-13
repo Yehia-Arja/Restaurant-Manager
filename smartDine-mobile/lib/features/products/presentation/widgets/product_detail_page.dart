@@ -7,6 +7,7 @@ import 'package:mobile/features/products/presentation/bloc/product_detail_bloc.d
 import 'package:mobile/features/products/presentation/bloc/product_detail_event.dart';
 import 'package:mobile/features/products/presentation/bloc/product_detail_state.dart';
 import 'package:mobile/features/products/presentation/screens/ar_view_screen.dart';
+import 'package:mobile/features/orders/presentation/widgets/confirm_order_button.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final Product? initialProduct;
@@ -125,16 +126,9 @@ class ProductDetailPage extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(p.description, style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // TODO: confirm order logic
-                          },
-                          child: const Text('Confirm Order'),
-                        ),
-                      ),
+
+                      // Confirm Order Button
+                      ConfirmOrderButton(productId: p.id),
                     ],
                   ),
                 ),
