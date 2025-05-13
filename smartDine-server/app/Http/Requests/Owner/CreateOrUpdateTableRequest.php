@@ -9,7 +9,6 @@ class CreateOrUpdateTableRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // add any ownership/permission checks here if needed
         return true;
     }
 
