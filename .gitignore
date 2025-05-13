@@ -12,6 +12,13 @@
 .swiftpm/
 migrate_working_dir/
 
+**/local.properties
+**/Flutter/Generated.xcconfig
+**/flutter_export_environment.sh
+**/GeneratedPluginRegistrant.*
+**/Flutter/ephemeral/
+
+
 # Catch-all Flutter build outputs
 **/build/
 **/.gradle/
