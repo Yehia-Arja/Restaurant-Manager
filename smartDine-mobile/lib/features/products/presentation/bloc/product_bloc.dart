@@ -13,7 +13,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   Future<void> _onLoadProducts(LoadProducts event, Emitter<ProductState> emit) async {
     emit(ProductLoading());
     try {
-      final products = await _listUseCase.call(event.branchId);
+      final products = await _listUseCase.call(
+        branchId: event.branchId,
+        searchQuery: event.searchQuery,
+        categoryId: event.categoryId,
+      );
       emit(ProductLoaded(products));
     } catch (e) {
       emit(ProductError(e.toString()));
