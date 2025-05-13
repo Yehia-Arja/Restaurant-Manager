@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Common;
 use App\Http\Controllers\Controller;
 use App\Services\Common\TableService;
 use App\Http\Requests\Common\TableRequest;
+use App\Http\Resources\Common\TableResource;
 
 class TableController extends Controller
 {
@@ -26,7 +27,7 @@ class TableController extends Controller
 
             return $this->success(
                 'Tables fetched',
-                $tables
+                TableResource::collection($tables)
             );
 
         } catch (\Throwable $e) {

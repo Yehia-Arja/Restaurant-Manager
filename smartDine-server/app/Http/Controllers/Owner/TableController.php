@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\CreateOrUpdateTableRequest;
 use App\Services\Owner\TableService;
 use Illuminate\Http\JsonResponse;
+use App\Http\Resources\Common\TableResource;
 use Exception;
 
 class TableController extends Controller
@@ -15,7 +16,7 @@ class TableController extends Controller
         try {
             $table = TableService::updateOrCreate($request->validated());
 
-            return $this->success('Table created', $table);
+            return $this->success('Table created', TableResource::make($table));
         } catch (Exception $e) {
             return $this->error('Creation failed: ' . $e->getMessage(), 500);
         }
@@ -26,7 +27,7 @@ class TableController extends Controller
         try {
             $table = TableService::updateOrCreate($request->validated(), $tableId);
 
-            return $this->success('Table updated', $table);
+            return $this->success('Table updated', TableResource::make($table));
         } catch (Exception $e) {
             return $this->error('Update failed: ' . $e->getMessage(), 500);
         }
