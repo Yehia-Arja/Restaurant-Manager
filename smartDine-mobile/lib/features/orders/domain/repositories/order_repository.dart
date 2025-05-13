@@ -4,6 +4,6 @@ abstract class OrderRepository {
   Future<OrderEntity> placeOrder({
     required int productId,
     required int branchId,
-    required int tableNumber,
+    required int tableId,
   });
 }

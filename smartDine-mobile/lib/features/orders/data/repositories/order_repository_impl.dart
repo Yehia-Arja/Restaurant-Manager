@@ -10,12 +10,12 @@ class OrderRepositoryImpl implements OrderRepository {
   Future<OrderEntity> placeOrder({
     required int productId,
     required int branchId,
-    required int tableNumber,
+    required int tableId,
   }) async {
     final model = await _remote.placeOrder(
       productId: productId,
       branchId: branchId,
-      tableNumber: tableNumber,
+      tableId: tableId,
     );
     return model;
   }

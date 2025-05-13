@@ -16,7 +16,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       final order = await _placeOrderUseCase(
         productId: event.productId,
         branchId: event.branchId,
-        tableNumber: event.tableNumber,
+        tableId: event.tableId,
       );
       emit(OrderSuccess(order));
     } catch (e) {

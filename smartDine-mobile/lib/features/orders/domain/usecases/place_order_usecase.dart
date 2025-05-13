@@ -6,15 +6,7 @@ class PlaceOrderUseCase {
 
   PlaceOrderUseCase(this._repository);
 
-  Future<OrderEntity> call({
-    required int productId,
-    required int branchId,
-    required int tableNumber,
-  }) {
-    return _repository.placeOrder(
-      productId: productId,
-      branchId: branchId,
-      tableNumber: tableNumber,
-    );
+  Future<OrderEntity> call({required int productId, required int branchId, required int tableId}) {
+    return _repository.placeOrder(productId: productId, branchId: branchId, tableId: tableId);
   }
 }
