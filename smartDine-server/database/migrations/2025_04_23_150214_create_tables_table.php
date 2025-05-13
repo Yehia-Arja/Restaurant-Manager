@@ -14,11 +14,15 @@ return new class extends Migration
         Schema::create('tables', function (Blueprint $table) {
             $table->id();
             $table->json('position');
-            $table->smallInteger('floor')->default(0);
+            $table->bigInteger('number');
+            $table->smallInteger('floor');
             $table->timestamps();
 
             // Foreign key
             $table->foreignId('restaurant_location_id')->constrained('restaurant_locations')->onDelete('cascade');
+
+            // Constraints
+            $table->unique(['number', 'restaurant_location_id'], 'table_unique_number_location');
         });
     }
 

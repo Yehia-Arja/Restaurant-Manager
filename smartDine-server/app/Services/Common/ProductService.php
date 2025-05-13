@@ -16,7 +16,7 @@ class ProductService
         ?int $restaurantId        = null,
         ?int $categoryId          = null,
         ?string $search           = null
-    ): Collection {
+    ) {
         $query = Product::query();
 
         // Filter by branch and eager-load pivot overrides

@@ -9,4 +9,9 @@ class Table extends Model
 {
     /** @use HasFactory<\Database\Factories\TableFactory> */
     use HasFactory;
+    
+    public function chairs()
+    {
+        return $this->hasMany(Chair::class);
+    }
 }

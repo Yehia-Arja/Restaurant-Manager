@@ -14,12 +14,11 @@ class CategoryService
      *
      * @param  int|null  $branchId
      * @param  int|null  $restaurantId
-     * @return Collection|Category[]
      */
     public static function list(
         ?int $branchId     = null,
         ?int $restaurantId = null
-    ): Collection {
+    ) {
         $q = Category::query();
 
         if ($branchId) {
