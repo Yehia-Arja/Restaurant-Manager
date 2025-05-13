@@ -60,7 +60,6 @@ class CreateOrUpdateTableRequest extends FormRequest
             'position.array'                  => 'Position must be an array with x and y.',
             'position.x.required'             => 'Position.x is required.',
             'position.y.required'             => 'Position.y is required.',
-            'num_chairs.required'             => 'Number of chairs is required.',
         ];
     }
 }
