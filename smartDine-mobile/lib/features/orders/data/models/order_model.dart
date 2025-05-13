@@ -5,13 +5,13 @@ class OrderModel extends OrderEntity {
   OrderModel({
     required int id,
     required ProductModel productModel,
-    required int tableNumber,
+    required int tableId,
     required String status,
     required DateTime createdAt,
   }) : super(
          id: id,
          product: productModel.toEntity(),
-         tableNumber: tableNumber,
+         tableId: tableId,
          status: status,
          createdAt: createdAt,
        );
@@ -20,7 +20,7 @@ class OrderModel extends OrderEntity {
     return OrderModel(
       id: json['id'] as int,
       productModel: ProductModel.fromJson(json['product'] as Map<String, dynamic>),
-      tableNumber: json['table_id'] as int,
+      tableId: json['table_id'] as int,
       status: json['status'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
     );

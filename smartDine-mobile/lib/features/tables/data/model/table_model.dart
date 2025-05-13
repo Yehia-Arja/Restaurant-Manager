@@ -3,16 +3,18 @@ import '../../domain/entities/table_entity.dart';
 class TableModel extends TableEntity {
   TableModel({
     required int id,
+    required int number,
     required bool isOccupied,
     required int floor,
     required double x,
     required double y,
-  }) : super(id: id, isOccupied: isOccupied, floor: floor, x: x, y: y);
+  }) : super(id: id, number: number, isOccupied: isOccupied, floor: floor, x: x, y: y);
 
   factory TableModel.fromJson(Map<String, dynamic> json) {
     final pos = json['position'] as Map<String, dynamic>;
     return TableModel(
       id: json['id'] as int,
+      number: json['number'] as int,
       isOccupied: (json['is_occupied'] as bool?) ?? false,
       floor: json['floor'] as int,
       x: (pos['x'] as num).toDouble(),
@@ -21,6 +23,6 @@ class TableModel extends TableEntity {
   }
 
   TableEntity toEntity() {
-    return TableEntity(id: id, isOccupied: isOccupied, floor: floor, x: x, y: y);
+    return TableEntity(id: id, number: number, isOccupied: isOccupied, floor: floor, x: x, y: y);
   }
 }

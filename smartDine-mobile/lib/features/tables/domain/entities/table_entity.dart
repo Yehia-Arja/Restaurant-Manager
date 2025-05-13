@@ -1,5 +1,6 @@
 class TableEntity {
   final int id;
+  final int number;
   final bool isOccupied;
   final int floor;
   final double x;
@@ -7,6 +8,7 @@ class TableEntity {
 
   TableEntity({
     required this.id,
+    required this.number,
     required this.isOccupied,
     required this.floor,
     required this.x,

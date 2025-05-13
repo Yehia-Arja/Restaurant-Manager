@@ -6,8 +6,6 @@ import 'package:mobile/features/orders/presentation/bloc/order_event.dart';
 import 'package:mobile/features/orders/presentation/bloc/order_state.dart';
 import 'package:mobile/features/tables/domain/usecases/get_tables_usecase.dart';
 
-// A button that handles fetching tables, showing a picker dialog,
-// and dispatching a place-order event.
 class ConfirmOrderButton extends StatelessWidget {
   final int productId;
 
@@ -34,62 +32,58 @@ class ConfirmOrderButton extends StatelessWidget {
                 state is OrderInProgress
                     ? null
                     : () async {
-                      // get selected restaurant (branch) id
                       final branchId = context.read<SelectedRestaurantCubit>().state;
                       if (branchId == null) return;
 
-                      // fetch tables for this branch
                       final tables = await context.read<GetTablesUseCase>()(branchId);
-                      int? selectedTable;
 
-                      // show table selector dialog
-                      final tableNumber = await showDialog<int>(
+                      int? selectedTableId;
+
+                      final result = await showDialog<int>(
                         context: context,
                         builder: (ctx) {
-                          final freeTables = tables.where((t) => !t.isOccupied).toList();
-                          return AlertDialog(
-                            title: const Text('Which table are you on?'),
-                            content: StatefulBuilder(
-                              builder: (context, setState) {
-                                return DropdownButton<int>(
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return AlertDialog(
+                                title: const Text('Which table are you on?'),
+                                content: DropdownButton<int>(
                                   isExpanded: true,
-                                  value: selectedTable,
+                                  value: selectedTableId,
                                   hint: const Text('Select table'),
                                   items:
-                                      freeTables.map((t) {
-                                        return DropdownMenuItem(
-                                          value: t.id,
-                                          child: Text('Table ${t.id} (Floor ${t.floor})'),
+                                      tables.map((t) {
+                                        return DropdownMenuItem<int>(
+                                          value: t.id, // Send ID
+                                          child: Text('Table ${t.number} (Floor ${t.floor})'),
                                         );
                                       }).toList(),
-                                  onChanged: (val) => setState(() => selectedTable = val),
-                                );
-                              },
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(ctx).pop(),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed:
-                                    selectedTable == null
-                                        ? null
-                                        : () => Navigator.of(ctx).pop(selectedTable),
-                                child: const Text('Confirm'),
-                              ),
-                            ],
+                                  onChanged: (val) => setState(() => selectedTableId = val),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(ctx).pop(),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed:
+                                        selectedTableId != null
+                                            ? () => Navigator.of(ctx).pop(selectedTableId)
+                                            : null,
+                                    child: const Text('Confirm'),
+                                  ),
+                                ],
+                              );
+                            },
                           );
                         },
                       );
 
-                      // dispatch order event
-                      if (tableNumber != null) {
+                      if (result != null) {
                         context.read<OrderBloc>().add(
                           PlaceOrderRequested(
                             productId: productId,
                             branchId: branchId,
-                            tableNumber: tableNumber,
+                            tableId: result,
                           ),
                         );
                       }

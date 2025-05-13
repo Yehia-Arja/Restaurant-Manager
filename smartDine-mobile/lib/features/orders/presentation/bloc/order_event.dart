@@ -10,14 +10,14 @@ abstract class OrderEvent extends Equatable {
 class PlaceOrderRequested extends OrderEvent {
   final int productId;
   final int branchId;
-  final int tableNumber;
+  final int tableId;
 
   const PlaceOrderRequested({
     required this.productId,
     required this.branchId,
-    required this.tableNumber,
+    required this.tableId,
   });
 
   @override
-  List<Object?> get props => [productId, branchId, tableNumber];
+  List<Object?> get props => [productId, branchId, tableId];
 }

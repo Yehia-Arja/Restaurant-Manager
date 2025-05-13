@@ -8,16 +8,19 @@ class OrdersRemote {
   Future<OrderModel> placeOrder({
     required int productId,
     required int branchId,
-    required int tableNumber,
+    required int tableId,
   }) async {
-    final response = await _dio.post(
-      'client/orders',
-      data: {
-        'product_id': productId,
-        'restaurant_location_id': branchId,
-        'table_number': tableNumber,
-      },
-    );
-    return OrderModel.fromJson(response.data['data'] as Map<String, dynamic>);
+    try {
+      final response = await _dio.post(
+        'common/orders',
+        data: {'product_id': productId, 'restaurant_location_id': branchId, 'table_id': tableId},
+      );
+      return OrderModel.fromJson(response.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      final message = e.response?.data['message'] as String? ?? e.message;
+      throw Exception('Failed to place order: $message');
+    } catch (e) {
+      throw Exception('Unexpected error placing order: $e');
+    }
   }
 }
