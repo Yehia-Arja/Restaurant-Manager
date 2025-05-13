@@ -3,6 +3,7 @@
 namespace App\Services\Common;
 
 use App\Models\Table;
+use Illuminate\Support\Collection;
 
 class TableService
 {
