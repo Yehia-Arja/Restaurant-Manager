@@ -40,6 +40,14 @@ import 'package:mobile/features/products/data/repositories/product_repository_im
 import 'package:mobile/features/products/domain/usecases/get_product_detail_usecase.dart';
 import 'package:mobile/features/products/presentation/widgets/product_detail_page.dart';
 
+// Tables & Orders
+import 'package:mobile/features/tables/data/datasource/tables_remote.dart';
+import 'package:mobile/features/tables/data/repositories/table_repository_impl.dart';
+import 'package:mobile/features/tables/domain/usecases/get_tables_usecase.dart';
+import 'package:mobile/features/orders/data/datasource/orders_remote.dart';
+import 'package:mobile/features/orders/data/repositories/order_repository_impl.dart';
+import 'package:mobile/features/orders/domain/usecases/place_order_usecase.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   final dio = DioService.dio;
@@ -70,15 +78,32 @@ void main() {
   final productRepo = ProductRepositoryImpl(productRemote);
   final getProductDetailUC = GetProductDetailUseCase(productRepo);
 
+  // Tables setup
+  final tablesRemote = TablesRemote(dio);
+  final tableRepo = TableRepositoryImpl(tablesRemote);
+  final getTablesUC = GetTablesUseCase(tableRepo);
+
+  // Orders setup
+  final ordersRemote = OrdersRemote(dio);
+  final orderRepo = OrderRepositoryImpl(ordersRemote);
+  final placeOrderUC = PlaceOrderUseCase(orderRepo);
+
   runApp(
     MultiRepositoryProvider(
       providers: [
+        // Auth
         RepositoryProvider.value(value: loginUseCase),
         RepositoryProvider.value(value: signupUseCase),
+        // RestaurantSelection & Favorites
         RepositoryProvider.value(value: getRestaurantsUC),
         RepositoryProvider.value(value: toggleFavoriteUC),
+        // Home
         RepositoryProvider.value(value: getHomeDataUC),
+        // Products
         RepositoryProvider.value(value: getProductDetailUC),
+        // Tables & Orders
+        RepositoryProvider.value(value: getTablesUC),
+        RepositoryProvider.value(value: placeOrderUC),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -88,6 +113,7 @@ void main() {
           BlocProvider(create: (_) => RestaurantSelectionBloc(getRestaurantsUC, toggleFavoriteUC)),
           // HomeBloc is provided inside HomePage
           // ProductDetailBloc is provided inside ProductDetailPage
+          // OrderBloc is provided inside ProductDetailPage
         ],
         child: const MyApp(),
       ),
