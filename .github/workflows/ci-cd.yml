@@ -8,36 +8,27 @@ on:
 
 env:
   PROJECT_DIR: smartDine-server
+  IMAGE_NAME: smartdine
+  IMAGE_TAG: latest
 
 jobs:
   build:
-    name: Build Docker Images
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install PHP & Composer
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2"
-          extensions: mbstring, xml, redis, pdo_mysql
-          tools: composer
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Install Laravel dependencies
+      - name: Build Docker image
         working-directory: ${{ env.PROJECT_DIR }}
-        run: composer install --no-interaction --optimize-autoloader
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
 
-      - name: Generate local .env
-        working-directory: ${{ env.PROJECT_DIR }}
-        run: |
-          cp .env.example .env
-          php artisan key:generate
-
-      - name: Build Docker Compose images
-        working-directory: ${{ env.PROJECT_DIR }}
-        run: docker compose build --parallel
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
   test:
     name: Run Laravel Tests
@@ -97,24 +88,19 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Install SSH Action
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.STAGING_HOST }}
-          username: ${{ secrets.STAGING_USERNAME }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
+          host: ${{ secrets.STAGING_SERVER }}
+          username: ubuntu
+          key: ${{ secrets.SSH_STAGING_PRIVATE_KEY }}
           port: 22
           script: |
-            cd ~/app/${{ env.PROJECT_DIR }}
-            docker-compose down
-            docker-compose pull
-            docker-compose up -d --build
-            # run migrations & clear cache
-            docker-compose exec -T laravel php artisan migrate --force
-            docker-compose exec -T laravel php artisan optimize:clear
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            docker stop smartdine || true && docker rm smartdine || true
+            docker run -d --name smartdine --env-file /app/.env -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            docker exec smartdine php artisan migrate --force
+            docker exec smartdine php artisan optimize:clear
 
   deploy-production:
     name: Deploy to Production
@@ -123,21 +109,16 @@ jobs:
     if: github.ref == 'refs/heads/production'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Install SSH Action
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.PRODUCTION_HOST }}
-          username: ${{ secrets.PRODUCTION_USERNAME }}
-          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          host: ${{ secrets.PRODUCTION_SERVER }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}
           port: 22
           script: |
-            cd ~/app/${{ env.PROJECT_DIR }}
-            docker-compose down
-            docker-compose pull
-            docker-compose up -d --build
-            # run migrations & clear cache
-            docker-compose exec -T laravel php artisan migrate --force
-            docker-compose exec -T laravel php artisan optimize:clear
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            docker stop smartdine || true && docker rm smartdine || true
+            docker run -d --name smartdine --env-file /app/.env -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            docker exec smartdine php artisan migrate --force
+            docker exec smartdine php artisan optimize:clear
