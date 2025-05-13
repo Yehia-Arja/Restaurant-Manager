@@ -6,11 +6,15 @@ class ProductRemote {
   final Dio _dio;
   ProductRemote(this._dio);
 
-  Future<List<Product>> fetchProducts(int branchId) async {
+  Future<List<Product>> fetchProducts(int branchId, String? searchQuery, int? categoryId) async {
     try {
       final response = await _dio.get(
         'common/products',
-        queryParameters: {'restaurant_location_id': branchId},
+        queryParameters: {
+          'restaurant_location_id': branchId,
+          if (searchQuery != null && searchQuery.isNotEmpty) 'search': searchQuery,
+          if (categoryId != null) 'category_id': categoryId,
+        },
       );
       final rawList =
           (response.data['data']['products'] as List<dynamic>).cast<Map<String, dynamic>>();
