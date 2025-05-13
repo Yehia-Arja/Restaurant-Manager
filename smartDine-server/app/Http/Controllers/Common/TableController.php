@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Common;
 
 use App\Http\Controllers\Controller;
+use App\Services\Common\TableService;
 use App\Http\Requests\Common\TableRequest;
 
 class TableController extends Controller
@@ -15,8 +16,8 @@ class TableController extends Controller
         try {
             $data = $request->validated();
 
-            $tables = TableService::list(
-                $data['branch_id'],
+            $tables = TableService::getTableList(
+                $data['restaurant_location_id'],
             );
 
             if ($tables->isEmpty()) {
@@ -25,7 +26,7 @@ class TableController extends Controller
 
             return $this->success(
                 'Tables fetched',
-                TableResource::collection($tables)
+                $tables
             );
 
         } catch (\Throwable $e) {

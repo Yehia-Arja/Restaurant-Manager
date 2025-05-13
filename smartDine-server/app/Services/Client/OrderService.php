@@ -28,7 +28,7 @@ class OrderService
     }
 
 
-    public static function listOwn(int $clientId, int $branchId): Collection
+    public static function listOwn(int $clientId, int $branchId)
     {
         return Order::with('product')
                     ->where('user_id', $clientId)
