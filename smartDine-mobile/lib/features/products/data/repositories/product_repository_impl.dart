@@ -7,8 +7,12 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(this._remote);
 
   @override
-  Future<List<Product>> fetchProducts({required int branchId}) {
-    return _remote.fetchProducts(branchId);
+  Future<List<Product>> fetchProducts({
+    required int branchId,
+    String? searchQuery,
+    int? categoryId,
+  }) {
+    return _remote.fetchProducts(branchId, searchQuery, categoryId);
   }
 
   @override
