@@ -18,19 +18,6 @@ class OrderController extends Controller
      */
     public function index(StaffOrderIndexRequest $request)
     {
-<<<<<<< HEAD
-        $data = $request->validated();
-
-        $orders = OrderService::listByTable(
-            $data['restaurant_location_id'],
-            $data['table_id']
-        );
-
-        return $this->success(
-            'Orders fetched',
-            OrderResource::collection($orders)
-        );
-=======
         try {
             $data = $request->validated();
 
@@ -47,7 +34,6 @@ class OrderController extends Controller
             return $this->error($e->getMessage(), 500);
         }
         
->>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
     }
 
     /**

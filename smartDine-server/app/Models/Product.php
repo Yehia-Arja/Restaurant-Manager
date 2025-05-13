@@ -4,11 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-<<<<<<< HEAD
-=======
 use Illuminate\Support\Facades\Storage;
 use App\Models\RestaurantLocation;
->>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
 
 class Product extends Model
 {
@@ -32,9 +29,6 @@ class Product extends Model
         'avg_rating',
         'rating_count',
     ];
-<<<<<<< HEAD
-}
-=======
 
     public function getImageUrlAttribute(): string
     {
@@ -64,4 +58,3 @@ class Product extends Model
         );
     }
 }
->>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d

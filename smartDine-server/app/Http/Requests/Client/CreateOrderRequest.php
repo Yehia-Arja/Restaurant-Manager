@@ -16,8 +16,7 @@ class CreateOrderRequest extends FormRequest
         return [
             'restaurant_location_id' => 'required|exists:restaurant_locations,id',
             'product_id'             => 'required|exists:products,id',
-            'table_id'               => 'required|exists:tables,id',
-            'status'                 => 'nullable|in:pending,completed,cancelled',
+            'table_number'               => 'required',
         ];
     }
 
@@ -28,8 +27,7 @@ class CreateOrderRequest extends FormRequest
             'restaurant_location_id.exists'   => 'Branch not found.',
             'product_id.required'             => 'Product is required.',
             'product_id.exists'               => 'Product not found.',
-            'table_id.required'               => 'Table is required.',
-            'table_id.exists'                 => 'Table not found.',
+            'table_number.required'          => 'Table number is required.',
         ];
     }
 }

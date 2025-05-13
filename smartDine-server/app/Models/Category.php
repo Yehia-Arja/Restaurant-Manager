@@ -2,16 +2,6 @@
 
 namespace App\Models;
 
-<<<<<<< HEAD
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class Category extends Model
-{
-    /** @use HasFactory<\Database\Factories\CategoryFactory> */
-    use HasFactory;
-}
-=======
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
@@ -44,4 +34,3 @@ class Category extends Model
         );
     }
 }
->>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d

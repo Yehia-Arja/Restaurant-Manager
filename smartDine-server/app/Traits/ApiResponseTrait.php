@@ -20,8 +20,6 @@ trait ApiResponseTrait
             'error' => $error,
         ], $code);
     }
-<<<<<<< HEAD
-=======
     public function paginatedResponse(string $message, $data, $paginator, int $code = 200)
     {
         return response()->json([
@@ -37,5 +35,4 @@ trait ApiResponseTrait
             ],
         ], $code);
     }
->>>>>>> 2b890721c062469001e41f7995fc9c4c496a783d
 }
