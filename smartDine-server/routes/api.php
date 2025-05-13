@@ -10,6 +10,7 @@ use App\Http\Controllers\Common\ProductController as CommonProductController;
 use App\Http\Controllers\Common\CategoryController as CommonCategoryController;
 use App\Http\Controllers\Common\RestaurantLocationController as CommonRestaurantLocationController;
 use App\Http\Controllers\Common\RecommendationController as CommonRecommendationController;
+use App\Http\Controllers\Common\TableController as CommonTableController;
 
 // Client
 use App\Http\Controllers\Client\FavoriteController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Client\FavoriteController;
 // Owner
 use App\Http\Controllers\Owner\ProductController as OwnerProductController;
 use App\Http\Controllers\Owner\CategoryController as OwnerCategoryController;
+use App\Http\Controllers\Owner\TableController as OwnerTableController;
 
 // Linking
 use App\Http\Controllers\ProductLocationController;
@@ -71,6 +73,11 @@ Route::group(["prefix" => "v0.1"], function () {
         Route::group(["prefix" => "favorites"], function () {
             Route::post("/", [FavoriteController::class, "toggle"]);
         });
+
+        // Tables (viewing by restaurant location)
+        Route::group(["prefix" => "tables"], function () {
+            Route::get("/", [CommonTableController::class, "index"]);
+        });
     });
 
     // Owner endpoints (authenticated)
@@ -97,6 +104,13 @@ Route::group(["prefix" => "v0.1"], function () {
 
             Route::post("/{category}/locations",            [CategoryLocationController::class, 'store']);
             Route::delete("/{category}/locations/{branch}", [CategoryLocationController::class, 'destroy']);
+        });
+
+        // Tables (owner CRUD)
+        Route::group(["prefix" => "tables"], function () {
+            Route::post("/",            [OwnerTableController::class, "store"]);
+            Route::put("/{tableId}",    [OwnerTableController::class, "update"]);
+            Route::delete("/{tableId}", [OwnerTableController::class, "destroy"]);
         });
     });
 
