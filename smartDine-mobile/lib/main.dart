@@ -28,11 +28,13 @@ import 'package:mobile/features/restaurant_selection/domain/usecases/toggle_favo
 import 'package:mobile/features/restaurant_selection/presentation/bloc/restaurant_selection_bloc.dart';
 import 'package:mobile/features/restaurant_selection/presentation/screens/restaurant_selection_screen.dart';
 
+// Main
+import 'package:mobile/features/main/presentation/screens/main_screen.dart';
+
 // Home
 import 'package:mobile/features/home/data/datasources/home_remote.dart';
 import 'package:mobile/features/home/data/repositories/home_repository_impl.dart';
 import 'package:mobile/features/home/domain/usecases/get_home_data_usecase.dart';
-import 'package:mobile/features/home/presentation/screens/home_screen.dart';
 
 // Products (Detail)
 import 'package:mobile/features/products/data/datasources/product_remote.dart';
@@ -135,7 +137,7 @@ class MyApp extends StatelessWidget {
         '/login': (_) => const LoginScreen(),
         '/signup': (_) => const SignupScreen(),
         '/restaurant_selection': (_) => const RestaurantSelectionScreen(),
-        '/home': (_) => const HomePage(),
+        '/home': (_) => const MainScreen(),
         '/product_detail': (ctx) {
           final args = ModalRoute.of(ctx)!.settings.arguments as int;
           return ProductDetailPage(productId: args);

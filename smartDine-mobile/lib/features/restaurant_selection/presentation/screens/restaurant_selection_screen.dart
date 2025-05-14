@@ -119,7 +119,7 @@ class _RestaurantSelectionScreenState extends State<RestaurantSelectionScreen> {
               restaurant: restaurant,
               onTap: () {
                 context.read<SelectedRestaurantCubit>().select(restaurant.id);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+                Navigator.pushReplacementNamed(context, '/home');
               },
               onFavoritePressed: () {
                 context.read<RestaurantSelectionBloc>().add(ToggleFavoriteRequested(restaurant.id));
