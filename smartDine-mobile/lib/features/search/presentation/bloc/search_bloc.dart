@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/features/categories/domain/usecases/list_categories_usecase.dart';
 import 'search_event.dart';
 import 'search_state.dart';
-import 'package:mobile/features/categories/domain/usecases/get_all_categories_usecase.dart';
-import 'package:mobile/features/products/domain/usecases/get_products_usecase.dart';
+import 'package:mobile/features/products/domain/usecases/list_products_usecase.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
-  final GetAllCategoriesUseCase _catsUc;
-  final GetProductsUseCase _prodsUc;
+  final ListCategoriesUseCase _catsUc;
+  final ListProductsUseCase _prodsUc;
 
   SearchBloc(this._catsUc, this._prodsUc) : super(const SearchState()) {
     on<InitSearch>(_onInit);
@@ -18,13 +18,14 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   Future<void> _onInit(InitSearch e, Emitter<SearchState> emit) async {
     emit(state.copyWith(loadingCats: true, loadingProds: true, error: null));
     try {
-      final cats = await _catsUc(); // no pagination
-      final prods = await _prodsUc(page: 1);
+      final cats = await _catsUc(e.branchId);
+      final prods = await _prodsUc(branchId: e.branchId, page: 1);
       emit(
         state.copyWith(
+          branchId: e.branchId,
           categories: cats,
-          products: prods.items,
-          hasMore: !prods.isLastPage,
+          products: prods.products,
+          totalPages: prods.totalPages,
           page: 1,
           loadingCats: false,
           loadingProds: false,
@@ -46,9 +47,18 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       ),
     );
     try {
-      final result = await _prodsUc(page: 1, categoryId: e.categoryId, query: state.query);
+      final result = await _prodsUc(
+        branchId: state.branchId!,
+        page: 1,
+        categoryId: e.categoryId,
+        searchQuery: state.query,
+      );
       emit(
-        state.copyWith(products: result.items, hasMore: !result.isLastPage, loadingProds: false),
+        state.copyWith(
+          products: result.products,
+          totalPages: result.totalPages,
+          loadingProds: false,
+        ),
       );
     } catch (ex) {
       emit(state.copyWith(error: ex.toString(), loadingProds: false));
@@ -58,9 +68,18 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   Future<void> _onQueryChanged(QueryChanged e, Emitter<SearchState> emit) async {
     emit(state.copyWith(query: e.query, products: [], page: 1, loadingProds: true, error: null));
     try {
-      final result = await _prodsUc(page: 1, categoryId: state.selectedCategory, query: e.query);
+      final result = await _prodsUc(
+        branchId: state.branchId!,
+        page: 1,
+        categoryId: state.selectedCategory,
+        searchQuery: e.query,
+      );
       emit(
-        state.copyWith(products: result.items, hasMore: !result.isLastPage, loadingProds: false),
+        state.copyWith(
+          products: result.products,
+          totalPages: result.totalPages,
+          loadingProds: false,
+        ),
       );
     } catch (ex) {
       emit(state.copyWith(error: ex.toString(), loadingProds: false));
@@ -68,20 +87,21 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   Future<void> _onFetchMore(FetchMoreProducts e, Emitter<SearchState> emit) async {
-    if (!state.hasMore || state.loadingProds) return;
+    if (state.loadingProds || state.page >= state.totalPages) return;
     emit(state.copyWith(loadingProds: true, error: null));
     try {
       final next = state.page + 1;
       final result = await _prodsUc(
+        branchId: state.branchId!,
         page: next,
         categoryId: state.selectedCategory,
-        query: state.query,
+        searchQuery: state.query,
       );
       emit(
         state.copyWith(
-          products: [...state.products, ...result.items],
+          products: [...state.products, ...result.products],
           page: next,
-          hasMore: !result.isLastPage,
+          totalPages: result.totalPages,
           loadingProds: false,
         ),
       );
