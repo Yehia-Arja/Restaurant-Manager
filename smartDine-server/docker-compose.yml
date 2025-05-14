@@ -1,49 +1,49 @@
 version: '3.8'
 
 services:
-  laravel:
-    image: yehiaarja/smartdine:latest
-    environment:
-      - LARAVEL_DATABASE_HOST=mysql_db
-      - LARAVEL_DATABASE_NAME=restaurant_db
-      - LARAVEL_DATABASE_USER=root
-      - LARAVEL_DATABASE_PASSWORD=1234
-      - LARAVEL_DATABASE_PORT_NUMBER=3306
-      - CACHE_DRIVER=redis
-      - REDIS_HOST=redis_cache
-      - REDIS_PASSWORD=redispass
-      - REDIS_PORT=6379
-      - SESSION_DRIVER=redis
-    restart: always
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
     ports:
-      - 80:8000
+      - 8015:8000
     depends_on:
       - mysql_db
       - redis_cache
-    command: /app/shellScript.sh
+    volumes:
+      - .:/app
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    restart: always
 
   mysql_db:
     image: mysql:8.0
     environment:
       - MYSQL_ROOT_PASSWORD=1234
       - MYSQL_DATABASE=restaurant_db
+      - MYSQL_USER=laravel_user
+      - MYSQL_PASSWORD=laravel_pass
+      - MYSQL_ROOT_HOST=%
     ports:
-      - 3380:3306
+      - 3399:3306
     volumes:
       - db-data:/var/lib/mysql
 
   redis_cache:
     image: redis:7-alpine
-    environment:
-    - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - 6379:6379
+    restart: always
+    volumes:
+      - redis-data:/data
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
       - PMA_HOST=mysql_db
-      - PMA_PORT=3306
+      - PMA_USER=laravel_user
+      - PMA_PASSWORD=laravel_pass
     ports:
       - 8082:80
     depends_on:
@@ -51,3 +51,4 @@ services:
 
 volumes:
   db-data:
+  redis-data:
