@@ -1,4 +1,5 @@
 import '../../domain/entities/product.dart';
+import '../../domain/entities/paginated_products.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../datasources/product_remote.dart';
 
@@ -7,12 +8,20 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(this._remote);
 
   @override
-  Future<List<Product>> fetchProducts({
-    required int branchId,
+  Future<PaginatedProducts> getProducts({
     String? searchQuery,
     int? categoryId,
+    bool favoritesOnly = false,
+    int page = 1,
+    int pageSize = 10,
   }) {
-    return _remote.fetchProducts(branchId, searchQuery, categoryId);
+    return _remote.fetchProducts(
+      searchQuery: searchQuery,
+      categoryId: categoryId,
+      favoritesOnly: favoritesOnly,
+      page: page,
+      pageSize: pageSize,
+    );
   }
 
   @override
