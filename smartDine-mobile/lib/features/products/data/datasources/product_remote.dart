@@ -1,20 +1,44 @@
 import 'package:dio/dio.dart';
 import '../../domain/entities/product.dart';
+import '../../domain/repositories/product_repository.dart';
 import '../models/product_model.dart';
 
 class ProductRemote {
   final Dio _dio;
   ProductRemote(this._dio);
 
-  Future<List<Product>> fetchProducts(int branchId) async {
+  Future<PaginatedProducts> fetchProducts({
+    required int branchId,
+    String? searchQuery,
+    int? categoryId,
+    bool favoritesOnly = false,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
     try {
       final response = await _dio.get(
         'common/products',
-        queryParameters: {'restaurant_location_id': branchId},
+        queryParameters: {
+          'restaurant_location_id': branchId,
+          'page': page,
+          'per_page': pageSize,
+          if (searchQuery != null && searchQuery.isNotEmpty) 'search': searchQuery,
+          if (categoryId != null) 'category_id': categoryId,
+          if (favoritesOnly) 'favorites': true,
+        },
       );
-      final rawList =
-          (response.data['data']['products'] as List<dynamic>).cast<Map<String, dynamic>>();
-      return rawList.map((json) => ProductModel.fromJson(json).toEntity()).toList();
+
+      final data = response.data['data'];
+      final List<dynamic> rawList = data['products'];
+      final products =
+          rawList
+              .cast<Map<String, dynamic>>()
+              .map((json) => ProductModel.fromJson(json).toEntity())
+              .toList();
+
+      final totalPages = data['last_page'] as int? ?? 1;
+
+      return PaginatedProducts(products: products, totalPages: totalPages);
     } on DioException catch (e) {
       final message = e.response?.data['message'] as String? ?? e.message;
       throw Exception('Failed to fetch products: $message');

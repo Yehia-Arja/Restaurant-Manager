@@ -51,7 +51,7 @@ class ProductCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                fontSize: 12,
+                                fontSize: 14,
                                 color: AppColors.secondary,
                               ),
                             ),
@@ -83,7 +83,7 @@ class ProductCard extends StatelessWidget {
                           Text(
                             product.timeToDeliver,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontSize: 10,
+                              fontSize: 12,
                               color: AppColors.placeholder,
                             ),
                           ),
@@ -91,7 +91,7 @@ class ProductCard extends StatelessWidget {
                           Text(
                             '•',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontSize: 10,
+                              fontSize: 12,
                               color: AppColors.placeholder,
                             ),
                           ),
@@ -99,7 +99,7 @@ class ProductCard extends StatelessWidget {
                           Text(
                             product.price,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontSize: 10,
+                              fontSize: 12,
                               color: AppColors.placeholder,
                             ),
                           ),
