@@ -14,11 +14,21 @@ class ProductLoading extends ProductState {}
 
 class ProductLoaded extends ProductState {
   final List<Product> products;
+  final int currentPage;
+  final int totalPages;
+  final bool isFetchingMore;
 
-  const ProductLoaded(this.products);
+  const ProductLoaded({
+    required this.products,
+    required this.currentPage,
+    required this.totalPages,
+    this.isFetchingMore = false,
+  });
+
+  bool get hasMore => currentPage < totalPages;
 
   @override
-  List<Object?> get props => [products];
+  List<Object?> get props => [products, currentPage, totalPages, isFetchingMore];
 }
 
 class ProductError extends ProductState {

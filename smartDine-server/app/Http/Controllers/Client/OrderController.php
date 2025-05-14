@@ -39,7 +39,8 @@ class OrderController extends Controller
             $data['user_id'] = Auth::id();
 
             $order = OrderService::place($data);
-
+            $order->load('product');
+            
             return $this->success(
                 'Order placed',
                 new OrderResource($order),
