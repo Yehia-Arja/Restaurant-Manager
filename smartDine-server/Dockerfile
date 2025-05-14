@@ -4,6 +4,8 @@ COPY . /app
 
 WORKDIR /app
 
+RUN install_packages autoconf
+
 RUN pecl install redis \
     && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini
 
