@@ -12,13 +12,13 @@ import 'package:mobile/features/products/presentation/widgets/product_card.dart'
 import 'package:mobile/shared/widgets/bottom_navigation_bar.dart';
 import 'package:mobile/features/home/domain/usecases/get_home_data_usecase.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   int _navIndex = 0;
 
   @override
