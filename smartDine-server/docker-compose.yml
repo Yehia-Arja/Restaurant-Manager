@@ -35,8 +35,8 @@ services:
   redis_cache:
     image: redis:7-alpine
     environment:
-      REDIS_PASSWORD: "redispass"
-      ALLOW_EMPTY_PASSWORD: "no"
+    - REDIS_PASSWORD=redispass
+    - ALLOW_EMPTY_PASSWORD=no
     ports:
       - 6379:6379
 
