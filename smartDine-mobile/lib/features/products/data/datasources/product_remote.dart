@@ -8,6 +8,7 @@ class ProductRemote {
   ProductRemote(this._dio);
 
   Future<PaginatedProducts> fetchProducts({
+    required int branchId,
     String? searchQuery,
     int? categoryId,
     bool favoritesOnly = false,
@@ -18,6 +19,7 @@ class ProductRemote {
       final response = await _dio.get(
         'common/products',
         queryParameters: {
+          'restaurant_location_id': branchId,
           'page': page,
           'per_page': pageSize,
           if (searchQuery != null && searchQuery.isNotEmpty) 'search': searchQuery,
