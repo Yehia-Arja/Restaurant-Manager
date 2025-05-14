@@ -2,11 +2,12 @@ import '../entities/product.dart';
 
 abstract class ProductRepository {
   Future<PaginatedProducts> getProducts({
-    int? categoryId,
+    required int branchId,
     String? searchQuery,
-    bool favoritesOnly = false,
-    int page = 1,
-    int pageSize = 10,
+    int? categoryId,
+    bool favoritesOnly,
+    int page,
+    int pageSize,
   });
 
   Future<Product> fetchById(int productId);
