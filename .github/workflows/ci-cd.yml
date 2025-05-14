@@ -31,15 +31,15 @@ jobs:
 
       - name: Wait for DB to be ready
         run: |
-          until docker exec smartdine_mysql mysql -uroot -proot -e "select 1"; do
+          until docker exec smartdine-server-mysql_db-1 mysql -uroot -p1234 -e "select 1"; do
             echo "Waiting for DB..."; sleep 2;
           done
 
       - name: Run migrations
-        run: docker compose exec smartdine_laravel_app php artisan migrate --force
+        run: docker exec smartdine-server-laravel-1 php artisan migrate --force
 
       - name: Run tests
-        run: docker compose exec smartdine_laravel_app php artisan test
+        run: docker exec smartdine-server-laravel-1 php artisan test
 
       - name: Push Laravel Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/smartdine:latest
@@ -47,6 +47,7 @@ jobs:
   Copy-docker-compose-to-EC2:
     needs: Build-Test-Push
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -60,19 +61,41 @@ jobs:
           source: "smartDine-server/docker-compose.yml"
           target: "/home/ubuntu"
 
-  Deploy-Laravel-Docker:
+  Deploy-Staging:
     needs: Copy-docker-compose-to-EC2
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: SSH and Deploy to EC2
+      - name: SSH and Deploy to Staging
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.STAGING_SERVER }}
           username: ubuntu
           key: ${{ secrets.SSH_STAGING_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/smartDine-server
+            sudo docker-compose down
+            sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/smartdine:latest || true
+            sudo docker-compose pull
+            sudo docker-compose up -d
+
+  Deploy-Production:
+    needs: Build-Test-Push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/production'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: SSH and Deploy to Production
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PRODUCTION_SERVER }}
+          username: ubuntu
+          key: ${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/smartDine-server
             sudo docker-compose down
