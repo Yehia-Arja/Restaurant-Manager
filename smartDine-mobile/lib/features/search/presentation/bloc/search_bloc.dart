@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/features/categories/domain/usecases/list_categories_usecase.dart';
 import 'search_event.dart';
 import 'search_state.dart';
+import 'package:mobile/features/categories/domain/usecases/list_categories_usecase.dart';
 import 'package:mobile/features/products/domain/usecases/list_products_usecase.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
@@ -88,19 +88,20 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   Future<void> _onFetchMore(FetchMoreProducts e, Emitter<SearchState> emit) async {
     if (state.loadingProds || state.page >= state.totalPages) return;
+
     emit(state.copyWith(loadingProds: true, error: null));
     try {
-      final next = state.page + 1;
+      final nextPage = state.page + 1;
       final result = await _prodsUc(
         branchId: state.branchId!,
-        page: next,
+        page: nextPage,
         categoryId: state.selectedCategory,
         searchQuery: state.query,
       );
       emit(
         state.copyWith(
           products: [...state.products, ...result.products],
-          page: next,
+          page: nextPage,
           totalPages: result.totalPages,
           loadingProds: false,
         ),
