@@ -17,7 +17,7 @@ class OrderResource extends JsonResource
             'product_id'             => $this->product_id,
             'table_id'               => $this->table_id,
             'restaurant_location_id' => $this->restaurant_location_id,
-            'status'                 => $this->status,
+            'status'                 => 'pending',
             'created_at'             => $this->created_at->toDateTimeString(),
 
             'product'                => new ProductResource($this->whenLoaded('product')),

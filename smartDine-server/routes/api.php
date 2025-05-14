@@ -13,6 +13,7 @@ use App\Http\Controllers\Common\RecommendationController as CommonRecommendation
 use App\Http\Controllers\Common\TableController as CommonTableController;
 
 // Client
+use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\FavoriteController;
 
 // Owner
@@ -50,6 +51,13 @@ Route::group(["prefix" => "v0.1"], function () {
         Route::group(["prefix" => "categories"], function () {
             Route::get("/",     [CommonCategoryController::class, "index"]);
             Route::get("/{id}", [CommonCategoryController::class, "show"]);
+        });
+
+        // Orders
+        Route::group(["prefix" => "orders"], function () {
+            Route::post("/", [ClientOrderController::class, "store"]);
+            Route::get("/",  [ClientOrderController::class, "index"]);
+            Route::get("/{id}", [ClientOrderController::class, "show"]);
         });
 
         // Restaurants

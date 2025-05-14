@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('chairs', function (Blueprint $table) {
             $table->id();
-            $table->json('position');
+            $table->boolean('is_occupied')->default(false);
             $table->timestamps();
 
             // Foreign keys
