@@ -1,4 +1,3 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/services/dio_service.dart';
@@ -40,7 +39,13 @@ import 'package:mobile/features/home/domain/usecases/get_home_data_usecase.dart'
 import 'package:mobile/features/products/data/datasources/product_remote.dart';
 import 'package:mobile/features/products/data/repositories/product_repository_impl.dart';
 import 'package:mobile/features/products/domain/usecases/get_product_detail_usecase.dart';
+import 'package:mobile/features/products/domain/usecases/list_products_usecase.dart';
 import 'package:mobile/features/products/presentation/widgets/product_detail_page.dart';
+
+// Categories
+import 'package:mobile/features/categories/data/datasources/category_remote.dart';
+import 'package:mobile/features/categories/data/repositories/category_repository_impl.dart';
+import 'package:mobile/features/categories/domain/usecases/list_categories_usecase.dart';
 
 // Tables & Orders
 import 'package:mobile/features/tables/data/datasource/tables_remote.dart';
@@ -54,38 +59,44 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   final dio = DioService.dio;
 
-  // Auth setup
+  // Auth
   final authRemote = AuthRemote(dio);
   final authRepo = AuthRepositoryImpl(authRemote);
   final loginUseCase = LoginUseCase(authRepo);
   final signupUseCase = SignupUseCase(authRepo);
 
-  // RestaurantSelection setup
+  // Restaurant selection
   final restaurantRemote = RestaurantSelectionRemote(dio);
   final restaurantRepo = RestaurantSelectionRepositoryImpl(restaurantRemote);
   final getRestaurantsUC = GetRestaurantsUseCase(restaurantRepo);
 
-  // Favorite setup
+  // Favorites
   final favoriteRemote = FavoriteRemote(dio);
   final favoriteRepo = FavoriteRepositoryImpl(favoriteRemote);
   final toggleFavoriteUC = ToggleFavoriteUseCase(favoriteRepo);
 
-  // Home setup
+  // Home
   final homeRemote = HomeRemote(dio);
   final homeRepo = HomeRepositoryImpl(homeRemote);
   final getHomeDataUC = GetHomeDataUseCase(homeRepo);
 
-  // Products setup
+  // Products
   final productRemote = ProductRemote(dio);
   final productRepo = ProductRepositoryImpl(productRemote);
   final getProductDetailUC = GetProductDetailUseCase(productRepo);
+  final listProductsUC = ListProductsUseCase(productRepo);
 
-  // Tables setup
+  // Categories
+  final categoryRemote = CategoryRemote(dio);
+  final categoryRepo = CategoryRepositoryImpl(categoryRemote);
+  final listCategoriesUC = ListCategoriesUseCase(categoryRepo);
+
+  // Tables
   final tablesRemote = TablesRemote(dio);
   final tableRepo = TableRepositoryImpl(tablesRemote);
   final getTablesUC = GetTablesUseCase(tableRepo);
 
-  // Orders setup
+  // Orders
   final ordersRemote = OrdersRemote(dio);
   final orderRepo = OrderRepositoryImpl(ordersRemote);
   final placeOrderUC = PlaceOrderUseCase(orderRepo);
@@ -96,13 +107,21 @@ void main() {
         // Auth
         RepositoryProvider.value(value: loginUseCase),
         RepositoryProvider.value(value: signupUseCase),
-        // RestaurantSelection & Favorites
+
+        // Restaurant & Favorites
         RepositoryProvider.value(value: getRestaurantsUC),
         RepositoryProvider.value(value: toggleFavoriteUC),
+
         // Home
         RepositoryProvider.value(value: getHomeDataUC),
+
         // Products
         RepositoryProvider.value(value: getProductDetailUC),
+        RepositoryProvider.value(value: listProductsUC),
+
+        // Categories
+        RepositoryProvider.value(value: listCategoriesUC),
+
         // Tables & Orders
         RepositoryProvider.value(value: getTablesUC),
         RepositoryProvider.value(value: placeOrderUC),
@@ -113,9 +132,6 @@ void main() {
           BlocProvider(create: (_) => SelectedBranchCubit()),
           BlocProvider(create: (_) => AuthBloc(loginUseCase, signupUseCase)),
           BlocProvider(create: (_) => RestaurantSelectionBloc(getRestaurantsUC, toggleFavoriteUC)),
-          // HomeBloc is provided inside HomePage
-          // ProductDetailBloc is provided inside ProductDetailPage
-          // OrderBloc is provided inside ProductDetailPage
         ],
         child: const MyApp(),
       ),

@@ -27,6 +27,8 @@ class SearchState extends Equatable {
     this.error,
   });
 
+  bool get hasMore => page < totalPages;
+
   SearchState copyWith({
     int? branchId,
     List<Category>? categories,
