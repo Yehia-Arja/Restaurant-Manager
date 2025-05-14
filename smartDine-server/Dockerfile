@@ -2,14 +2,15 @@ FROM bitnami/laravel:latest
 
 USER root
 
-# Install build tools needed for PECL Redis
+# Install required build tools to compile Redis via PECL
 RUN install_packages \
     autoconf \
+    build-essential \
+    pkg-config \
     gcc \
-    make \
-    pkg-config
+    make
 
-# Install PhpRedis extension
+# Install PhpRedis via PECL
 RUN pecl install redis \
     && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini
 
