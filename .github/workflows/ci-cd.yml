@@ -1,4 +1,4 @@
-name: CI/CD
+name: Push and Run
 
 on:
   push:
@@ -47,6 +47,7 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+
       redis:
         image: redis:7-alpine
         ports: ["6379:6379"]
@@ -64,22 +65,24 @@ jobs:
 
       - name: Install Laravel dependencies
         working-directory: ${{ env.PROJECT_DIR }}
-        run: composer install --no-interaction --optimize-autoloader
+        run: composer install --no-interaction --prefer-dist
 
       - name: Prepare testing environment
         working-directory: ${{ env.PROJECT_DIR }}
         run: |
           cp .env.example .env.testing
+          php artisan key:generate --env=testing
+          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env.testing
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=test_db/' .env.testing
           sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env.testing
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env.testing
-          php artisan key:generate --env=testing
+          php artisan config:clear --env=testing
 
-      - name: Migrate & run tests
+      - name: Run migrations & tests
         working-directory: ${{ env.PROJECT_DIR }}
         run: |
           php artisan migrate:fresh --env=testing --force
-          php artisan test
+          php artisan test --env=testing
 
   deploy-staging:
     name: Deploy to Staging
@@ -88,7 +91,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Install SSH Action
+      - name: Deploy to staging server via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.STAGING_SERVER }}
@@ -98,7 +101,7 @@ jobs:
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             docker stop smartdine || true && docker rm smartdine || true
-            docker run -d --name smartdine --env-file /app/.env -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            docker run -d --name smartdine --env-file /app/.env -p 80:8000 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             docker exec smartdine php artisan migrate --force
             docker exec smartdine php artisan optimize:clear
 
@@ -109,7 +112,7 @@ jobs:
     if: github.ref == 'refs/heads/production'
 
     steps:
-      - name: Install SSH Action
+      - name: Deploy to production server via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PRODUCTION_SERVER }}
@@ -119,6 +122,6 @@ jobs:
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             docker stop smartdine || true && docker rm smartdine || true
-            docker run -d --name smartdine --env-file /app/.env -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            docker run -d --name smartdine --env-file /app/.env -p 80:8000 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             docker exec smartdine php artisan migrate --force
             docker exec smartdine php artisan optimize:clear
