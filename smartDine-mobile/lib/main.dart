@@ -32,7 +32,7 @@ import 'package:mobile/features/restaurant_selection/presentation/screens/restau
 import 'package:mobile/features/home/data/datasources/home_remote.dart';
 import 'package:mobile/features/home/data/repositories/home_repository_impl.dart';
 import 'package:mobile/features/home/domain/usecases/get_home_data_usecase.dart';
-import 'package:mobile/features/home/presentation/screens/home_page.dart';
+import 'package:mobile/features/home/presentation/screens/home_screen.dart';
 
 // Products (Detail)
 import 'package:mobile/features/products/data/datasources/product_remote.dart';
