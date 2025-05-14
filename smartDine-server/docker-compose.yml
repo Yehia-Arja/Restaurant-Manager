@@ -11,7 +11,6 @@ services:
       - LARAVEL_DATABASE_PORT_NUMBER=3306
       - CACHE_DRIVER=redis
       - REDIS_HOST=redis_cache
-      - REDIS_PASSWORD=redispass
       - REDIS_PORT=6379
       - SESSION_DRIVER=redis
     restart: always
@@ -28,7 +27,7 @@ services:
       - MYSQL_ROOT_PASSWORD=1234
       - MYSQL_DATABASE=restaurant_db
     ports:
-      - 3380:3306
+      - 3390:3306
     volumes:
       - db-data:/var/lib/mysql
 

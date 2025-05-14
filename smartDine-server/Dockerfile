@@ -16,6 +16,7 @@ RUN pecl install redis \
 
 
 COPY . /app
+RUN rm -f .env && cp .env.example .env
 
 WORKDIR /app
 
