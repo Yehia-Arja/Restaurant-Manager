@@ -2,36 +2,26 @@ FROM bitnami/laravel:latest
 
 USER root
 
-# Install required build tools to compile PhpRedis via PECL
+# Install PhpRedis
 RUN install_packages \
     autoconf \
     build-essential \
     pkg-config \
     gcc \
-    make
-
-# Install PhpRedis extension
-RUN pecl install redis \
+    make \
+    && pecl install redis \
     && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini
 
-
+# Copy project files
 COPY . /app
-
 WORKDIR /app
 
-
+# Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist
 
-# Fix permissions for storage and cache
+# Fix permissions for Laravel
 RUN mkdir -p storage/logs bootstrap/cache \
     && chown -R 1001:1001 storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Make the entry script executable
-RUN chmod +x /app/shellScript.sh
-
-# Drop to non-root user (Bitnami default)
 USER 1001
-
-# Launch Laravel
-CMD ["/app/shellScript.sh"]
