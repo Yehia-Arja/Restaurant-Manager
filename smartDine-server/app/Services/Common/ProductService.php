@@ -4,6 +4,7 @@ namespace App\Services\Common;
 
 use App\Models\Product;
 use Illuminate\Support\Collection;
+use App\Models\Category;
 
 class ProductService
 {
@@ -12,49 +13,38 @@ class ProductService
      * Uses the 'locations' relation (morph-pivot) to filter by branch and load override pivots.
      */
     public static function list(
-        ?int $restaurantLocationId = null,
-        ?int $restaurantId        = null,
-        ?int $categoryId          = null,
-        ?string $search           = null
+        ?int $branchId = null,
+        ?int $restaurantId = null,
+        ?int $userId = null,
+        bool $favoritesOnly = false
     ) {
-        $query = Product::query();
-
-        // Filter by branch and eager-load pivot overrides
-        if ($restaurantLocationId) {
-            $query->whereHas('locations', function ($q) use ($restaurantLocationId) {
-                $q->where('restaurant_location_id', $restaurantLocationId);
-            });
-            $query->with(['locations' => function ($q) use ($restaurantLocationId) {
-                $q->where('restaurant_location_id', $restaurantLocationId)
-                  ->withPivot(['override_price', 'override_description']);
-            }]);
+        $q = Category::query();
+    
+        if ($branchId) {
+            $q->select('categories.*')
+              ->join('locationables as loc', function ($join) use ($branchId) {
+                  $join->on('loc.locationable_id', '=', 'categories.id')
+                       ->where('loc.locationable_type', 'Category')
+                       ->where('loc.restaurant_location_id', $branchId);
+              });
+        } elseif ($restaurantId) {
+            $q->where('restaurant_id', $restaurantId);
         }
-        // Otherwise, filter by restaurant
-        elseif ($restaurantId) {
-            $query->where('restaurant_id', $restaurantId);
-        }
-
-        // Category filter
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
-        }
-
-        // Search by name, description, or tags
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('products.name', 'like', "%{$search}%")
-                  ->orWhere('products.description', 'like', "%{$search}%")
-                  ->orWhereIn('products.id', function ($inner) use ($search) {
-                      $inner->select('product_id')
-                            ->from('product_tags')
-                            ->join('tags', 'tags.id', '=', 'product_tags.tag_id')
-                            ->where('tags.name', 'like', "%{$search}%");
-                  });
+    
+        if ($favoritesOnly && $userId) {
+            $q->whereIn('id', function ($sub) use ($userId) {
+                $sub->select('favoritable_id')
+                    ->from('favorites')
+                    ->where('favoritable_type', Category::class)
+                    ->where('user_id', $userId);
             });
         }
-
-        return $query->get();
+    
+        return $q->get();
     }
+    /**
+     * Fetch a single product by its ID, including its locations and override pivots.
+     */    
 
     public static function getById(int $id): Product
     {
