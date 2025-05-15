@@ -1,7 +1,6 @@
 version: '3.8'
-
 services:
-  server:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,12 +8,20 @@ services:
       - .env
     ports:
       - 8015:8000
+      - 6001:6001
     depends_on:
       - mysql_db
       - redis_cache
     volumes:
       - .:/app
-    command: php artisan serve --host=0.0.0.0 --port=8000
+    restart: always
+
+  redis_cache:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
     restart: always
 
   mysql_db:
@@ -30,14 +37,6 @@ services:
     volumes:
       - db-data:/var/lib/mysql
 
-  redis_cache:
-    image: redis:7-alpine
-    ports:
-      - 6379:6379
-    restart: always
-    volumes:
-      - redis-data:/data
-
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
@@ -48,6 +47,24 @@ services:
       - 8082:80
     depends_on:
       - mysql_db
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - app
+      - redis_cache
+    command: >
+      sh -c "
+        php artisan websockets:serve --host=0.0.0.0 --port=6001 &
+        php artisan queue:work --sleep=3 --tries=3
+      "
+    restart: always
 
 volumes:
   db-data:

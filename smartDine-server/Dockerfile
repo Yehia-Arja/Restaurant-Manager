@@ -37,5 +37,5 @@ RUN mkdir -p storage/logs bootstrap/cache \
 
 USER 1001
 
-# Default command (you can override in compose)
+# Default command
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
