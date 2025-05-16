@@ -51,10 +51,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Confirm SSH key presence
-        run: |
-          echo "${{ secrets.STAGING_EC2_KEY }}" | wc -l
-
       - name: Copy docker-compose.yml to EC2 (Staging)
         uses: appleboy/scp-action@v1
         with:
