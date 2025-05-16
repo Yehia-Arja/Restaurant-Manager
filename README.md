@@ -5,11 +5,10 @@
 <!-- project overview -->
 <img src="./readme/title2.svg"/>
 
-> **SmartDine** brings your restaurant brand to life across every branch, screen, and interaction.  
-> Whether you're running one location or fifty, it transforms the chaos of operations into a connected, delightful experience.  
-> Clients enjoy smoother ordering, owners stay in control, and admins manage it all from the top.  
-> 
-> It’s fast. It’s smart. And it’s built for restaurants ready to scale without losing their soul.
+> **SmartDine** is your restaurant’s secret weapon.  
+> It’s not just about menus and orders — it’s about making every branch, every client, and every owner feel like they’re part of something seamless and smart.  
+> Whether you're running one location or fifty, SmartDine gives you a command center to manage it all effortlessly.  
+> Real-time insights, AR-powered previews, AI-based combos, and client-facing assistants — it's not a system, it's your digital restaurant empire.
 
 <br><br>
 
@@ -18,13 +17,16 @@
 
 ### Architecture Overview
 
-The client experience runs on Flutter.  
-Owners and admins manage everything through a responsive React dashboard.  
-Backend APIs are powered by Laravel, with Redis and MySQL under the hood.  
-Express with Socket.IO handles live communication.  
-Everything runs in isolated containers, orchestrated via Docker Compose and deployed using GitHub Actions on EC2.
+- **Client App**: Built in Flutter for a fast, native experience
+- **Web Dashboard**: React-powered control panel for owners and admins
+- **API Layer**: Laravel handles authentication, business logic, and DB interaction
+- **Real-Time**: Express + Socket.IO for WebSocket-powered updates
+- **Infrastructure**: Dockerized services, deployed via GitHub Actions to AWS EC2
+- **Caching & Queues**: Redis is used across the stack for performance and task management
 
-<img src="./readme/erd.svg">
+#### Database Diagram – Restaurant-Manager
+
+<img src="./readme/erd.svg"/>
 
 <br><br>
 
@@ -33,13 +35,13 @@ Everything runs in isolated containers, orchestrated via Docker Compose and depl
 
 ### What Makes SmartDine Special
 
-AI suggests full combo meals tailored to each user’s taste and order history  
-AR menu preview shows clients how their food looks before they order  
-Live seat tracking from smart chair sensors helps users avoid the wait  
-In-app assistant answers questions and guides new users through the menu  
-Branch-specific overrides let owners fine-tune prices and availability  
-Real-time updates keep clients informed instantly  
-Every role sees exactly what they need: admin, owner, or client
+- AI-generated meal combos tailored to each user’s preferences
+- Augmented reality dish preview before ordering
+- Smart chair sensors show real-time seat availability
+- In-app assistant that guides users and answers menu questions
+- Branch-level control for price, availability, and product descriptions
+- Real-time updates pushed to users instantly through WebSockets
+- Three distinct role-based views: admin, owner, and client
 
 <br><br>
 
@@ -48,19 +50,19 @@ Every role sees exactly what they need: admin, owner, or client
 
 ### Admin Control Panel
 
-Register new restaurants and assign ownership  
-View and audit any restaurant or product  
-Moderate reviews and manage platform data  
-Track global performance and metrics across all branches  
-Control feature flags, cache, queues, and system settings  
-Admin overrides are tracked and limited to safeguard owner control
+- Register new restaurants and assign ownership
+- Audit restaurant menus, data, and performance
+- Moderate public reviews with platform-level visibility
+- Track analytics across all branches
+- Manage system-level settings like feature flags, cache, and background jobs
+- Override content where necessary — always with audit tracking
 
 <br><br>
 
 <!-- Demo -->
 <img src="./readme/title5.svg"/>
 
-> Demo animations are coming soon. Expect short, sharp previews that show off the experience.
+> Demo animations (5s or less) are being finalized. Coming soon.
 
 ### User Screens (Mobile)
 
@@ -81,11 +83,11 @@ Admin overrides are tracked and limited to safeguard owner control
 
 ### Development Flow
 
-Services follow modular architecture for maintainability and clarity  
-Validation logic is handled cleanly using Laravel FormRequests and DTOs  
-Testing is integrated across backend, mobile, and APIs  
-AI logic and Redis caching are tested in isolation with fakes  
-Formatters and linters ensure consistency across every commit
+- Modular folder structure with feature-based separation
+- FormRequests and DTOs for input validation and transformation
+- PHPUnit, Flutter Test, and Postman used across layers
+- AI services and Redis caching are unit-tested in isolation
+- Pint, Dart Format, and ESLint maintain code quality on every commit
 
 <br><br>
 
@@ -94,12 +96,12 @@ Formatters and linters ensure consistency across every commit
 
 ### Deployment Pipeline
 
-Every component is containerized and built through CI  
-GitHub Actions automates testing, builds, and remote deployment  
-The platform runs on EC2 with a simple `docker-compose` process  
-Public API endpoint: `https://api.smartdine.app:8010`  
-Health check route: `GET /v1/health` → `{ "status": "ok" }`  
-Postman file: `/docs/SmartDine.postman_collection.json`
+- Each service (Laravel, React, Express, Flutter) is containerized with Docker
+- GitHub Actions handles testing, building, and deployment
+- Deployed to AWS EC2 with persistent volume binding and `.env` configs
+- Public API: `https://api.smartdine.app:8010`
+- Health Check: `GET /v1/health` → `{ "status": "ok" }`
+- Postman Collection: `/docs/SmartDine.postman_collection.json`
 
 | Auth API                         | Order API                         | AI API                            |
 | -------------------------------- | ---------------------------------- | --------------------------------- |
@@ -107,7 +109,5 @@ Postman file: `/docs/SmartDine.postman_collection.json`
 
 <br><br>
 
-Built to empower clients.  
-Designed for owners.  
-Controlled by admins.  
-That’s SmartDine.
+SmartDine empowers clients, equips owners, and keeps admins in control.  
+This is restaurant tech — done right.
