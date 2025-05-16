@@ -6,14 +6,13 @@
 <img src="./readme/title2.svg"/>
 
 > **SmartDine** is built with modern, cloud-powered tech that’s fast, scalable, and ready to grow with you.  
-Everything happens in real time — from AR-powered menus your guests explore to IoT-powered seat tracking and live insights for owners behind the scenes.  
-The backend runs smooth and secure. The frontend is clean, fast, and built for an effortless experience.  
-It’s designed to be easy to update, easy to scale, and hard to live without.
-
-Under the hood, SmartDine keeps every part of your operation in sync — menus, orders, pricing, occupancy, and users — so your team can focus on delivering great service, not fighting slow systems.  
-Whether you're opening a new branch or updating tonight’s specials, it’s quick, intuitive, and just works.  
-Feels like magic. Powered by engineering.
-
+> Everything happens in real time — from AR-powered menus your guests explore to IoT-powered seat tracking and live insights for owners behind the scenes.  
+> The backend runs smooth and secure. The frontend is clean, fast, and built for an effortless experience.  
+> It’s designed to be easy to update, easy to scale, and hard to live without.  
+>
+> Under the hood, SmartDine keeps every part of your operation in sync — menus, orders, pricing, occupancy, and users — so your team can focus on delivering great service, not fighting slow systems.  
+> Whether you're opening a new branch or updating tonight’s specials, it’s quick, intuitive, and just works.  
+> Feels like magic. Powered by engineering.
 
 <br><br>
 
@@ -22,12 +21,12 @@ Feels like magic. Powered by engineering.
 
 ### Architecture Overview
 
-- Client App: Built in Flutter for a fast, native experience  
-- Web Dashboard: React-powered control panel for owners and admins  
-- API Layer: Laravel handles authentication, business logic, and DB interaction  
-- Real-Time: Express + Socket.IO for WebSocket-powered updates  
-- Infrastructure: Dockerized services, deployed via GitHub Actions to AWS EC2  
-- Caching & Queues: Redis is used across the stack for performance and task management
+- **Client App**: Built in Flutter for a fast, native experience  
+- **Web Dashboard**: React-powered control panel for owners and admins  
+- **API Layer**: Laravel handles authentication, business logic, and DB interaction  
+- **Real-Time**: Express + Socket.IO for WebSocket-powered updates  
+- **Infrastructure**: Dockerized services, deployed via GitHub Actions to AWS EC2  
+- **Caching & Queues**: Redis is used across the stack for performance and task management
 
 #### Database Diagram – Restaurant-Manager
 
