@@ -9,23 +9,22 @@ RUN apt-get update \
     && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy all files
+COPY . /app
+
+# Fix permissions as root
+RUN mkdir -p /app/storage/logs /app/bootstrap/cache \
+    && chmod -R 775 /app/storage /app/bootstrap/cache \
+    && chown -R www-data:www-data /app/storage /app/bootstrap/cache
+
 USER 1001
 
-# Copy project files with correct permissions
-COPY --chown=bitnami:daemon . /app
-
 WORKDIR /app
-
-# Create folders and fix permissions early
-RUN mkdir -p storage/logs bootstrap/cache \
-    && chmod -R ug+rwX storage bootstrap/cache \
-    && chmod -R ug+rwX /app \
-    && chown -R bitnami:daemon storage bootstrap/cache
 
 # Install dependencies
 RUN composer install --no-interaction --prefer-dist
 
-# Make the shell script executable
+# Make script executable
 RUN chmod +x /app/shellScript.sh
 
 CMD ["/app/shellScript.sh"]
