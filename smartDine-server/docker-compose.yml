@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   server:
-    image: yehiaarja/ddockersmartdine:latest
+    image: yehiaarja/dockersmartdine:latest
     environment:
       - LARAVEL_DATABASE_HOST=database
       - LARAVEL_DATABASE_NAME=restaurant_db
