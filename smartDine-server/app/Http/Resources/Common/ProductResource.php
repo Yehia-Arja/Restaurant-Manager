@@ -23,7 +23,7 @@ class ProductResource extends JsonResource
             'time_to_deliver' => $this->time_to_deliver,
             'ingredients' => $this->ingredients,
 
-            'image_url' => MediaService::url($this->file_name, 'products'),
+            'image_url' => 'http://a8ad-85-112-82-132.ngrok-free.app/Car_in_Front_of_Stone_0512190122_texture.png',
             'ar_model_url' => 'https://a8ad-85-112-82-132.ngrok-free.app/Car_in_Front_of_Stone_0512190122_texture.glb'
         ];
     }
