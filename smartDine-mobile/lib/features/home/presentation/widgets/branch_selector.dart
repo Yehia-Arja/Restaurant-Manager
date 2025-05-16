@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/core/theme/colors.dart';
-import 'package:mobile/features/home/domain/entities/branch.dart';
+
 import 'package:mobile/core/blocs/selected_branch_cubit.dart';
+import 'package:mobile/features/home/domain/entities/branch.dart';
 
 class BranchSelector extends StatefulWidget {
   final List<Branch> branches;
   final VoidCallback? onNotificationTap;
 
-  const BranchSelector({super.key, required this.branches, this.onNotificationTap});
+  const BranchSelector({Key? key, required this.branches, this.onNotificationTap})
+    : super(key: key);
 
   @override
   State<BranchSelector> createState() => _BranchSelectorState();
