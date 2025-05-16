@@ -20,8 +20,8 @@ class CategoryController extends Controller
             $data = $request->validated();
 
             $categories = CategoryService::list(
-                $data['restaurant_id'],
-                $data['branch_id'],
+                $data['restaurant_location_id'] ?? null,
+                $data['restaurant_id'] ?? null,
             );
             
             if ($categories->isEmpty()) {

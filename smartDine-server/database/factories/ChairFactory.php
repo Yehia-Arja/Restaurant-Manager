@@ -22,12 +22,9 @@ class ChairFactory extends Factory
         $table = Table::inRandomOrder()->first();
 
         return [
-            'position' => json_encode([
-                'x' => $this->faker->numberBetween(0, 1000),
-                'y' => $this->faker->numberBetween(0, 1000),
-            ]),
-            'table_id' => $table->id,
-            'sensor_id' => $this->faker->unique()->randomElement($sensorIds),
+            'is_occupied' => $this->faker->boolean(30), // 30% chance to be occupied
+            'table_id'    => $table->id,
+            'sensor_id'   => $this->faker->unique()->randomElement($sensorIds),
         ];
     }
 }

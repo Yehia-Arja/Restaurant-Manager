@@ -11,10 +11,46 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
   Future<void> _onLoadProducts(LoadProducts event, Emitter<ProductState> emit) async {
-    emit(ProductLoading());
     try {
-      final products = await _listUseCase.call(event.branchId);
-      emit(ProductLoaded(products));
+      final isFirstPage = event.page == 1;
+
+      if (isFirstPage) {
+        emit(ProductLoading());
+      } else if (state is ProductLoaded) {
+        final current = state as ProductLoaded;
+        emit(
+          ProductLoaded(
+            products: current.products,
+            currentPage: current.currentPage,
+            totalPages: current.totalPages,
+            isFetchingMore: true,
+          ),
+        );
+      }
+
+      final result = await _listUseCase.call(
+        branchId: event.branchId,
+        searchQuery: event.searchQuery,
+        categoryId: event.categoryId,
+        favoritesOnly: event.favoritesOnly,
+        page: event.page,
+      );
+
+      final newProducts = result.products;
+      final totalPages = result.totalPages;
+
+      if (state is ProductLoaded && !isFirstPage) {
+        final previous = state as ProductLoaded;
+        emit(
+          ProductLoaded(
+            products: [...previous.products, ...newProducts],
+            currentPage: event.page,
+            totalPages: totalPages,
+          ),
+        );
+      } else {
+        emit(ProductLoaded(products: newProducts, currentPage: event.page, totalPages: totalPages));
+      }
     } catch (e) {
       emit(ProductError(e.toString()));
     }

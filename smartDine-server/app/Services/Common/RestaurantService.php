@@ -61,7 +61,7 @@ class RestaurantService
             return null;
         }
 
-        $products   = ProductService::list($selected->id);
+        $products = ProductService::list($selected->id);
         $categories = CategoryService::list($selected->id);
 
         return [

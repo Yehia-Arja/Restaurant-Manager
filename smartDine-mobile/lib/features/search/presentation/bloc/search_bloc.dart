@@ -1,0 +1,113 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'search_event.dart';
+import 'search_state.dart';
+import 'package:mobile/features/categories/domain/usecases/list_categories_usecase.dart';
+import 'package:mobile/features/products/domain/usecases/list_products_usecase.dart';
+
+class SearchBloc extends Bloc<SearchEvent, SearchState> {
+  final ListCategoriesUseCase _catsUc;
+  final ListProductsUseCase _prodsUc;
+
+  SearchBloc(this._catsUc, this._prodsUc) : super(const SearchState()) {
+    on<InitSearch>(_onInit);
+    on<CategoryChanged>(_onCategoryChanged);
+    on<QueryChanged>(_onQueryChanged);
+    on<FetchMoreProducts>(_onFetchMore);
+  }
+
+  Future<void> _onInit(InitSearch e, Emitter<SearchState> emit) async {
+    emit(state.copyWith(loadingCats: true, loadingProds: true, error: null));
+    try {
+      final cats = await _catsUc(e.branchId);
+      final prods = await _prodsUc(branchId: e.branchId, page: 1);
+      emit(
+        state.copyWith(
+          branchId: e.branchId,
+          categories: cats,
+          products: prods.products,
+          totalPages: prods.totalPages,
+          page: 1,
+          loadingCats: false,
+          loadingProds: false,
+        ),
+      );
+    } catch (ex) {
+      emit(state.copyWith(error: ex.toString(), loadingCats: false, loadingProds: false));
+    }
+  }
+
+  Future<void> _onCategoryChanged(CategoryChanged e, Emitter<SearchState> emit) async {
+    emit(
+      state.copyWith(
+        selectedCategory: e.categoryId,
+        products: [],
+        page: 1,
+        loadingProds: true,
+        error: null,
+      ),
+    );
+    try {
+      final result = await _prodsUc(
+        branchId: state.branchId!,
+        page: 1,
+        categoryId: e.categoryId,
+        searchQuery: state.query,
+      );
+      emit(
+        state.copyWith(
+          products: result.products,
+          totalPages: result.totalPages,
+          loadingProds: false,
+        ),
+      );
+    } catch (ex) {
+      emit(state.copyWith(error: ex.toString(), loadingProds: false));
+    }
+  }
+
+  Future<void> _onQueryChanged(QueryChanged e, Emitter<SearchState> emit) async {
+    emit(state.copyWith(query: e.query, products: [], page: 1, loadingProds: true, error: null));
+    try {
+      final result = await _prodsUc(
+        branchId: state.branchId!,
+        page: 1,
+        categoryId: state.selectedCategory,
+        searchQuery: e.query,
+      );
+      emit(
+        state.copyWith(
+          products: result.products,
+          totalPages: result.totalPages,
+          loadingProds: false,
+        ),
+      );
+    } catch (ex) {
+      emit(state.copyWith(error: ex.toString(), loadingProds: false));
+    }
+  }
+
+  Future<void> _onFetchMore(FetchMoreProducts e, Emitter<SearchState> emit) async {
+    if (state.loadingProds || state.page >= state.totalPages) return;
+
+    emit(state.copyWith(loadingProds: true, error: null));
+    try {
+      final nextPage = state.page + 1;
+      final result = await _prodsUc(
+        branchId: state.branchId!,
+        page: nextPage,
+        categoryId: state.selectedCategory,
+        searchQuery: state.query,
+      );
+      emit(
+        state.copyWith(
+          products: [...state.products, ...result.products],
+          page: nextPage,
+          totalPages: result.totalPages,
+          loadingProds: false,
+        ),
+      );
+    } catch (ex) {
+      emit(state.copyWith(error: ex.toString(), loadingProds: false));
+    }
+  }
+}
