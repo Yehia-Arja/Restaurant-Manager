@@ -16,8 +16,11 @@ COPY --chown=bitnami:daemon . /app
 
 WORKDIR /app
 
-# Pre-create required Laravel folders (these will already have correct ownership from COPY)
-RUN mkdir -p storage/logs bootstrap/cache
+# Create folders and fix permissions early
+RUN mkdir -p storage/logs bootstrap/cache \
+    && chmod -R ug+rwX storage bootstrap/cache \
+    && chmod -R ug+rwX /app \
+    && chown -R bitnami:daemon storage bootstrap/cache
 
 # Install dependencies
 RUN composer install --no-interaction --prefer-dist
