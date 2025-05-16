@@ -41,7 +41,7 @@ jobs:
           password: ${{ env.DOCKER_KEY }}
 
       - name: Build Laravel image
-        run: docker build -t yehiaarja/dockertestlara:latest .
+        run: docker build -t yehiaarja/dockersmartdine:latest .
 
       - name: Start services
         run: docker compose up -d
@@ -59,7 +59,7 @@ jobs:
         run: docker compose exec server php artisan test
 
       - name: Push Laravel Docker image
-        run: docker push yehiaarja/dockertestlara:latest
+        run: docker push yehiaarja/dockersmartdine:latest
 
   Copy-docker-compose-to-EC2:
     needs: Build-Test-Push
