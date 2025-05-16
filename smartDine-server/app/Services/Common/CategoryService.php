@@ -26,7 +26,7 @@ class CategoryService
             $q->select('categories.*')
               ->join('locationables as loc', function($join) use ($branchId) {
                   $join->on('loc.locationable_id', '=', 'categories.id')
-                       ->where('loc.locationable_type',  'Category')
+                       ->where('loc.locationable_type',  'App\Models\Category')
                        ->where('loc.restaurant_location_id', $branchId);
               });
         }

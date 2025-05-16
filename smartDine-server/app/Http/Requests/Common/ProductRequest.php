@@ -18,6 +18,7 @@ class ProductRequest extends FormRequest
             'restaurant_id'          => 'required_without:restaurant_location_id|exists:restaurants,id',
             'category_id'            => 'sometimes|exists:categories,id',
             'search'                 => 'sometimes|string',
+            'favorites_only'         => 'sometimes|boolean',
         ];
     }
 

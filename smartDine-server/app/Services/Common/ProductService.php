@@ -4,6 +4,8 @@ namespace App\Services\Common;
 
 use App\Models\Product;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Category;
 
 class ProductService
 {
@@ -12,49 +14,61 @@ class ProductService
      * Uses the 'locations' relation (morph-pivot) to filter by branch and load override pivots.
      */
     public static function list(
-        ?int $restaurantLocationId = null,
-        ?int $restaurantId        = null,
-        ?int $categoryId          = null,
-        ?string $search           = null
+        ?int $branchId = null,
+        ?int $restaurantId = null,
+        ?int $categoryId = null,
+        ?bool $favoritesOnly = false,
+        ?string $search = null
     ) {
-        $query = Product::query();
-
-        // Filter by branch and eager-load pivot overrides
-        if ($restaurantLocationId) {
-            $query->whereHas('locations', function ($q) use ($restaurantLocationId) {
-                $q->where('restaurant_location_id', $restaurantLocationId);
-            });
-            $query->with(['locations' => function ($q) use ($restaurantLocationId) {
-                $q->where('restaurant_location_id', $restaurantLocationId)
-                  ->withPivot(['override_price', 'override_description']);
-            }]);
-        }
-        // Otherwise, filter by restaurant
-        elseif ($restaurantId) {
-            $query->where('restaurant_id', $restaurantId);
-        }
-
-        // Category filter
+        $q = Product::query();
+    
+        // Filter by category
         if ($categoryId) {
-            $query->where('category_id', $categoryId);
+            $q->where('category_id', $categoryId);
         }
-
-        // Search by name, description, or tags
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('products.name', 'like', "%{$search}%")
-                  ->orWhere('products.description', 'like', "%{$search}%")
-                  ->orWhereIn('products.id', function ($inner) use ($search) {
-                      $inner->select('product_id')
-                            ->from('product_tags')
-                            ->join('tags', 'tags.id', '=', 'product_tags.tag_id')
-                            ->where('tags.name', 'like', "%{$search}%");
-                  });
+    
+        // Filter by branch (morph relationship: locations)
+        if ($branchId) {
+            $q->whereHas('locations', function ($query) use ($branchId) {
+                $query->where('restaurant_location_id', $branchId);
             });
         }
-
-        return $query->get();
+    
+        // Filter by restaurant
+        if ($restaurantId) {
+            $q->where('restaurant_id', $restaurantId);
+        }
+    
+        // Filter by user favorites
+        if ($favoritesOnly) {
+            $userId = Auth::id();
+            $q->whereIn('id', function ($sub) use ($userId) {
+                $sub->select('favoritable_id')
+                    ->from('favorites')
+                    ->where('favoritable_type', Product::class)
+                    ->where('user_id', $userId);
+            });
+        }
+    
+        // Apply search (on name/description)
+        if ($search) {
+            $q->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+    
+        // Eager load locations + override
+        $q->with(['locations' => function ($q) {
+            $q->withPivot(['override_price', 'override_description']);
+        }]);
+    
+        return $q->get();
     }
+    
+    /**
+     * Fetch a single product by its ID, including its locations and override pivots.
+     */    
 
     public static function getById(int $id): Product
     {
