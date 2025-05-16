@@ -46,6 +46,9 @@ jobs:
       - name: Start services
         run: docker compose up -d
 
+      - name: Show container status
+        run: docker ps -a
+
       - name: Wait for DB to be ready
         run: |
           until docker exec smartDine-server-database-1 mysql -uroot -p1234 -e "select 1"; do
