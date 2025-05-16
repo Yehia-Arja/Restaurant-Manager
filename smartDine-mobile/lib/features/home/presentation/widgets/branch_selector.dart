@@ -23,71 +23,64 @@ class _BranchSelectorState extends State<BranchSelector> {
   @override
   Widget build(BuildContext context) {
     final selectedId = context.watch<SelectedBranchCubit>().state;
+    final matches = widget.branches.where((b) => b.id == selectedId);
+    final current = matches.isNotEmpty ? matches.first : widget.branches.first;
 
-    Branch current = widget.branches.first;
-    if (selectedId != null) {
-      final match = widget.branches.where((b) => b.id == selectedId);
-      if (match.isNotEmpty) current = match.first;
-    }
-
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        bottomLeft: Radius.circular(12),
-        bottomRight: Radius.circular(12),
-      ),
-      child: Container(
-        color: AppColors.accent,
-        child: SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Row(
-              children: [
-                PopupMenuButton<Branch>(
-                  tooltip: 'Select Branch',
-                  offset: const Offset(0, 44),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                  onOpened: () => setState(() => _menuOpen = true),
-                  onSelected: (b) {
-                    context.read<SelectedBranchCubit>().select(b.id);
-                    setState(() => _menuOpen = false);
-                  },
-                  onCanceled: () => setState(() => _menuOpen = false),
-                  itemBuilder:
-                      (_) =>
-                          widget.branches
-                              .map((b) => PopupMenuItem(value: b, child: Text(b.locationName)))
-                              .toList(),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.location_on_outlined, color: Colors.white, size: 22),
-                      const SizedBox(width: 6),
-                      Text(
-                        current.locationName,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Icon(
-                        _menuOpen ? CupertinoIcons.chevron_up : CupertinoIcons.chevron_down,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          PopupMenuButton<Branch>(
+            tooltip: 'Select Branch',
+            offset: const Offset(0, 48),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            color: Colors.white,
+            onOpened: () => setState(() => _menuOpen = true),
+            onCanceled: () => setState(() => _menuOpen = false),
+            onSelected: (b) {
+              context.read<SelectedBranchCubit>().select(b.id);
+              setState(() => _menuOpen = false);
+            },
+            itemBuilder:
+                (_) =>
+                    widget.branches
+                        .map((b) => PopupMenuItem<Branch>(value: b, child: Text(b.locationName)))
+                        .toList(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.location_on_outlined, color: Colors.white, size: 20),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      current.locationName,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.white,
-                        size: 11,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                IconButton(
-                  iconSize: 20,
-                  icon: const Icon(Icons.person, color: Colors.white),
-                  onPressed: widget.onNotificationTap,
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  Icon(
+                    _menuOpen ? CupertinoIcons.chevron_up : CupertinoIcons.chevron_down,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+          const Spacer(),
+          IconButton(
+            icon: const Icon(Icons.person),
+            color: Colors.white,
+            onPressed: widget.onNotificationTap,
+          ),
+        ],
       ),
     );
   }
