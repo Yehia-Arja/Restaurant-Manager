@@ -1,5 +1,5 @@
 
-cp .env.example .env
+cp .env
 php artisan key:generate
 php artisan config:clear
 php artisan migrate --force
