@@ -103,3 +103,10 @@
 
 SmartDine empowers clients, equips owners, and keeps admins in control.  
 This is restaurant tech done right 🍴
+
+<br><br>
+
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
+
