@@ -31,7 +31,7 @@ class ProcessUserRecs implements ShouldQueue
         foreach ($this->userIds as $userId) {
             // find favorite category
             $favCat = DB::table('orders')
-                ->join('products','orders.product_id','=','products.id')
+                ->join('products', 'orders.product_id', '=', 'products.id')
                 ->where('orders.user_id', $userId)
                 ->select('products.category_id', DB::raw('COUNT(*) as cnt'))
                 ->groupBy('products.category_id')
@@ -49,12 +49,17 @@ class ProcessUserRecs implements ShouldQueue
             $candidates = $branchProducts
                 ->filter(fn($p) => (
                     (!$favCat || $p->category_id === $favCat)
-                    && ! in_array($p->id, $ordered)
+                    && !in_array($p->id, $ordered)
                 ))
                 ->take(10);
 
             $recs = $candidates->isEmpty() ? $popular : $candidates;
-            Cache::put("user:{$userId}:branch:{$this->branchId}:recs", $recs, now()->addMinutes(30));
+
+            Cache::put(
+                "user:{$userId}:branch:{$this->branchId}:recs",
+                $recs->pluck('name')->toArray(),
+                now()->addMinutes(30)
+            );
         }
     }
 }

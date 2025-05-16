@@ -41,6 +41,9 @@ Route::group(["prefix" => "v0.1"], function () {
         "prefix"     => "common",
         "middleware" => "auth:api",
     ], function () {
+        // AI
+        Route::post('/chat/message', [\App\Http\Controllers\Client\ChatController::class, 'handleUserMessage']);
+        Route::get('/chat/history', [\App\Http\Controllers\Client\ChatController::class, 'getPastChats']);
         // Products
         Route::group(["prefix" => "products"], function () {
             Route::get("/",     [CommonProductController::class, "index"]);
