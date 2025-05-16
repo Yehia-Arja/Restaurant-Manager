@@ -1,34 +1,30 @@
-FROM bitnami/laravel:12.0.7-debian-12-r0
+FROM bitnami/laravel:latest
 
+# Use root to install dependencies + fix permissions
 USER root
-WORKDIR /app
 
+# Install Redis extension + system deps
 RUN apt-get update \
     && apt-get install -y unzip gcc make autoconf g++ libzip-dev \
     && pecl install redis \
-    && mkdir -p /opt/bitnami/php/etc/conf.d \
     && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy app before setting ownership
+COPY . /app
 
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+# Fix permissions for Bitnami's default user (1001)
+RUN mkdir -p /app/vendor /app/storage/logs /app/bootstrap/cache \
+    && chown -R 1001:1001 /app \
+    && chmod -R 775 /app/storage /app/bootstrap/cache
 
-
-COPY . .
-
-
-RUN php artisan key:generate --force \
-    && php artisan package:discover --ansi \
-    && php artisan config:cache \
-    && php artisan route:cache
-
-
-RUN chown -R 1001:1001 /app/storage /app/bootstrap/cache
-
+# Switch to non-root user
 USER 1001
-EXPOSE 8000
-CMD ["php","artisan","serve","--host=0.0.0.0","--port=8000"]
 
-# Default command
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+WORKDIR /app
+
+RUN composer install --no-interaction --prefer-dist
+
+RUN chmod +x /app/shellScript.sh
+
+CMD ["/app/shellScript.sh"]
