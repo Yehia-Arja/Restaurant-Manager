@@ -1,41 +1,34 @@
-FROM bitnami/laravel:latest
+FROM bitnami/laravel:12.0.7-debian-12-r0
 
 USER root
+WORKDIR /app
 
-# Install system dependencies for WebSockets, queue, and OpenAI HTTP
-RUN install_packages \
-    autoconf \
-    build-essential \
-    pkg-config \
-    gcc \
-    make \
-    libzip-dev \
-    libssl-dev \
-    zip \
-    unzip \
+RUN apt-get update \
+    && apt-get install -y unzip gcc make autoconf g++ libzip-dev \
     && pecl install redis \
-    && docker-php-ext-install pdo_mysql sockets zip \
+    && mkdir -p /opt/bitnami/php/etc/conf.d \
     && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy composer files first for caching
-COPY composer.json composer.lock /app/
-WORKDIR /app
 
-# Install PHP dependencies including WebSockets & Pusher packages
-RUN composer require beyondcode/laravel-websockets pusher/pusher-php-server \
-    && composer install --no-dev --optimize-autoloader
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Copy application code
-COPY . /app
-WORKDIR /app
 
-# Set permissions
-RUN mkdir -p storage/logs bootstrap/cache \
-    && chown -R 1001:1001 storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+COPY . .
+
+
+RUN php artisan key:generate --force \
+    && php artisan package:discover --ansi \
+    && php artisan config:cache \
+    && php artisan route:cache
+
+
+RUN chown -R 1001:1001 /app/storage /app/bootstrap/cache
 
 USER 1001
+EXPOSE 8000
+CMD ["php","artisan","serve","--host=0.0.0.0","--port=8000"]
 
 # Default command
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
