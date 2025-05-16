@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:mobile/core/blocs/selected_branch_cubit.dart';
 import 'package:mobile/features/home/domain/entities/branch.dart';
+import 'package:mobile/core/theme/colors.dart';
 
 class BranchSelector extends StatefulWidget {
   final List<Branch> branches;
