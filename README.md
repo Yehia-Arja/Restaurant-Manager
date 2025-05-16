@@ -6,11 +6,12 @@
 <!-- project overview -->
 <img src="./readme/title2.svg"/>
 
-> **SmartDine** is a next‑generation restaurant management system built for chains with many branches and even more hungry guests. It unifies mobile ordering, branch operations, and owner analytics under one roof—sprinkled with AI personalisation and IoT smarts.
+> **SmartDine** is a next-generation restaurant management system built for chains with many branches and even more hungry guests. It unifies mobile ordering, branch operations, and owner analytics under one roof—sprinkled with AI personalisation and IoT smarts.
 >
 > • **Flutter** mobile app (clients)  
 > • **React** web dashboard (owners & admins)  
 > • **Laravel** REST API + MySQL + Redis  
+> • WebSockets via **Express + Socket.IO**  
 > • Containers & CI with **Docker** + **GitHub Actions** + **AWS EC2**
 
 <br><br>
@@ -31,7 +32,7 @@
   * **Express + Socket.IO** (WebSockets for live order & sensor events)
 
 * **DevOps**  
-  * Docker‑compose for local parity  
+  * Docker-compose for local parity  
   * GitHub Actions pipeline → build, test, push images, deploy  
   * EC2 host pulls latest images and runs `docker-compose up -d`
 
@@ -45,13 +46,13 @@
 
 ### Key Features
 
-* AI‑powered food recommendations based on order history and taste profiles
+* AI-powered food recommendations based on order history and taste profiles
 * AR dish preview—upload a photo, get a 3D model clients can drop on their table
 * Smart chair sensors stream occupancy updates, triggering cleaner alerts in real time
-* Conversational AI assistant answers menu questions and guides first‑time users
-* Branch‑level overrides for price, availability, and description—central catalogue, local tweaks
-* Real‑time order board for chefs and waiters via **Express + Socket.IO**
-* Role‑based access (owner, manager, staff, client)
+* Conversational AI assistant answers menu questions and guides first-time users
+* Branch-level overrides for price, availability, and description—central catalogue, local tweaks
+* Real-time order board for chefs and waiters via **Express + Socket.IO**
+* Role-based access (owner, manager, staff, client)
 
 <br><br>
 
@@ -61,17 +62,30 @@
 ### Admin Panel Duties
 
 * Register new restaurants and assign owners
-* Manage branches, categories, products, and tags
-* Moderate reviews and ratings
-* View global analytics: sales, traffic, sensor metrics
-* System‑wide settings: feature flags, cache, queue monitor
+* View and audit any restaurant, branch, or menu item
+* Moderate reviews and ratings across the platform
+* Global analytics: sales, traffic, sensor metrics
+* System-wide settings: feature flags, cache, queue monitor
+* Admins **can** edit product data if absolutely needed—but only through an override panel with warnings and audit logs
 
 <br><br>
 
 <!-- Demo -->
 <img src="./readme/title5.svg"/>
 
-> **Demo GIFs coming soon** (≤ 5 s each). Screens are getting their final polish.
+> **Demo GIFs coming soon** (≤ 5 s each). Screens are getting their final polish.
+
+### User Screens (Mobile)
+
+| Login screen                      | Register screen                         | Home screen                     |
+| --------------------------------- | --------------------------------------- | ------------------------------- |
+| ![Login](./readme/demo/login.png) | ![Register](./readme/demo/register.png) | ![Home](./readme/demo/home.png) |
+
+### Admin Screens (Web)
+
+| Dashboard                              | Product Management                    |
+| -------------------------------------- | ------------------------------------- |
+| ![Dashboard](./readme/demo/admin1.png) | ![Products](./readme/demo/admin2.png) |
 
 <br><br>
 
@@ -80,23 +94,32 @@
 
 ### Dev & QA Process
 
-* Feature branches & pull‑request reviews
-* PHPUnit, Flutter test suites, and Postman collections run in CI
-* Highlight snippet: `app/Services/ProductRecommendationService.php`—unit‑tested with Redis fakes
-* Code style enforced by Pint, Dart fmt, ESLint pre‑commit hooks
+| Services                                | Validation                                  | Testing                           |
+| --------------------------------------- | ------------------------------------------- | --------------------------------- |
+| ![Services](./readme/demo/services.png) | ![Validation](./readme/demo/validation.png) | ![Tests](./readme/demo/tests.png) |
+
+* Testing tools: PHPUnit (Laravel), Flutter test, Postman tests
+* State management: BLoC (Flutter), Redux (React)
+* Linting: Integrated pre-commit lint checks
+* Notable snippet: `ProductRecommendationService.php` uses AI calls + Redis caching and is fully unit-tested
 
 <br><br>
 
 <!-- Deployment -->
 <img src="./readme/title7.svg"/>
 
-### Deployment Snapshot
+### Deployment Strategy
 
-* Images: `smartdine-api`, `smartdine-web`, `smartdine-mobile`, `smartdine-sockets`
-* Pipeline: build → test → push → EC2 pull & restart
-* Production API: `https://api.smartdine.app:8010`  
-* Health‑check: `GET /v1/health` → `{ "status": "ok" }`
+* Docker images built for Laravel, React, Express (WebSockets), and Flutter
+* GitHub Actions: CI runs tests, builds, pushes to Docker Hub
+* EC2 pulls latest images, runs via `docker-compose up -d`
+* Production API lives at: `https://api.smartdine.app:8010`
+* Health-check: `GET /v1/health` → `{ "status": "ok" }`
 * Postman collection: `/docs/SmartDine.postman_collection.json`
+
+| Postman Auth API                    | Postman Order API                    | Postman AI API                    |
+| ----------------------------------- | ------------------------------------ | --------------------------------- |
+| ![Auth](./readme/demo/postman1.png) | ![Order](./readme/demo/postman2.png) | ![AI](./readme/demo/postman3.png) |
 
 <br><br>
 
