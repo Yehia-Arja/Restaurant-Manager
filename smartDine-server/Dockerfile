@@ -15,6 +15,10 @@ COPY . /app
 
 WORKDIR /app
 
+RUN mkdir -p storage/logs bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
 RUN composer install --no-interaction --prefer-dist
 
 RUN chmod +x /app/shellScript.sh
