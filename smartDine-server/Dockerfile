@@ -11,16 +11,18 @@ RUN apt-get update \
 
 USER 1001
 
-COPY . /app
+# Copy project files with correct permissions
+COPY --chown=bitnami:daemon . /app
 
 WORKDIR /app
 
-RUN mkdir -p storage/logs bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+# Pre-create required Laravel folders (these will already have correct ownership from COPY)
+RUN mkdir -p storage/logs bootstrap/cache
 
+# Install dependencies
 RUN composer install --no-interaction --prefer-dist
 
+# Make the shell script executable
 RUN chmod +x /app/shellScript.sh
 
 CMD ["/app/shellScript.sh"]
