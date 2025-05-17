@@ -1,12 +1,6 @@
 version: '3.8'
 services:
   server:
-    volumes:
-      - .:/app
-      - logs-volume:/app/storage/logs
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: yehiaarja/dockersmartdine:latest
     environment:
       - LARAVEL_DATABASE_HOST=database
