@@ -20,8 +20,6 @@ WORKDIR /app
 RUN composer install --no-interaction --prefer-dist
 
 
-RUN php artisan config:clear
-
 RUN chmod +x /app/shellScript.sh
 
 CMD ["/app/shellScript.sh"]
