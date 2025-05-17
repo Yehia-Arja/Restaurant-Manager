@@ -76,4 +76,16 @@ class ChatService
             'restaurant_location_id' => $locationId,
         ]);
     }
+
+    public static function deleteMessage(int $id, int $userId): void
+    {
+        $message = Message::findOrFail($id);
+        $chat = Chat::findOrFail($message->chat_id);
+        
+        if ($chat->user_id !== $userId) {
+            throw new \Exception("Unauthorized action.");
+        }
+        
+        $message->delete();
+    }
 }
