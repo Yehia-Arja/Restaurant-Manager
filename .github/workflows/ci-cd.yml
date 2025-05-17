@@ -12,7 +12,6 @@ jobs:
     defaults:
       run:
         working-directory: ./smartDine-server
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -27,31 +26,13 @@ jobs:
         run: docker build -t yehiaarja/dockersmartdine:latest .
 
       - name: Start services
-        run: docker compose up -d --wait
+        run: docker compose up -d
 
-      - name: Wait for Laravel to connect to DB
+      - name: Wait for DB to be ready
         run: |
-          echo "Waiting for Laravel DB connection..."
-          for i in $(seq 1 30); do
-            echo "Attempt $i..."
-            if docker compose exec server php artisan migrate:status; then
-              echo "Laravel can talk to the DB"
-              break
-            fi
-            echo "Still waiting... ($i/30)"
-            sleep 2
-            if [ $i -eq 30 ]; then
-              echo "Laravel could not connect to DB in time"
-              docker compose logs database
-              exit 1
-            fi
+          until docker exec smartdine-server-database-1 mysql -uroot -p1234 -e "select 1"; do
+            echo "Waiting for DB..."; sleep 2;
           done
-
-      - name: Clear Laravel config cache
-        run: docker compose exec server php artisan config:clear
-
-      - name: Rebuild Laravel config cache
-        run: docker compose exec server php artisan config:cache
 
       - name: Run migrations
         run: docker compose exec server php artisan migrate --force
