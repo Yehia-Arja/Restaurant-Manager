@@ -26,7 +26,7 @@ jobs:
         run: docker build -t yehiaarja/dockersmartdine:latest .
 
       - name: Start services
-        run: docker compose up -d
+        run: docker compose up -d --wait
 
       - name: Wait for DB to be ready
         run: |
