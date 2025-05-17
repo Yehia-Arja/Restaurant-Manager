@@ -7,7 +7,6 @@ use App\Models\Message;
 use App\Schemas\MessageSchema;
 use App\Services\Common\PrismService;
 use App\Services\IntentHandlers\ProductIntentHandler;
-use App\Services\IntentHandlers\AppGuideResponder;
 use App\Services\IntentHandlers\AppGuiderIntentHandler;
 
 class ChatService
@@ -34,26 +33,20 @@ class ChatService
 
         $structured = PrismService::generate($schema, $data['prompt']);
 
-        if (!empty($structured['reply'])) {
-            Message::create([
-                'user_id'     => $data['user_id'],
-                'chat_id'     => $chat->id,
-                'sender_type' => 'ai',
-                'content'     => $structured['reply'],
-            ]);
-            return $structured;
+        $reply = $structured['reply'] ?? null;
+
+        if (!$reply) {
+            $intent = $structured['intent'] ?? null;
+            $reply = 'Sorry, I didn’t understand.';
+
+            if ($intent === 'product_enquiry') {
+                $reply = ProductIntentHandler::handle($structured);
+            } elseif ($intent === 'app_enquiry') {
+                $reply = AppGuiderIntentHandler::handle($data['message']);
+            }
         }
 
-        $intent = $structured['intent'] ?? null;
-        $reply = 'Sorry, I didn’t understand.';
-
-        if ($intent === 'product_enquiry') {
-            $reply = ProductIntentHandler::handle($structured);
-        } elseif ($intent === 'app_enquiry') {
-            $reply = AppGuiderIntentHandler::handle($data['message']);
-        }
-
-        Message::create([
+        $aiMessage = Message::create([
             'user_id'     => $data['user_id'],
             'chat_id'     => $chat->id,
             'sender_type' => 'ai',
@@ -61,15 +54,17 @@ class ChatService
         ]);
 
         $structured['reply'] = $reply;
+        $structured['message'] = $aiMessage;
+
         return $structured;
     }
 
     public static function getChatHistory(Chat $chat): array
     {
         return Message::where('chat_id', $chat->id)
-        ->orderBy('created_at')
-        ->get(['sender_type', 'content', 'created_at'])
-        ->toArray();
+            ->orderBy('created_at')
+            ->get()
+            ->toArray();
     }
 
     public static function getOrCreateChat($userId, $locationId): Chat
@@ -84,7 +79,7 @@ class ChatService
     {
         $message = Message::findOrFail($id);
         $chat = Chat::findOrFail($message->chat_id);
-        
+
         if ($chat->user_id !== $userId) {
             throw new \Exception("Unauthorized action.");
         }

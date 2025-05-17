@@ -36,7 +36,7 @@ class ChatController extends Controller
 
             $response = ChatService::handleMessage($payload);
 
-            return $this->success($response['reply']);
+            return $this->success('message replied',$response);
         } catch (\Throwable $e) {
             Log::error('Chat message handling failed', [
                 'error' => $e->getMessage(),
