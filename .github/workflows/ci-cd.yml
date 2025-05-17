@@ -30,8 +30,19 @@ jobs:
 
       - name: Wait for DB to be ready
         run: |
-          until docker exec smartdine-server-database-1 sh -c 'mysql -uroot -p1234 -e "SELECT 1" 2>/dev/null'; do
-          echo "Waiting for DB..."; sleep 2;
+          echo "Waiting for DB to be ready..."
+          MAX_RETRIES=30
+          RETRY_INTERVAL=2
+          COUNT=0
+
+          until docker exec smartdine-server-database-1 sh -c 'mysqladmin ping -uroot -p1234 --silent'; do
+            COUNT=$((COUNT+1))
+            if [ $COUNT -ge $MAX_RETRIES ]; then
+              echo "DB did not become ready in time"
+              exit 1
+            fi
+            echo "Still waiting... ($COUNT)"
+            sleep $RETRY_INTERVAL
           done
 
       - name: Run migrations
