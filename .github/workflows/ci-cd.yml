@@ -45,6 +45,9 @@ jobs:
             sleep $RETRY_INTERVAL
           done
 
+      - name: Test DB connection
+        run: docker compose exec server php -r "var_dump(DB::connection()->getPdo());"
+
       - name: Run migrations
         run: docker compose exec server php artisan migrate --force
 
