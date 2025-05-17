@@ -57,7 +57,9 @@ jobs:
           host: ${{ secrets.STAGING_DEPLOY_HOST }}
           username: ${{ secrets.STAGING_EC2_USER }}
           key: ${{ secrets.STAGING_EC2_KEY }}
-          source: "smartDine-server/docker-compose.yml"
+          source: |
+            "smartDine-server/docker-compose.yml"
+            smartDine-server/.env.example
           target: "/home/${{ secrets.STAGING_EC2_USER }}"
 
       - name: SSH and Deploy to EC2 (Staging)
