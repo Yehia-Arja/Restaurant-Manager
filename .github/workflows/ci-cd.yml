@@ -58,7 +58,7 @@ jobs:
           username: ${{ secrets.STAGING_EC2_USER }}
           key: ${{ secrets.STAGING_EC2_KEY }}
           source: |
-            "smartDine-server/docker-compose.yml"
+            smartDine-server/docker-compose.yml
             smartDine-server/.env.example
           target: "/home/${{ secrets.STAGING_EC2_USER }}"
 
