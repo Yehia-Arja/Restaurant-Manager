@@ -47,9 +47,6 @@ jobs:
           done
           echo "DB is ready!"
 
-      - name: Test Laravel DB connection via Tinker
-        run: docker compose exec server php artisan tinker --execute="var_dump(DB::connection()->getPdo());"
-
       - name: Run migrations
         run: docker compose exec server php artisan migrate --force
 
