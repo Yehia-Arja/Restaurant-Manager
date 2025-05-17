@@ -33,14 +33,17 @@ jobs:
         run: |
           echo "Waiting for MySQL to be ready..."
           for i in $(seq 1 30); do
-            if docker compose exec server mysql -h database -uroot -p1234 -e "SELECT 1" >/dev/null 2>&1; then
+            echo "Attempt $i..."
+            if docker compose exec server mysql -h database -uroot -p1234 -e "SELECT 1"; then
               echo "MySQL is ready"
               break
             fi
             echo "Still waiting... ($i/30)"
             sleep 2
             if [ $i -eq 30 ]; then
-              echo "MySQL not ready in time"
+              echo "MySQL not ready after 30 attempts"
+              echo "--- MySQL Logs ---"
+              docker compose logs database
               exit 1
             fi
           done
@@ -57,7 +60,7 @@ jobs:
       - name: Run tests
         run: docker compose exec server php artisan test
 
-      - name: Push Docker image
+      - name: Push Laravel Docker image
         run: docker push yehiaarja/dockersmartdine:latest
 
   Deploy-Staging:
