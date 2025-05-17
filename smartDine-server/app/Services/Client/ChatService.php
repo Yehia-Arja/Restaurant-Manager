@@ -20,7 +20,7 @@ class ChatService
         Message::create([
             'chat_id'     => $chat->id,
             'sender_type' => 'user',
-            'message'     => $data['message'],
+            'content'     => $data['message'],
         ]);
 
         $schema = MessageSchema::make('chat_message', 'Structured chat response', [
@@ -37,7 +37,7 @@ class ChatService
             Message::create([
                 'chat_id'     => $chat->id,
                 'sender_type' => 'assistant',
-                'message'     => $structured['reply'],
+                'content'     => $structured['reply'],
             ]);
             return $structured;
         }
@@ -54,7 +54,7 @@ class ChatService
         Message::create([
             'chat_id'     => $chat->id,
             'sender_type' => 'assistant',
-            'message'     => $reply,
+            'content'     => $reply,
         ]);
 
         $structured['reply'] = $reply;
