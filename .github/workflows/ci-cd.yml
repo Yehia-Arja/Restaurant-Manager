@@ -29,6 +29,9 @@ jobs:
       - name: Start services
         run: docker compose up -d --wait
 
+      - name: Show .env inside Laravel container
+        run: docker compose exec server cat .env
+
       - name: Wait for Laravel to connect to DB
         run: |
           echo "Waiting for Laravel DB connection..."
