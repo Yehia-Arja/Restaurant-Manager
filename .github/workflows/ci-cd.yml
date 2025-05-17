@@ -29,23 +29,27 @@ jobs:
       - name: Start services
         run: docker compose up -d --wait
 
-      - name: Wait for DB to be ready
+      - name: Wait for MySQL to be ready
         run: |
-          echo "Waiting for DB to be ready..."
-          MAX_RETRIES=30
-          RETRY_INTERVAL=2
-          COUNT=0
-
-          until docker exec smartdine-server-database-1 sh -c 'mysqladmin ping -uroot -p1234 --silent'; do
-            COUNT=$((COUNT+1))
-            if [ $COUNT -ge $MAX_RETRIES ]; then
-              echo "DB did not become ready in time"
+          echo "Waiting for MySQL to be ready..."
+          for i in $(seq 1 30); do
+            if docker compose exec server mysql -h database -uroot -p1234 -e "SELECT 1" >/dev/null 2>&1; then
+              echo "MySQL is ready"
+              break
+            fi
+            echo "Still waiting... ($i/30)"
+            sleep 2
+            if [ $i -eq 30 ]; then
+              echo "MySQL not ready in time"
               exit 1
             fi
-            echo "Still waiting... ($COUNT)"
-            sleep $RETRY_INTERVAL
           done
-          echo "DB is ready!"
+
+      - name: Clear Laravel config cache
+        run: docker compose exec server php artisan config:clear
+
+      - name: Rebuild Laravel config cache
+        run: docker compose exec server php artisan config:cache
 
       - name: Run migrations
         run: docker compose exec server php artisan migrate --force
@@ -53,5 +57,65 @@ jobs:
       - name: Run tests
         run: docker compose exec server php artisan test
 
-      - name: Push Laravel Docker image
+      - name: Push Docker image
         run: docker push yehiaarja/dockersmartdine:latest
+
+  Deploy-Staging:
+    if: github.ref_name == 'main'
+    needs: Build-Test-Push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy docker-compose.yml to EC2 (Staging)
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.STAGING_DEPLOY_HOST }}
+          username: ${{ secrets.STAGING_EC2_USER }}
+          key: ${{ secrets.STAGING_EC2_KEY }}
+          source: "smartDine-server/docker-compose.yml"
+          target: "/home/${{ secrets.STAGING_EC2_USER }}"
+
+      - name: SSH and Deploy to EC2 (Staging)
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.STAGING_DEPLOY_HOST }}
+          username: ${{ secrets.STAGING_EC2_USER }}
+          key: ${{ secrets.STAGING_EC2_KEY }}
+          script: |
+            cd /home/${{ secrets.STAGING_EC2_USER }}/smartDine-server
+            sudo docker-compose down
+            sudo docker rmi yehiaarja/dockersmartdine:latest || true
+            sudo docker-compose pull
+            sudo docker-compose up -d
+
+  Deploy-Production:
+    if: github.ref_name == 'production'
+    needs: Build-Test-Push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy docker-compose.yml to EC2 (Production)
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.PROD_DEPLOY_HOST }}
+          username: ${{ secrets.PROD_EC2_USER }}
+          key: ${{ secrets.PROD_EC2_KEY }}
+          source: "smartDine-server/docker-compose.yml"
+          target: "/home/${{ secrets.PROD_EC2_USER }}"
+
+      - name: SSH and Deploy to EC2 (Production)
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PROD_DEPLOY_HOST }}
+          username: ${{ secrets.PROD_EC2_USER }}
+          key: ${{ secrets.PROD_EC2_KEY }}
+          script: |
+            cd /home/${{ secrets.PROD_EC2_USER }}/smartDine-server
+            sudo docker-compose down
+            sudo docker rmi yehiaarja/dockersmartdine:latest || true
+            sudo docker-compose pull
+            sudo docker-compose up -d
