@@ -8,6 +8,7 @@ use App\Schemas\MessageSchema;
 use App\Services\Common\PrismService;
 use App\Services\IntentHandlers\ProductIntentHandler;
 use App\Services\IntentHandlers\AppGuideResponder;
+use App\Services\IntentHandlers\AppGuiderIntentHandler;
 
 class ChatService
 {
@@ -21,7 +22,7 @@ class ChatService
             'sender_type' => 'user',
             'message'     => $data['message'],
         ]);
-        
+
         $schema = MessageSchema::make('chat_message', 'Structured chat response', [
             'intent'       => 'What the user wants to do',
             'reply'        => 'AI reply if possible',
@@ -47,7 +48,7 @@ class ChatService
         if ($intent === 'product_enquiry') {
             $reply = ProductIntentHandler::handle($structured);
         } elseif ($intent === 'app_enquiry') {
-            $reply = AppGuideResponder::handle();
+            $reply = AppGuiderIntentHandler::handle($data['message']);
         }
 
         Message::create([
