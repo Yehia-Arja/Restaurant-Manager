@@ -60,4 +60,20 @@ class ChatService
         $structured['reply'] = $reply;
         return $structured;
     }
+
+    public static function getChatHistory(Chat $chat): array
+    {
+        return Message::where('chat_id', $chat->id)
+        ->orderBy('created_at')
+        ->get(['sender_type', 'content', 'created_at'])
+        ->toArray();
+    }
+
+    public static function getOrCreateChat($userId, $locationId): Chat
+    {
+        return Chat::firstOrCreate([
+            'user_id' => $userId,
+            'restaurant_location_id' => $locationId,
+        ]);
+    }
 }
