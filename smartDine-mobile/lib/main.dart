@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/services/dio_service.dart';
 import 'package:mobile/core/theme/theme.dart';
+import 'package:flutter/rendering.dart';
 
 // Cubits
 import 'package:mobile/core/blocs/selected_restaurant_cubit.dart';
@@ -35,7 +36,7 @@ import 'package:mobile/features/home/data/datasources/home_remote.dart';
 import 'package:mobile/features/home/data/repositories/home_repository_impl.dart';
 import 'package:mobile/features/home/domain/usecases/get_home_data_usecase.dart';
 
-// Products (Detail)
+// Products
 import 'package:mobile/features/products/data/datasources/product_remote.dart';
 import 'package:mobile/features/products/data/repositories/product_repository_impl.dart';
 import 'package:mobile/features/products/domain/usecases/get_product_detail_usecase.dart';
@@ -55,8 +56,19 @@ import 'package:mobile/features/orders/data/datasource/orders_remote.dart';
 import 'package:mobile/features/orders/data/repositories/order_repository_impl.dart';
 import 'package:mobile/features/orders/domain/usecases/place_order_usecase.dart';
 
+// Assistant (AI Chat)
+import 'package:mobile/features/assistant/data/datasources/chat_remote.dart';
+import 'package:mobile/features/assistant/data/repositories/chat_repository_impl.dart';
+import 'package:mobile/features/assistant/domain/usecases/send_message_usecase.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  debugPrintMarkNeedsLayoutStacks = false;
+  debugPrintMarkNeedsPaintStacks = false;
+  debugPaintSizeEnabled = false;
+  debugPaintBaselinesEnabled = false;
+  debugPaintPointersEnabled = false;
+  debugPaintLayerBordersEnabled = false;
   final dio = DioService.dio;
 
   // Auth
@@ -101,6 +113,11 @@ void main() {
   final orderRepo = OrderRepositoryImpl(ordersRemote);
   final placeOrderUC = PlaceOrderUseCase(orderRepo);
 
+  // Assistant
+  final chatRemote = ChatRemoteDatasourceImpl(dio);
+  final chatRepo = ChatRepositoryImpl(chatRemote);
+  final sendMessageUC = SendMessageUseCase(chatRepo);
+
   runApp(
     MultiRepositoryProvider(
       providers: [
@@ -125,6 +142,9 @@ void main() {
         // Tables & Orders
         RepositoryProvider.value(value: getTablesUC),
         RepositoryProvider.value(value: placeOrderUC),
+
+        // Assistant
+        RepositoryProvider.value(value: sendMessageUC),
       ],
       child: MultiBlocProvider(
         providers: [

@@ -7,16 +7,17 @@ import 'package:mobile/core/blocs/selected_branch_cubit.dart';
 import 'package:mobile/features/home/domain/usecases/get_home_data_usecase.dart';
 import 'package:mobile/features/categories/domain/usecases/list_categories_usecase.dart';
 import 'package:mobile/features/products/domain/usecases/list_products_usecase.dart';
-
 import 'package:mobile/features/home/presentation/bloc/home_bloc.dart';
 import 'package:mobile/features/home/presentation/bloc/home_event.dart';
 import 'package:mobile/features/home/presentation/screens/home_screen.dart';
-
 import 'package:mobile/features/search/presentation/bloc/search_bloc.dart';
 import 'package:mobile/features/search/presentation/bloc/search_event.dart';
 import 'package:mobile/features/search/presentation/screens/search_screen.dart';
-
 import 'package:mobile/shared/widgets/bottom_navigation_bar.dart';
+
+import 'package:mobile/features/assistant/domain/usecases/send_message_usecase.dart';
+import 'package:mobile/features/assistant/presentation/bloc/chat_bloc.dart';
+import 'package:mobile/features/assistant/presentation/screens/assistant_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -74,6 +75,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final sendMessageUseCase = context.read<SendMessageUseCase>();
+
     final screens = [
       BlocProvider.value(
         key: ValueKey('home_${_branchId ?? 'none'}'),
@@ -86,7 +89,10 @@ class _MainScreenState extends State<MainScreen> {
         child: const SearchScreen(),
       ),
       const Placeholder(key: ValueKey('seat')),
-      const Placeholder(key: ValueKey('assistant')),
+      BlocProvider(
+        create: (_) => ChatBloc(sendMessageUseCase: sendMessageUseCase, branchId: _branchId ?? 0),
+        child: AssistantScreen(branchId: _branchId ?? 0, sendMessageUseCase: sendMessageUseCase),
+      ),
       const Placeholder(key: ValueKey('activity')),
     ];
 

@@ -15,6 +15,7 @@ use App\Http\Controllers\Common\TableController as CommonTableController;
 // Client
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\FavoriteController;
+use App\Http\Controllers\Client\ChatController;
 
 // Owner
 use App\Http\Controllers\Owner\ProductController as OwnerProductController;
@@ -41,6 +42,12 @@ Route::group(["prefix" => "v0.1"], function () {
         "prefix"     => "common",
         "middleware" => "auth:api",
     ], function () {
+        //Ai
+        Route::group(["prefix" => "chat"], function () {
+            Route::post("/", [ChatController::class, "handleUserMessage"]);
+            Route::get("/",  [ChatController::class, "getChatHistory"]);
+            Route::delete("/", [ChatController::class, "deleteMessage"]);
+        });
         // Products
         Route::group(["prefix" => "products"], function () {
             Route::get("/",     [CommonProductController::class, "index"]);
