@@ -29,20 +29,19 @@ jobs:
       - name: Start services
         run: docker compose up -d --wait
 
-      - name: Wait for MySQL to be ready
+      - name: Wait for Laravel to connect to DB
         run: |
-          echo "Waiting for MySQL to be ready..."
+          echo "Waiting for Laravel DB connection..."
           for i in $(seq 1 30); do
             echo "Attempt $i..."
-            if docker compose exec server mysql -h database -uroot -p1234 -e "SELECT 1"; then
-              echo "MySQL is ready"
+            if docker compose exec server php artisan migrate:status; then
+              echo "Laravel can talk to the DB"
               break
             fi
             echo "Still waiting... ($i/30)"
             sleep 2
             if [ $i -eq 30 ]; then
-              echo "MySQL not ready after 30 attempts"
-              echo "--- MySQL Logs ---"
+              echo "Laravel could not connect to DB in time"
               docker compose logs database
               exit 1
             fi
