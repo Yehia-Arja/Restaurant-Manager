@@ -3,7 +3,6 @@
 namespace App\Services\IntentHandlers;
 
 use App\Models\Product;
-use Illuminate\Support\Collection;
 
 class ProductIntentHandler
 {
@@ -29,11 +28,12 @@ class ProductIntentHandler
             );
         }
 
-        // Filter by branch location via polymorphic 'locations'
+        // Corrected polymorphic branch filtering
         if (!empty($data['branch_id'])) {
-            $query->whereHas('locations', fn($q) =>
-                $q->where('restaurant_location_id', $data['branch_id'])
-            );
+            $query->whereHas('locations', function ($q) use ($data) {
+                $q->where('locationable_type', 'App\Models\RestaurantLocation')
+                  ->where('locationable_id', $data['branch_id']);
+            });
         }
 
         $products = $query->with('tags', 'category')->take(3)->get();

@@ -18,6 +18,7 @@ class ChatService
 
         // Save user message
         Message::create([
+            'user_id'     => $data['user_id'],
             'chat_id'     => $chat->id,
             'sender_type' => 'user',
             'content'     => $data['message'],
@@ -35,8 +36,9 @@ class ChatService
 
         if (!empty($structured['reply'])) {
             Message::create([
+                'user_id'     => $data['user_id'],
                 'chat_id'     => $chat->id,
-                'sender_type' => 'assistant',
+                'sender_type' => 'ai',
                 'content'     => $structured['reply'],
             ]);
             return $structured;
@@ -52,8 +54,9 @@ class ChatService
         }
 
         Message::create([
+            'user_id'     => $data['user_id'],
             'chat_id'     => $chat->id,
-            'sender_type' => 'assistant',
+            'sender_type' => 'ai',
             'content'     => $reply,
         ]);
 
@@ -85,7 +88,7 @@ class ChatService
         if ($chat->user_id !== $userId) {
             throw new \Exception("Unauthorized action.");
         }
-        
+
         $message->delete();
     }
 }

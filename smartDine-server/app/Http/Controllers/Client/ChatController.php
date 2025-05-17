@@ -43,7 +43,7 @@ class ChatController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return $this->error('An error occurred while processing your message.', 500);
+            return $this->error($e->getMessage(), 500);
         }
     }
 
