@@ -1,15 +1,12 @@
-class MessageModel {
-  final int id;
-  final String content;
-  final String senderType;
-  final DateTime createdAt;
+import '../../domain/entities/message.dart';
 
+class MessageModel extends Message {
   MessageModel({
-    required this.id,
-    required this.content,
-    required this.senderType,
-    required this.createdAt,
-  });
+    required int id,
+    required String content,
+    required String senderType,
+    required DateTime createdAt,
+  }) : super(id: id, content: content, senderType: senderType, createdAt: createdAt);
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
