@@ -54,6 +54,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Debug files before SCP
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Contents:"
+          ls -la
+          echo "SmartDine-server:"
+          ls -la smartDine-server || echo "Missing smartDine-server"
+          echo "SmartDine-ws-server:"
+          ls -la smartDine-ws-server || echo "Missing smartDine-ws-server"
+          echo "docker-compose.yml:"
+          ls -la docker-compose.yml || echo "Missing docker-compose.yml"
+
       - name: Copy project to EC2
         uses: appleboy/scp-action@v1
         with:
