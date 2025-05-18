@@ -46,7 +46,7 @@ services:
       - database
 
   ws-server:
-    build: ./smartDine-ws-server
+    image: yehiaarja/smartdine-ws:latest
     container_name: smartdine_ws
     restart: always
     ports:

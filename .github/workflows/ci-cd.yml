@@ -9,9 +9,6 @@ on:
 jobs:
   Build-Test-Push:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -25,8 +22,11 @@ jobs:
       - name: Build Laravel image
         run: docker build -t yehiaarja/dockersmartdine:latest ./smartDine-server
 
+      - name: Build WebSocket image
+        run: docker build -t yehiaarja/smartdine-ws:latest ./smartDine-ws-server
+
       - name: Start services
-        run: docker compose -f ./smartDine-server/docker-compose.yaml up -d
+        run: docker compose -f ./docker-compose.yaml up -d
 
       - name: Wait for DB to be ready
         run: |
@@ -35,13 +35,16 @@ jobs:
           done
 
       - name: Run migrations
-        run: docker compose -f ./smartDine-server/docker-compose.yaml exec server php artisan migrate --force
+        run: docker compose -f ./docker-compose.yaml exec server php artisan migrate --force
 
       - name: Run tests
-        run: docker compose -f ./smartDine-server/docker-compose.yaml exec server php artisan test
+        run: docker compose -f ./docker-compose.yaml exec server php artisan test
 
-      - name: Push Laravel Docker image
+      - name: Push Laravel image
         run: docker push yehiaarja/dockersmartdine:latest
+
+      - name: Push WebSocket image
+        run: docker push yehiaarja/smartdine-ws:latest
 
   Deploy-Staging:
     if: github.ref_name == 'main'
@@ -68,10 +71,11 @@ jobs:
           key: ${{ secrets.STAGING_EC2_KEY }}
           script: |
             cd /home/${{ secrets.STAGING_EC2_USER }}
-            sudo docker compose -f ./smartDine-server/docker-compose.yaml down
+            sudo docker compose -f ./docker-compose.yaml down
             sudo docker rmi yehiaarja/dockersmartdine:latest || true
-            sudo docker compose -f ./smartDine-server/docker-compose.yaml pull
-            sudo docker compose -f ./smartDine-server/docker-compose.yaml up -d
+            sudo docker rmi yehiaarja/smartdine-ws:latest || true
+            sudo docker compose -f ./docker-compose.yaml pull
+            sudo docker compose -f ./docker-compose.yaml up -d
 
   Deploy-Production:
     if: github.ref_name == 'production'
@@ -98,7 +102,8 @@ jobs:
           key: ${{ secrets.PROD_EC2_KEY }}
           script: |
             cd /home/${{ secrets.PROD_EC2_USER }}
-            sudo docker compose -f ./smartDine-server/docker-compose.yaml down
+            sudo docker compose -f ./docker-compose.yaml down
             sudo docker rmi yehiaarja/dockersmartdine:latest || true
-            sudo docker compose -f ./smartDine-server/docker-compose.yaml pull
-            sudo docker compose -f ./smartDine-server/docker-compose.yaml up -d
+            sudo docker rmi yehiaarja/smartdine-ws:latest || true
+            sudo docker compose -f ./docker-compose.yaml pull
+            sudo docker compose -f ./docker-compose.yaml up -d
