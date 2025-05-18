@@ -90,7 +90,7 @@ jobs:
           username: ${{ secrets.STAGING_EC2_USER }}
           key: ${{ secrets.STAGING_EC2_KEY }}
           source: "smartdine-deploy/"
-          target: "/home/${{ secrets.STAGING_EC2_USER }}/smartdine-deploy"
+          target: "/home/${{ secrets.STAGING_EC2_USER }}"
           recursive: true
 
       - name: SSH and Deploy to EC2
@@ -142,7 +142,7 @@ jobs:
           username: ${{ secrets.PROD_EC2_USER }}
           key: ${{ secrets.PROD_EC2_KEY }}
           source: "smartdine-deploy/"
-          target: "/home/${{ secrets.PROD_EC2_USER }}/smartdine-deploy"
+          target: "/home/${{ secrets.PROD_EC2_USER }}"
           recursive: true
 
       - name: SSH and Deploy to EC2
