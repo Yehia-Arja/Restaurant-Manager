@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./smartDine-server
+        working-directory: .
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -23,10 +23,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Laravel image
-        run: docker build -t yehiaarja/dockersmartdine:latest .
+        run: docker build -t yehiaarja/dockersmartdine:latest ./smartDine-server
 
       - name: Start services
-        run: docker compose up -d
+        run: docker compose -f ./smartDine-server/docker-compose.yaml up -d
 
       - name: Wait for DB to be ready
         run: |
@@ -35,10 +35,10 @@ jobs:
           done
 
       - name: Run migrations
-        run: docker compose exec server php artisan migrate --force
+        run: docker compose -f ./smartDine-server/docker-compose.yaml exec server php artisan migrate --force
 
       - name: Run tests
-        run: docker compose exec server php artisan test
+        run: docker compose -f ./smartDine-server/docker-compose.yaml exec server php artisan test
 
       - name: Push Laravel Docker image
         run: docker push yehiaarja/dockersmartdine:latest
@@ -51,27 +51,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Copy docker-compose.yml to EC2 (Staging)
+      - name: Copy project to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.STAGING_DEPLOY_HOST }}
           username: ${{ secrets.STAGING_EC2_USER }}
           key: ${{ secrets.STAGING_EC2_KEY }}
-          source: "smartDine-server"
+          source: "."
           target: "/home/${{ secrets.STAGING_EC2_USER }}"
 
-      - name: SSH and Deploy to EC2 (Staging)
+      - name: SSH and Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.STAGING_DEPLOY_HOST }}
           username: ${{ secrets.STAGING_EC2_USER }}
           key: ${{ secrets.STAGING_EC2_KEY }}
           script: |
-            cd /home/${{ secrets.STAGING_EC2_USER }}/smartDine-server
-            sudo docker compose down
+            cd /home/${{ secrets.STAGING_EC2_USER }}
+            sudo docker compose -f ./smartDine-server/docker-compose.yaml down
             sudo docker rmi yehiaarja/dockersmartdine:latest || true
-            sudo docker compose pull
-            sudo docker compose up -d
+            sudo docker compose -f ./smartDine-server/docker-compose.yaml pull
+            sudo docker compose -f ./smartDine-server/docker-compose.yaml up -d
 
   Deploy-Production:
     if: github.ref_name == 'production'
@@ -81,24 +81,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Copy docker-compose.yml to EC2 (Production)
+      - name: Copy project to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.PROD_DEPLOY_HOST }}
           username: ${{ secrets.PROD_EC2_USER }}
           key: ${{ secrets.PROD_EC2_KEY }}
-          source: "smartDine-server/docker-compose.yml"
+          source: "."
           target: "/home/${{ secrets.PROD_EC2_USER }}"
 
-      - name: SSH and Deploy to EC2 (Production)
+      - name: SSH and Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.PROD_DEPLOY_HOST }}
           username: ${{ secrets.PROD_EC2_USER }}
           key: ${{ secrets.PROD_EC2_KEY }}
           script: |
-            cd /home/${{ secrets.PROD_EC2_USER }}/smartDine-server
-            sudo docker compose down
+            cd /home/${{ secrets.PROD_EC2_USER }}
+            sudo docker compose -f ./smartDine-server/docker-compose.yaml down
             sudo docker rmi yehiaarja/dockersmartdine:latest || true
-            sudo docker compose pull
-            sudo docker compose up -d
+            sudo docker compose -f ./smartDine-server/docker-compose.yaml pull
+            sudo docker compose -f ./smartDine-server/docker-compose.yaml up -d

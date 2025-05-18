@@ -14,7 +14,7 @@ class TableResource extends JsonResource
             'floor'       => $this->floor,
             'position'    => json_decode($this->position, true),
             'num_chairs'  => $this->chairs_count ?? $this->chairs()->count(),
-            'is_occupied' => ($this->occupied_chairs_count ?? $this->chairs()->where('is_occupied', true)->count()) > 0,
+            'is_occupied' => $this->is_occupied,
         ];
     }
 }

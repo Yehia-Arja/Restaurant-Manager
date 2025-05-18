@@ -35,5 +35,5 @@ class TableController extends Controller
         }
 
     }
-
+    
 }
