@@ -75,14 +75,23 @@ jobs:
           mv smartDine-ws-server smartdine-deploy/
           mv docker-compose.yml smartdine-deploy/
 
+      - name: Ensure target directory exists
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.STAGING_DEPLOY_HOST }}
+          username: ${{ secrets.STAGING_EC2_USER }}
+          key: ${{ secrets.STAGING_EC2_KEY }}
+          script: mkdir -p /home/${{ secrets.STAGING_EC2_USER }}/smartdine-deploy
+
       - name: Copy project to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.STAGING_DEPLOY_HOST }}
           username: ${{ secrets.STAGING_EC2_USER }}
           key: ${{ secrets.STAGING_EC2_KEY }}
-          source: "smartdine-deploy"
+          source: "smartdine-deploy/"
           target: "/home/${{ secrets.STAGING_EC2_USER }}/smartdine-deploy"
+          recursive: true
 
       - name: SSH and Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
@@ -118,14 +127,23 @@ jobs:
           mv smartDine-ws-server smartdine-deploy/
           mv docker-compose.yml smartdine-deploy/
 
+      - name: Ensure target directory exists
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PROD_DEPLOY_HOST }}
+          username: ${{ secrets.PROD_EC2_USER }}
+          key: ${{ secrets.PROD_EC2_KEY }}
+          script: mkdir -p /home/${{ secrets.PROD_EC2_USER }}/smartdine-deploy
+
       - name: Copy project to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.PROD_DEPLOY_HOST }}
           username: ${{ secrets.PROD_EC2_USER }}
           key: ${{ secrets.PROD_EC2_KEY }}
-          source: "smartdine-deploy"
+          source: "smartdine-deploy/"
           target: "/home/${{ secrets.PROD_EC2_USER }}/smartdine-deploy"
+          recursive: true
 
       - name: SSH and Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
