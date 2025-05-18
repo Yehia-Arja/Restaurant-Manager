@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Chair;
 use App\Models\Table;
+use Illuminate\Support\Facades\Http;
 
 class ChairSensorService
 {
@@ -23,5 +24,18 @@ class ChairSensorService
         $table->is_occupied = $anyOccupied;
         $table->save();
 
+        self::notifyNodeJs($table->id, $table->is_occupied);
+
+    }
+
+    private static function notifyNodeJs(int $tableId, bool $occupied): void
+    {
+        Http::post('http://websocket:3000/broadcast', [
+            'event' => 'table_updated',
+            'data' => [
+                'table_id' => $tableId,
+                'is_occupied' => $occupied,
+            ],
+        ]);
     }
 }
