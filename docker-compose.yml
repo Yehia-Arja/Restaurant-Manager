@@ -26,7 +26,7 @@ services:
       retries: 10
       timeout: 5s
     ports:
-      - 3380:3306
+      - 3390:3306
     volumes:
       - db-data:/var/lib/mysql
 
