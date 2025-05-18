@@ -16,7 +16,7 @@ class MessageRemote {
         data: {'restaurant_location_id': restaurantLocationId, 'message': message},
       );
 
-      final data = response.data['data'];
+      final data = response.data['data']['message'];
 
       return MessageModel.fromJson(data);
     } catch (e) {

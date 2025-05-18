@@ -224,6 +224,12 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "intl",
+      "rootUri": "file:///C:/Users/yehia/AppData/Local/Pub/Cache/hosted/pub.dev/intl-0.18.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "js",
       "rootUri": "file:///C:/Users/yehia/AppData/Local/Pub/Cache/hosted/pub.dev/js-0.6.7",
       "packageUri": "lib/",
@@ -560,7 +566,7 @@
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-05-16T12:27:58.587990Z",
+  "generated": "2025-05-18T00:29:10.492109Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/src/flutter/flutter",
