@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/message.dart';
-import '../../domain/usecases/get_chat_history.dart';
-import '../../domain/usecases/send_message.dart';
+import '../../domain/usecases/get_chat_history_usecase.dart';
+import '../../domain/usecases/send_message_usecase.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
 

@@ -57,9 +57,12 @@ import 'package:mobile/features/orders/data/repositories/order_repository_impl.d
 import 'package:mobile/features/orders/domain/usecases/place_order_usecase.dart';
 
 // Assistant (AI Chat)
+import 'package:mobile/features/assistant/data/repositories/message_repository_impl.dart';
 import 'package:mobile/features/assistant/data/datasources/chat_remote.dart';
-import 'package:mobile/features/assistant/data/repositories/chat_repository_impl.dart';
+import 'package:mobile/features/assistant/data/datasources/message_remote.dart';
+import 'package:mobile/features/assistant/data/repositories/message_repository_impl.dart';
 import 'package:mobile/features/assistant/domain/usecases/send_message_usecase.dart';
+import 'package:mobile/features/assistant/domain/usecases/get_chat_history_usecase.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,6 +72,7 @@ void main() {
   debugPaintBaselinesEnabled = false;
   debugPaintPointersEnabled = false;
   debugPaintLayerBordersEnabled = false;
+
   final dio = DioService.dio;
 
   // Auth
@@ -114,37 +118,27 @@ void main() {
   final placeOrderUC = PlaceOrderUseCase(orderRepo);
 
   // Assistant
-  final chatRemote = ChatRemoteDatasourceImpl(dio);
-  final chatRepo = ChatRepositoryImpl(chatRemote);
-  final sendMessageUC = SendMessageUseCase(chatRepo);
+  final chatRemote = ChatRemote(dio);
+  final messageRemote = MessageRemote(dio);
+  final messageRepo = MessageRepositoryImpl(chatRemote: chatRemote, messageRemote: messageRemote);
+  final sendMessageUC = SendMessage(messageRepo);
+  final getChatHistoryUC = GetChatHistory(messageRepo);
 
   runApp(
     MultiRepositoryProvider(
       providers: [
-        // Auth
         RepositoryProvider.value(value: loginUseCase),
         RepositoryProvider.value(value: signupUseCase),
-
-        // Restaurant & Favorites
         RepositoryProvider.value(value: getRestaurantsUC),
         RepositoryProvider.value(value: toggleFavoriteUC),
-
-        // Home
         RepositoryProvider.value(value: getHomeDataUC),
-
-        // Products
         RepositoryProvider.value(value: getProductDetailUC),
         RepositoryProvider.value(value: listProductsUC),
-
-        // Categories
         RepositoryProvider.value(value: listCategoriesUC),
-
-        // Tables & Orders
         RepositoryProvider.value(value: getTablesUC),
         RepositoryProvider.value(value: placeOrderUC),
-
-        // Assistant
         RepositoryProvider.value(value: sendMessageUC),
+        RepositoryProvider.value(value: getChatHistoryUC),
       ],
       child: MultiBlocProvider(
         providers: [

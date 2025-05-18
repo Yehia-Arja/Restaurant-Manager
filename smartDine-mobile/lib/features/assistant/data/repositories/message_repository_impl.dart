@@ -1,28 +1,26 @@
-import '../../domain/entities/message.dart';
+import 'package:mobile/features/assistant/domain/entities/message.dart';
+import 'package:mobile/features/assistant/domain/repositories/message_repository.dart';
+import 'package:mobile/features/assistant/data/datasources/chat_remote.dart';
+import 'package:mobile/features/assistant/data/datasources/message_remote.dart';
 
-class MessageModel {
-  final int id;
-  final String content;
-  final String senderType;
-  final DateTime createdAt;
+class MessageRepositoryImpl implements MessageRepository {
+  final ChatRemote chatRemote;
+  final MessageRemote messageRemote;
 
-  MessageModel({
-    required this.id,
-    required this.content,
-    required this.senderType,
-    required this.createdAt,
-  });
+  MessageRepositoryImpl({required this.chatRemote, required this.messageRemote});
 
-  factory MessageModel.fromJson(Map<String, dynamic> json) {
-    return MessageModel(
-      id: json['id'],
-      content: json['content'],
-      senderType: json['sender_type'],
-      createdAt: DateTime.parse(json['created_at']),
-    );
+  @override
+  Future<List<Message>> getChatMessages(int restaurantLocationId) {
+    return chatRemote.getChatHistory(restaurantLocationId: restaurantLocationId);
   }
 
-  Message toEntity() {
-    return Message(id: id, content: content, senderType: senderType, createdAt: createdAt);
+  @override
+  Future<Message> sendMessage({required int restaurantLocationId, required String message}) {
+    return messageRemote.sendMessage(restaurantLocationId: restaurantLocationId, message: message);
+  }
+
+  @override
+  Future<void> deleteMessage(int messageId) {
+    return messageRemote.deleteMessage(messageId);
   }
 }

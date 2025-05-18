@@ -17,6 +17,7 @@ class MessageRemote {
       );
 
       final data = response.data['data'];
+
       return MessageModel.fromJson(data);
     } catch (e) {
       throw Exception('Failed to send message: $e');
