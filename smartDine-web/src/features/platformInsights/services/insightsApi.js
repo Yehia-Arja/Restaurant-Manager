@@ -4,12 +4,12 @@ import { requestMethods } from '../../../utils/enums/request.methods';
 const insightsApi = {
   getInsights: async (month = null) => {
     try {
-      const route = month ? `/insights?month=${month}` : '/insights';
+        const route = month ? `admin/platform-insights?month=${month}` : 'admin/platform-insights';
+        console.log("Fetching insights from route:", route);
       const response = await request({
         method: requestMethods.GET,
         route,
       });
-
       if (!response.success) {
         throw new Error(response.message || "Failed to fetch insights");
       }

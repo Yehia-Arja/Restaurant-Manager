@@ -18,7 +18,7 @@ const insightsSlice = createSlice({
       })
       .addCase(fetchInsights.fulfilled, (state, action) => {
         state.loading = false;
-        state.insight = action.payload.insight;
+        state.insight = action.payload;
         state.dailyRevenue = action.payload.daily_revenue;
       })
       .addCase(fetchInsights.rejected, (state, action) => {

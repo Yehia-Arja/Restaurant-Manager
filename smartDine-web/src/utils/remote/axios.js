@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-const apiUrl = import.meta.env.VITE_URL ;
+const apiUrl = 'http://13.36.237.88/api/v0.1/';
 
 const request = async ({ method, route, body, headers = {} }) => {
   try {
