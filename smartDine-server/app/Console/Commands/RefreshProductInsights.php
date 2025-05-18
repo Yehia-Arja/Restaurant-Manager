@@ -11,11 +11,9 @@ use App\Models\Product;
 
 class RefreshProductInsights extends Command
 {
-    protected $signature = <<<'SIG'
-app:refresh-product-insights
-    {--restaurant_id= : Refresh only this restaurant}
-    {--branch_id=     : Refresh only this branch}
-SIG;
+    protected $signature = 'refresh:product-insights
+                            {--branch_id= : The branch ID to process}
+                            {--restaurant_id= : The restaurant ID to process}';
     protected $description = 'Recalculate product_insights per-branch (and thus per-restaurant)';
 
     public function handle()

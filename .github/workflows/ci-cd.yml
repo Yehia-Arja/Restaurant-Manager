@@ -9,10 +9,6 @@ on:
 jobs:
   Build-Test-Push:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./smartDine-server
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -24,81 +20,141 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Laravel image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/smartdine:latest .
+        run: docker build -t yehiaarja/dockersmartdine:latest ./smartDine-server
+
+      - name: Build WebSocket image
+        run: docker build -t yehiaarja/smartdine-ws:latest ./smartDine-ws-server
 
       - name: Start services
-        run: docker compose up -d
+        run: docker compose -f ./docker-compose.yml up -d
 
       - name: Wait for DB to be ready
         run: |
-          until docker exec smartdine-server-mysql_db-1 mysql -uroot -p1234 -e "select 1"; do
+          until docker exec smartdine-server-database-2 mysql -uroot -p1234 -e "select 1"; do
             echo "Waiting for DB..."; sleep 2;
           done
 
       - name: Run migrations
-        run: docker exec smartdine-server-laravel-1 php artisan migrate --force
+        run: docker compose -f ./docker-compose.yml exec server php artisan migrate --force
 
       - name: Run tests
-        run: docker exec smartdine-server-laravel-1 php artisan test
+        run: docker compose -f ./docker-compose.yml exec server php artisan test
 
-      - name: Push Laravel Docker image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/smartdine:latest
+      - name: Push Laravel image
+        run: docker push yehiaarja/dockersmartdine:latest
 
-  Copy-docker-compose-to-EC2:
-    needs: Build-Test-Push
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Push WebSocket image
+        run: docker push yehiaarja/smartdine-ws:latest
 
-      - name: Copy docker-compose.yml to EC2
-        uses: appleboy/scp-action@v1
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
-          host: ${{ secrets.STAGING_SERVER }}
-          username: ubuntu
-          key: ${{ secrets.SSH_STAGING_PRIVATE_KEY }}
-          source: "smartDine-server/docker-compose.yml"
-          target: "/home/ubuntu"
+          name: smartdine-artifacts
+          path: |
+            smartDine-server
+            smartDine-ws-server
+            docker-compose.yml
 
   Deploy-Staging:
-    needs: Copy-docker-compose-to-EC2
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: SSH and Deploy to Staging
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.STAGING_SERVER }}
-          username: ubuntu
-          key: ${{ secrets.SSH_STAGING_PRIVATE_KEY }}
-          script: |
-            cd /home/ubuntu/smartDine-server
-            sudo docker-compose down
-            sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/smartdine:latest || true
-            sudo docker-compose pull
-            sudo docker-compose up -d
-
-  Deploy-Production:
+    if: github.ref_name == 'main'
     needs: Build-Test-Push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/production'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: SSH and Deploy to Production
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: smartdine-artifacts
+
+      - name: Prepare deployment folder
+        run: |
+          mkdir smartdine-deploy
+          mv smartDine-server smartdine-deploy/
+          mv smartDine-ws-server smartdine-deploy/
+          mv docker-compose.yml smartdine-deploy/
+
+      - name: Ensure target directory exists
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.PRODUCTION_SERVER }}
-          username: ubuntu
-          key: ${{ secrets.SSH_PRODUCTION_PRIVATE_KEY }}
+          host: ${{ secrets.STAGING_DEPLOY_HOST }}
+          username: ${{ secrets.STAGING_EC2_USER }}
+          key: ${{ secrets.STAGING_EC2_KEY }}
+          script: mkdir -p /home/${{ secrets.STAGING_EC2_USER }}/smartdine-deploy
+
+      - name: Copy project to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.STAGING_DEPLOY_HOST }}
+          username: ${{ secrets.STAGING_EC2_USER }}
+          key: ${{ secrets.STAGING_EC2_KEY }}
+          source: "smartdine-deploy/"
+          target: "/home/${{ secrets.STAGING_EC2_USER }}"
+          recursive: true
+
+      - name: SSH and Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.STAGING_DEPLOY_HOST }}
+          username: ${{ secrets.STAGING_EC2_USER }}
+          key: ${{ secrets.STAGING_EC2_KEY }}
           script: |
-            cd /home/ubuntu/smartDine-server
-            sudo docker-compose down
-            sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/smartdine:latest || true
-            sudo docker-compose pull
-            sudo docker-compose up -d
+            cd /home/${{ secrets.STAGING_EC2_USER }}/smartdine-deploy
+            sudo docker compose -f ./docker-compose.yml down
+            sudo docker rmi yehiaarja/dockersmartdine:latest || true
+            sudo docker rmi yehiaarja/smartdine-ws:latest || true
+            sudo docker compose -f ./docker-compose.yml pull
+            sudo docker compose -f ./docker-compose.yml up -d
+
+  Deploy-Production:
+    if: github.ref_name == 'production'
+    needs: Build-Test-Push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: smartdine-artifacts
+
+      - name: Prepare deployment folder
+        run: |
+          mkdir smartdine-deploy
+          mv smartDine-server smartdine-deploy/
+          mv smartDine-ws-server smartdine-deploy/
+          mv docker-compose.yml smartdine-deploy/
+
+      - name: Ensure target directory exists
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PROD_DEPLOY_HOST }}
+          username: ${{ secrets.PROD_EC2_USER }}
+          key: ${{ secrets.PROD_EC2_KEY }}
+          script: mkdir -p /home/${{ secrets.PROD_EC2_USER }}/smartdine-deploy
+
+      - name: Copy project to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.PROD_DEPLOY_HOST }}
+          username: ${{ secrets.PROD_EC2_USER }}
+          key: ${{ secrets.PROD_EC2_KEY }}
+          source: "smartdine-deploy/"
+          target: "/home/${{ secrets.PROD_EC2_USER }}"
+          recursive: true
+
+      - name: SSH and Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PROD_DEPLOY_HOST }}
+          username: ${{ secrets.PROD_EC2_USER }}
+          key: ${{ secrets.PROD_EC2_KEY }}
+          script: |
+            cd /home/${{ secrets.PROD_EC2_USER }}/smartdine-deploy
+            sudo docker compose -f ./docker-compose.yml down
+            sudo docker rmi yehiaarja/dockersmartdine:latest || true
+            sudo docker rmi yehiaarja/smartdine-ws:latest || true
+            sudo docker compose -f ./docker-compose.yml pull
+            sudo docker compose -f ./docker-compose.yml up -d

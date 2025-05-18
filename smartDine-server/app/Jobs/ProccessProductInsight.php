@@ -18,47 +18,30 @@ class ProccessProductInsight implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
 
-    /**
-     * Optional month (Y-m), default to now.
-     */
     protected string $month;
+    protected array $productIds;
+    protected int $branchId;
 
-    /**
-     * Create a new job instance.
-     *
-     * @param  string|null  $month  format "YYYY-MM", defaults to current month
-     */
-    public function __construct(?string $month = null)
+    public function __construct(array $productIds, int $branchId, ?string $month = null)
     {
+        $this->productIds = $productIds;
+        $this->branchId = $branchId;
         $this->month = $month ?: now()->format('Y-m');
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        // Fetch all product↔branch entries
-        $pairs = DB::table('locationables')
-            ->where('locationable_type', 'Product')
-            ->select('locationable_id as product_id', 'restaurant_location_id')
-            ->get();
-
-        foreach ($pairs as $pair) {
-            $productId = $pair->product_id;
-            $branchId  = $pair->restaurant_location_id;
-
+        foreach ($this->productIds as $productId) {
             // Order count (all statuses, include soft-deleted)
             $orderCount = Order::withTrashed()
                 ->where('product_id', $productId)
-                ->where('restaurant_location_id', $branchId)
+                ->where('restaurant_location_id', $this->branchId)
                 ->count();
 
-            // Reviews for that product at that branch
             $reviews = Review::where('reviewable_type', 'App\Models\Product')
                 ->where('reviewable_id', $productId)
                 ->whereHas('order', fn($q) =>
-                    $q->where('restaurant_location_id', $branchId)
+                    $q->where('restaurant_location_id', $this->branchId)
                 )
                 ->get();
 
@@ -67,7 +50,6 @@ class ProccessProductInsight implements ShouldQueue
                 ? round($reviews->avg('rating'), 2)
                 : 0.00;
 
-            // Last 5 comments
             $latestComments = $reviews
                 ->sortByDesc('created_at')
                 ->take(5)
@@ -77,8 +59,8 @@ class ProccessProductInsight implements ShouldQueue
 
             ProductInsight::updateOrCreate(
                 [
-                    'product_id'                => $productId,
-                    'restaurant_location_id'    => $branchId,
+                    'product_id'             => $productId,
+                    'restaurant_location_id' => $this->branchId,
                 ],
                 [
                     'order_count'     => $orderCount,
@@ -90,7 +72,7 @@ class ProccessProductInsight implements ShouldQueue
             );
         }
 
-        Log::info("Product insights recalculated for {$this->month}.");
+        Log::info("Product insights recalculated for branch {$this->branchId} ({$this->month}).");
     }
 
     public function failed(\Throwable $exception): void

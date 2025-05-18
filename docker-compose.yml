@@ -1,0 +1,63 @@
+version: '3.8'
+services:
+  server:
+    container_name: smartdine-server
+    build: ./smartDine-server
+    image: yehiaarja/dockersmartdine:latest
+    env_file:
+      - ./smartDine-server/.env.example
+    restart: always
+    ports:
+      - 80:8000
+    depends_on:
+      - database
+      - redis
+    command: /app/shellScript.sh
+
+  database:
+    container_name: smartdine-server-database-2
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=restaurant_db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 10
+      timeout: 5s
+    ports:
+      - 3390:3306
+    volumes:
+      - db-data:/var/lib/mysql
+
+  redis:
+    container_name: smartdine-redis-1
+    image: redis:alpine
+    ports:
+      - 6380:6379
+    volumes:
+      - redis-data:/data
+
+  phpmyadmin:
+    container_name: smartdine-phpmyadmin-1
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=database
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - 8080:80
+    depends_on:
+      - database
+
+  ws-server:
+    image: yehiaarja/smartdine-ws:latest
+    container_name: smartdine_ws
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - server
+      
+volumes:
+  db-data:
+  redis-data:
