@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->json('position');
             $table->bigInteger('number');
+            $table->boolean('is_occupied')->default(false);
             $table->smallInteger('floor');
             $table->timestamps();
 

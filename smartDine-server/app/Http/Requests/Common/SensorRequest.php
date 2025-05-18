@@ -4,7 +4,7 @@ namespace App\Http\Requests\Common;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TableRequest extends FormRequest
+class SensorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,8 @@ class TableRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'restaurant_location_id' => 'required|exists:restaurant_locations,id',
-            'floor'                 => 'required|integer|exists:tables,floor',
+            'sensor_id' => 'required|integer|exists:chairs,sensor_id',
+            'value'     => 'required|numeric',
         ];
     }
 }
