@@ -81,7 +81,7 @@ jobs:
           host: ${{ secrets.STAGING_DEPLOY_HOST }}
           username: ${{ secrets.STAGING_EC2_USER }}
           key: ${{ secrets.STAGING_EC2_KEY }}
-          source: "smartdine-deploy/*"
+          source: "smartdine-deploy"
           target: "/home/${{ secrets.STAGING_EC2_USER }}/smartdine-deploy"
 
       - name: SSH and Deploy to EC2
@@ -124,7 +124,7 @@ jobs:
           host: ${{ secrets.PROD_DEPLOY_HOST }}
           username: ${{ secrets.PROD_EC2_USER }}
           key: ${{ secrets.PROD_EC2_KEY }}
-          source: "smartdine-deploy/*"
+          source: "smartdine-deploy"
           target: "/home/${{ secrets.PROD_EC2_USER }}/smartdine-deploy"
 
       - name: SSH and Deploy to EC2
