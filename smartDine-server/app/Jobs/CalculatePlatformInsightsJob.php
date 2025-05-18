@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\User;
@@ -33,42 +34,27 @@ class CalculatePlatformInsightsJob implements ShouldQueue
 
     public function handle(): void
     {
-        // Owners & Clients
-        $ownersCount   = User::where('user_type_id', 2)->count();
-        $clientsCount  = User::where('user_type_id', 4)->count();
+        $ownersCount  = User::where('user_type_id', 2)->count();
+        $clientsCount = User::where('user_type_id', 4)->count();
 
-        // Monthly splits
-        [$y, $m]       = explode('-', $this->month);
-        [$py, $pm]     = explode('-', $this->prevMonth);
+        [$y, $m] = explode('-', $this->month);
 
-        // New clients this month vs last
-        $newClients   = User::where('user_type_id', 4)
-                            ->whereYear('created_at', $y)
-                            ->whereMonth('created_at', $m)
-                            ->count();
+        $newClients = User::where('user_type_id', 4)
+                          ->whereYear('created_at', $y)
+                          ->whereMonth('created_at', $m)
+                          ->count();
 
-        $newClientsP  = User::where('user_type_id', 4)
-                            ->whereYear('created_at', $py)
-                            ->whereMonth('created_at', $pm)
-                            ->count();
+        $restaurantsCount = Restaurant::count();
+        $newRestaurants   = Restaurant::whereYear('created_at', $y)
+                                      ->whereMonth('created_at', $m)
+                                      ->count();
 
-        // Restaurants
-        $restaurantsCount    = Restaurant::count();
-        $newRestaurants      = Restaurant::whereYear('created_at', $y)
-                                         ->whereMonth('created_at', $m)
-                                         ->count();
-        $newRestaurantsPrev  = Restaurant::whereYear('created_at', $py)
-                                         ->whereMonth('created_at', $pm)
-                                         ->count();
+        $productsCount       = Product::count();
+        $occupiedTablesCount = Table::where('is_occupied', true)->count();
 
-        // Products & Occupancy
-        $productsCount        = Product::count();
-        $occupiedTablesCount  = Table::where('is_occupied', true)->count();
-
-        // Orders & Revenue
-        $ordersThisMonth      = Order::whereYear('created_at', $y)
-                                     ->whereMonth('created_at', $m)
-                                     ->get();
+        $ordersThisMonth = Order::whereYear('created_at', $y)
+                                ->whereMonth('created_at', $m)
+                                ->get();
 
         $totalOrdersCount     = $ordersThisMonth->count();
         $completedOrdersCount = $ordersThisMonth->where('status', 'completed')->count();
@@ -78,14 +64,25 @@ class CalculatePlatformInsightsJob implements ShouldQueue
 
         $ordersThisMonth->load('product');
         $revenue = 0;
+
         foreach ($ordersThisMonth as $order) {
-            $revenue += $order->override_price ?? ($order->product->price ?? 0);
+            $productId  = $order->product_id;
+            $locationId = $order->restaurant_location_id;
+
+            $overridePrice = DB::table('locationables')
+                ->where('locationable_type', 'App\\Models\\Product')
+                ->where('locationable_id', $productId)
+                ->where('restaurant_location_id', $locationId)
+                ->value('override_price');
+
+            $productPrice = optional($order->product)->price ?? 0;
+            $price        = $overridePrice ?? $productPrice;
+
+            $revenue += $price;
         }
 
-        // Fetch previous insight
         $prevInsight = PlatformInsight::where('month', $this->prevMonth)->first();
 
-        // Growth calculations
         $clientsGrowth = ($prevInsight && $prevInsight->clients_count > 0)
             ? round((($clientsCount - $prevInsight->clients_count) / $prevInsight->clients_count) * 100, 2)
             : null;
@@ -94,7 +91,10 @@ class CalculatePlatformInsightsJob implements ShouldQueue
             ? round((($restaurantsCount - $prevInsight->restaurants_count) / $prevInsight->restaurants_count) * 100, 2)
             : null;
 
-        // Save to DB
+        $revenueGrowth = ($prevInsight && $prevInsight->total_revenue > 0)
+            ? round((($revenue - $prevInsight->total_revenue) / $prevInsight->total_revenue) * 100, 2)
+            : null;
+
         PlatformInsight::updateOrCreate(
             ['month' => $this->month],
             [
@@ -115,6 +115,7 @@ class CalculatePlatformInsightsJob implements ShouldQueue
                 'orders_completion_pct'    => $ordersCompletionPct,
 
                 'total_revenue'            => $revenue,
+                'revenue_growth_pct'       => $revenueGrowth,
             ]
         );
 
