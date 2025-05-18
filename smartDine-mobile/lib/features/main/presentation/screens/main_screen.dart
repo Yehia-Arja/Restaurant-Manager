@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:mobile/core/blocs/selected_restaurant_cubit.dart';
 import 'package:mobile/core/blocs/selected_branch_cubit.dart';
 import 'package:mobile/features/home/domain/usecases/get_home_data_usecase.dart';
@@ -14,10 +13,11 @@ import 'package:mobile/features/search/presentation/bloc/search_bloc.dart';
 import 'package:mobile/features/search/presentation/bloc/search_event.dart';
 import 'package:mobile/features/search/presentation/screens/search_screen.dart';
 import 'package:mobile/shared/widgets/bottom_navigation_bar.dart';
-
-import 'package:mobile/features/assistant/domain/usecases/send_message_usecase.dart';
 import 'package:mobile/features/assistant/presentation/bloc/chat_bloc.dart';
+import 'package:mobile/features/assistant/presentation/bloc/chat_event.dart';
 import 'package:mobile/features/assistant/presentation/screens/assistant_screen.dart';
+import 'package:mobile/features/assistant/domain/usecases/send_message_usecase.dart';
+import 'package:mobile/features/assistant/domain/usecases/get_chat_history_usecase.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -75,7 +75,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final sendMessageUseCase = context.read<SendMessageUseCase>();
+    final sendMessage = context.read<SendMessage>();
+    final getChatHistory = context.read<GetChatHistory>();
 
     final screens = [
       BlocProvider.value(
@@ -90,8 +91,12 @@ class _MainScreenState extends State<MainScreen> {
       ),
       const Placeholder(key: ValueKey('seat')),
       BlocProvider(
-        create: (_) => ChatBloc(sendMessageUseCase: sendMessageUseCase, branchId: _branchId ?? 0),
-        child: AssistantScreen(branchId: _branchId ?? 0, sendMessageUseCase: sendMessageUseCase),
+        key: ValueKey('assistant_${_branchId ?? 'none'}'),
+        create:
+            (_) =>
+                ChatBloc(getChatHistory: getChatHistory, sendMessage: sendMessage)
+                  ..add(FetchChatHistory(_branchId ?? 0)),
+        child: AssistantScreen(branchId: _branchId ?? 0, sendMessageUseCase: sendMessage),
       ),
       const Placeholder(key: ValueKey('activity')),
     ];
