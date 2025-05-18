@@ -23,6 +23,7 @@ class TableRequest extends FormRequest
     {
         return [
             'restaurant_location_id' => 'required|exists:restaurant_locations,id',
+            'floor'                 => 'required|integer|exists:tables,floor',
         ];
     }
 }

@@ -19,6 +19,7 @@ class TableController extends Controller
 
             $tables = TableService::getTableList(
                 $data['restaurant_location_id'],
+                $data['floor']
             );
 
             if ($tables->isEmpty()) {
@@ -35,5 +36,5 @@ class TableController extends Controller
         }
 
     }
-    
+
 }
