@@ -27,6 +27,7 @@ use App\Http\Controllers\ProductLocationController;
 use App\Http\Controllers\CategoryLocationController;
 
 // Admin
+use App\Http\Controllers\Admin\PlatformInsightController;
 use App\Http\Controllers\Admin\RestaurantController as AdminRestaurantController;
 use App\Http\Controllers\Admin\RestaurantLocationController as AdminLocationController;
 
@@ -134,6 +135,14 @@ Route::group(["prefix" => "v0.1"], function () {
         "prefix"     => "admin",
         "middleware" => "auth:api",
     ], function () {
+
+        // Insights
+        Route::group(['prefix' => 'platform-insights'], function () {
+            Route::get('/', [PlatformInsightController::class, 'index']);
+            Route::get('/months', [PlatformInsightController::class, 'months']);
+            Route::post('/refresh', [PlatformInsightController::class, 'refresh']);
+        });
+
         // Restaurants
         Route::group(["prefix" => "restaurants"], function () {
             Route::post("/",       [AdminRestaurantController::class, "store"]);
