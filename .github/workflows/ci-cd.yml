@@ -30,7 +30,7 @@ jobs:
 
       - name: Wait for DB to be ready
         run: |
-          until docker exec smartdine-server-database-1 mysql -uroot -p1234 -e "select 1"; do
+          until docker exec smartdine-server-database-2 mysql -uroot -p1234 -e "select 1"; do
             echo "Waiting for DB..."; sleep 2;
           done
 
