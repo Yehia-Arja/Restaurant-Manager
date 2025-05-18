@@ -68,13 +68,20 @@ jobs:
         with:
           name: smartdine-artifacts
 
+      - name: Prepare deployment folder
+        run: |
+          mkdir smartdine-deploy
+          mv smartDine-server smartdine-deploy/
+          mv smartDine-ws-server smartdine-deploy/
+          mv docker-compose.yml smartdine-deploy/
+
       - name: Copy project to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.STAGING_DEPLOY_HOST }}
           username: ${{ secrets.STAGING_EC2_USER }}
           key: ${{ secrets.STAGING_EC2_KEY }}
-          source: "smartDine-server smartDine-ws-server docker-compose.yml"
+          source: "smartdine-deploy/*"
           target: "/home/${{ secrets.STAGING_EC2_USER }}/smartdine-deploy"
 
       - name: SSH and Deploy to EC2
@@ -84,7 +91,7 @@ jobs:
           username: ${{ secrets.STAGING_EC2_USER }}
           key: ${{ secrets.STAGING_EC2_KEY }}
           script: |
-            cd /home/${{ secrets.STAGING_EC2_USER }}
+            cd /home/${{ secrets.STAGING_EC2_USER }}/smartdine-deploy
             sudo docker compose -f ./docker-compose.yml down
             sudo docker rmi yehiaarja/dockersmartdine:latest || true
             sudo docker rmi yehiaarja/smartdine-ws:latest || true
@@ -104,13 +111,20 @@ jobs:
         with:
           name: smartdine-artifacts
 
+      - name: Prepare deployment folder
+        run: |
+          mkdir smartdine-deploy
+          mv smartDine-server smartdine-deploy/
+          mv smartDine-ws-server smartdine-deploy/
+          mv docker-compose.yml smartdine-deploy/
+
       - name: Copy project to EC2
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.PROD_DEPLOY_HOST }}
           username: ${{ secrets.PROD_EC2_USER }}
           key: ${{ secrets.PROD_EC2_KEY }}
-          source: "smartDine-server smartDine-ws-server docker-compose.yml"
+          source: "smartdine-deploy/*"
           target: "/home/${{ secrets.PROD_EC2_USER }}/smartdine-deploy"
 
       - name: SSH and Deploy to EC2
@@ -120,7 +134,7 @@ jobs:
           username: ${{ secrets.PROD_EC2_USER }}
           key: ${{ secrets.PROD_EC2_KEY }}
           script: |
-            cd /home/${{ secrets.PROD_EC2_USER }}
+            cd /home/${{ secrets.PROD_EC2_USER }}/smartdine-deploy
             sudo docker compose -f ./docker-compose.yml down
             sudo docker rmi yehiaarja/dockersmartdine:latest || true
             sudo docker rmi yehiaarja/smartdine-ws:latest || true
