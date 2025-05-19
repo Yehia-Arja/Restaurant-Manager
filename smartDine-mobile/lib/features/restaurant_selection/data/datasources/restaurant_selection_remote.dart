@@ -5,12 +5,6 @@ class RestaurantSelectionRemote {
   final Dio _dio;
   RestaurantSelectionRemote(this._dio);
 
-  /// Fetches a paginated list of restaurants.
-  /// Expects the JSON to look like:
-  /// {
-  ///   "data": [ { …restaurant objects… } ],
-  ///   "pagination": { "current_page": 1, "last_page": 5, ... }
-  /// }
   Future<Map<String, dynamic>> getRestaurants({
     required String endpoint,
     String? query,

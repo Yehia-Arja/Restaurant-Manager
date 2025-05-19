@@ -16,11 +16,11 @@ import 'package:mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:mobile/features/auth/presentation/screens/signup_screen.dart';
 
 import 'package:mobile/features/restaurant_selection/data/datasources/restaurant_selection_remote.dart';
-import 'package:mobile/features/restaurant_selection/data/datasources/favorite_remote.dart';
+import 'package:mobile/features/favorite/data/datasources/favorite_remote.dart';
 import 'package:mobile/features/restaurant_selection/data/repositories/restaurant_selection_repository_impl.dart';
-import 'package:mobile/features/restaurant_selection/data/repositories/favorite_repository_impl.dart';
+import 'package:mobile/features/favorite/data/repositories/favorite_repository_impl.dart';
 import 'package:mobile/features/restaurant_selection/domain/usecases/get_restaurants_usecase.dart';
-import 'package:mobile/features/restaurant_selection/domain/usecases/toggle_favorite_usecase.dart';
+import 'package:mobile/features/favorite/domain/usecases/toggle_favorite_usecase.dart';
 import 'package:mobile/features/restaurant_selection/presentation/bloc/restaurant_selection_bloc.dart';
 import 'package:mobile/features/restaurant_selection/presentation/screens/restaurant_selection_screen.dart';
 
@@ -35,6 +35,7 @@ import 'package:mobile/features/products/data/datasources/product_remote.dart';
 import 'package:mobile/features/products/data/repositories/product_repository_impl.dart';
 import 'package:mobile/features/products/domain/usecases/get_product_detail_usecase.dart';
 import 'package:mobile/features/products/domain/usecases/list_products_usecase.dart';
+import 'package:mobile/features/products/presentation/bloc/product_bloc.dart';
 import 'package:mobile/features/products/presentation/widgets/product_detail_page.dart';
 
 import 'package:mobile/features/categories/data/datasources/category_remote.dart';
@@ -123,8 +124,9 @@ void main() {
           BlocProvider(create: (_) => SelectedBranchCubit()),
           BlocProvider(create: (_) => AuthBloc(loginUseCase, signupUseCase)),
           BlocProvider(create: (_) => RestaurantSelectionBloc(getRestaurantsUC, toggleFavoriteUC)),
-          BlocProvider(create: (_) => HomeBloc(getHomeDataUC)),
+          BlocProvider(create: (_) => HomeBloc(getHomeDataUC, toggleFavoriteUC)), // ✅ fixed here
           BlocProvider(create: (_) => SearchBloc(listCategoriesUC, listProductsUC)),
+          BlocProvider(create: (_) => ProductBloc(listProductsUC, toggleFavoriteUC)),
         ],
         child: const MyApp(),
       ),

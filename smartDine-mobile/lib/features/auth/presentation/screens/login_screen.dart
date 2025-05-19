@@ -18,13 +18,32 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+  final ScrollController _scrollController = ScrollController();
+
   bool _isPasswordVisible = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollTo(FocusNode focusNode) {
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          focusNode.offset.dy,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   @override
@@ -48,105 +67,131 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: BaseScaffold(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.chevron_left, size: 24, color: AppColors.placeholder),
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Back arrow
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.chevron_left, size: 24, color: AppColors.placeholder),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Login',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineLarge?.copyWith(color: AppColors.secondary),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Login to your account',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
-            ),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                'Email',
+              const SizedBox(height: 8),
+
+              // Title
+              Text(
+                'Login',
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineLarge?.copyWith(color: AppColors.secondary),
+              ),
+              const SizedBox(height: 8),
+
+              // Subtitle
+              Text(
+                'Login to your account',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
               ),
-            ),
-            const SizedBox(height: 4),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                hintText: 'Enter your email',
-                prefixIcon: const Icon(Icons.email, color: AppColors.placeholder),
+              const SizedBox(height: 16),
+
+              // SVG just before inputs, slightly blended
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: SvgPicture.asset(
+                  'lib/assets/images/login.svg',
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.22,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                'Password',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
+              const SizedBox(height: 16),
+
+              // Email
+              Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  'Email',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            TextField(
-              controller: _passwordController,
-              obscureText: !_isPasswordVisible,
-              decoration: InputDecoration(
-                hintText: 'Enter your password',
-                prefixIcon: const Icon(Icons.lock, color: AppColors.placeholder),
-                suffixIcon: Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                      color: AppColors.placeholder,
+              const SizedBox(height: 4),
+              TextField(
+                controller: _emailController,
+                focusNode: _emailFocus,
+                onTap: () => _scrollTo(_emailFocus),
+                decoration: const InputDecoration(
+                  hintText: 'Enter your email',
+                  prefixIcon: Icon(Icons.email, color: AppColors.placeholder),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Password
+              Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  'Password',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
+                ),
+              ),
+              const SizedBox(height: 4),
+              TextField(
+                controller: _passwordController,
+                focusNode: _passwordFocus,
+                onTap: () => _scrollTo(_passwordFocus),
+                obscureText: !_isPasswordVisible,
+                decoration: InputDecoration(
+                  hintText: 'Enter your password',
+                  prefixIcon: const Icon(Icons.lock, color: AppColors.placeholder),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: AppColors.placeholder,
+                      ),
+                      onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                     ),
-                    onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                final isLoading = state is AuthLoading;
-                return CustomButton(
-                  child:
-                      isLoading
-                          ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: AppColors.primary,
-                              strokeWidth: 2,
-                            ),
-                          )
-                          : const Text('Login'),
-                  onPressed: () {
-                    if (!isLoading) {
-                      final email = _emailController.text.trim();
-                      final password = _passwordController.text.trim();
-                      context.read<AuthBloc>().add(LoginRequested(email, password));
-                    }
-                  },
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-            SvgPicture.asset(
-              'lib/assets/images/login.svg',
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.height * 0.4,
-              fit: BoxFit.contain,
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              // Login Button
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  final isLoading = state is AuthLoading;
+                  return CustomButton(
+                    child:
+                        isLoading
+                            ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: AppColors.primary,
+                                strokeWidth: 2,
+                              ),
+                            )
+                            : const Text('Login'),
+                    onPressed: () {
+                      if (!isLoading) {
+                        final email = _emailController.text.trim();
+                        final password = _passwordController.text.trim();
+                        context.read<AuthBloc>().add(LoginRequested(email, password));
+                      }
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

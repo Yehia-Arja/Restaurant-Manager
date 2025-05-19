@@ -57,4 +57,10 @@ class Product extends Model
             'restaurant_location_id'
         );
     }
+
+    public function favorites()
+    {
+        return $this->morphMany(Favorite::class, 'favoritable');
+    }
+
 }

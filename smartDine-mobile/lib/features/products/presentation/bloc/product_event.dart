@@ -25,3 +25,11 @@ class LoadProducts extends ProductEvent {
   @override
   List<Object?> get props => [branchId, searchQuery, categoryId, favoritesOnly, page];
 }
+
+class ToggleProductFavorite extends ProductEvent {
+  final int productId;
+  const ToggleProductFavorite(this.productId);
+
+  @override
+  List<Object?> get props => [productId];
+}
