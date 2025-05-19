@@ -5,6 +5,7 @@ import 'package:mobile/features/search/presentation/bloc/search_event.dart';
 import 'package:mobile/features/search/presentation/bloc/search_state.dart';
 import 'package:mobile/features/categories/presentation/widgets/category_chip.dart';
 import 'package:mobile/shared/widgets/base_scaffold.dart';
+import 'package:mobile/core/blocs/selected_branch_cubit.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -19,6 +20,12 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+
+    final branchId = context.read<SelectedBranchCubit>().state;
+    if (branchId != null) {
+      context.read<SearchBloc>().add(InitSearch(branchId));
+    }
+
     _scroll.addListener(() {
       final bloc = context.read<SearchBloc>();
       if (_scroll.position.pixels >= _scroll.position.maxScrollExtent - 100 &&
