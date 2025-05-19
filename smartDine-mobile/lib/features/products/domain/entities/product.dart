@@ -9,7 +9,7 @@ class Product {
   final String imageUrl;
   final String arModelUrl;
 
-  Product({
+  const Product({
     required this.id,
     required this.name,
     required this.description,
@@ -20,4 +20,28 @@ class Product {
     required this.imageUrl,
     required this.arModelUrl,
   });
+
+  Product copyWith({
+    int? id,
+    String? name,
+    String? description,
+    String? price,
+    String? timeToDeliver,
+    String? ingredients,
+    bool? isFavorited,
+    String? imageUrl,
+    String? arModelUrl,
+  }) {
+    return Product(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      price: price ?? this.price,
+      timeToDeliver: timeToDeliver ?? this.timeToDeliver,
+      ingredients: ingredients ?? this.ingredients,
+      isFavorited: isFavorited ?? this.isFavorited,
+      imageUrl: imageUrl ?? this.imageUrl,
+      arModelUrl: arModelUrl ?? this.arModelUrl,
+    );
+  }
 }

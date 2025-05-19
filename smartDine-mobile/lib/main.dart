@@ -35,7 +35,7 @@ import 'package:mobile/features/products/data/datasources/product_remote.dart';
 import 'package:mobile/features/products/data/repositories/product_repository_impl.dart';
 import 'package:mobile/features/products/domain/usecases/get_product_detail_usecase.dart';
 import 'package:mobile/features/products/domain/usecases/list_products_usecase.dart';
-import 'package:mobile/features/products/presentation/bloc/product_bloc.dart'; // ✅ import this
+import 'package:mobile/features/products/presentation/bloc/product_bloc.dart';
 import 'package:mobile/features/products/presentation/widgets/product_detail_page.dart';
 
 import 'package:mobile/features/categories/data/datasources/category_remote.dart';
@@ -124,7 +124,7 @@ void main() {
           BlocProvider(create: (_) => SelectedBranchCubit()),
           BlocProvider(create: (_) => AuthBloc(loginUseCase, signupUseCase)),
           BlocProvider(create: (_) => RestaurantSelectionBloc(getRestaurantsUC, toggleFavoriteUC)),
-          BlocProvider(create: (_) => HomeBloc(getHomeDataUC)),
+          BlocProvider(create: (_) => HomeBloc(getHomeDataUC, toggleFavoriteUC)), // ✅ fixed here
           BlocProvider(create: (_) => SearchBloc(listCategoriesUC, listProductsUC)),
           BlocProvider(create: (_) => ProductBloc(listProductsUC, toggleFavoriteUC)),
         ],
