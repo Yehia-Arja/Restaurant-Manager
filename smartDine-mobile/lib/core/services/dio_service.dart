@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class DioService {
   static final Dio dio = Dio(
       BaseOptions(
-        baseUrl: 'http://13.36.237.88/api/v0.1/',
+        baseUrl: 'http://192.168.0.127/api/v0.1/',
         connectTimeout: const Duration(seconds: 100),
         receiveTimeout: const Duration(seconds: 100),
         headers: {'Accept': 'application/json'},
