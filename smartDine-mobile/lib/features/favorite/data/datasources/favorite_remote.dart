@@ -6,6 +6,7 @@ class FavoriteRemote {
 
   Future<void> toggleFavorite({required int id, required String type}) async {
     try {
+      print('om heteeee');
       final response = await _dio.post(
         'common/favorites',
         data: {'favoritable_id': id, 'favoritable_type': type},

@@ -8,6 +8,7 @@ class ProductModel extends Product {
     required String price,
     required String timeToDeliver,
     required String ingredients,
+    required bool isFavorited,
     required String imageUrl,
     required String arModelUrl,
   }) : super(
@@ -17,6 +18,7 @@ class ProductModel extends Product {
          price: price,
          timeToDeliver: timeToDeliver,
          ingredients: ingredients,
+         isFavorited: isFavorited,
          imageUrl: imageUrl,
          arModelUrl: arModelUrl,
        );
@@ -29,6 +31,7 @@ class ProductModel extends Product {
       price: json['price'] as String,
       timeToDeliver: json['time_to_deliver'] as String,
       ingredients: json['ingredients'] as String,
+      isFavorited: json['is_favorited'] ?? false,
       imageUrl: json['image_url'] as String,
       arModelUrl: json['ar_model_url'] as String,
     );

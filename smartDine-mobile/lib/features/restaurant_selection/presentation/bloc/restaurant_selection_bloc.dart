@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'restaurant_selection_event.dart';
 import 'restaurant_selection_state.dart';
 import '../../domain/usecases/get_restaurants_usecase.dart';
-import '../../domain/usecases/toggle_favorite_usecase.dart';
+import '../../../favorite/domain/usecases/toggle_favorite_usecase.dart';
 import '../../domain/entities/restaurant.dart';
 
 class RestaurantSelectionBloc extends Bloc<RestaurantSelectionEvent, RestaurantSelectionState> {

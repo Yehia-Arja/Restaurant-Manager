@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/blocs/selected_restaurant_cubit.dart';
 import 'package:mobile/core/theme/colors.dart';
 import 'package:mobile/features/home/presentation/bloc/home_bloc.dart';
+import 'package:mobile/features/home/presentation/bloc/home_event.dart';
 import 'package:mobile/features/home/presentation/bloc/home_state.dart';
 import 'package:mobile/features/home/presentation/widgets/branch_selector.dart';
 import 'package:mobile/features/categories/presentation/widgets/category_card.dart';
@@ -86,7 +87,15 @@ class HomeScreen extends StatelessWidget {
                               crossAxisSpacing: 12,
                               childAspectRatio: 167 / 193,
                             ),
-                            itemBuilder: (_, i) => ProductCard(product: data.products[i]),
+                            itemBuilder:
+                                (_, i) => ProductCard(
+                                  product: data.products[i],
+                                  onFavoritePressed: () {
+                                    context.read<HomeBloc>().add(
+                                      ToggleFavoriteInHome(data.products[i].id),
+                                    );
+                                  },
+                                ),
                           ),
                         ),
 
