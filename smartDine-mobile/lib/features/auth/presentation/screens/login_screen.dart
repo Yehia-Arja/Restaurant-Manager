@@ -73,15 +73,14 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Back button with padding
-              Padding(
-                padding: const EdgeInsets.only(left: 4),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.chevron_left, size: 24, color: AppColors.placeholder),
-                  ),
+              // Back arrow
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.chevron_left, size: 24, color: AppColors.placeholder),
                 ),
               ),
               const SizedBox(height: 8),
@@ -100,22 +99,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 'Login to your account',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
-              // Wider and better-fitted SVG image
+              // SVG just before inputs, slightly blended
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: SvgPicture.asset(
                   'lib/assets/images/login.svg',
                   width: double.infinity,
-                  height: MediaQuery.of(context).size.height * 0.24,
+                  height: MediaQuery.of(context).size.height * 0.22,
                   fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-              // Email Label
+              // Email
               Align(
                 alignment: Alignment.topLeft,
                 child: Text(
@@ -135,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Password Label
+              // Password
               Align(
                 alignment: Alignment.topLeft,
                 child: Text(
