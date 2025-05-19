@@ -30,7 +30,7 @@ class ChairSensorService
 
     private static function notifyNodeJs(int $tableId, bool $occupied): void
     {
-        Http::post('http://websocket:3000/broadcast', [
+        Http::post('http://smartdine_ws:3001/broadcast', [
             'event' => 'table_updated',
             'data' => [
                 'table_id' => $tableId,

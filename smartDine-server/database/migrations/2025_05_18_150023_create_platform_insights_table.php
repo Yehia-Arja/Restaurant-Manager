@@ -28,6 +28,7 @@ class CreatePlatformInsightsTable extends Migration
             $table->decimal('orders_completion_pct', 5, 2)->nullable();
 
             $table->decimal('total_revenue', 15, 2)->default(0);
+            $table->decimal('revenue_growth_pct', 6, 2)->nullable();
 
             $table->timestamps();
         });

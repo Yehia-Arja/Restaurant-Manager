@@ -9,4 +9,10 @@ class Sensor extends Model
 {
     /** @use HasFactory<\Database\Factories\SensorFactory> */
     use HasFactory;
+
+    public function chair()
+    {
+        return $this->hasOne(Chair::class);
+    }
+
 }
