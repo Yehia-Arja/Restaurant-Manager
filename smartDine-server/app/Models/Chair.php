@@ -9,4 +9,13 @@ class Chair extends Model
 {
     /** @use HasFactory<\Database\Factories\ChairFactory> */
     use HasFactory;
+
+    public function sensor()
+    {
+        return $this->belongsTo(Sensor::class);
+    }
+
+    public function table() {
+        return $this->belongsTo(Table::class);
+    }
 }

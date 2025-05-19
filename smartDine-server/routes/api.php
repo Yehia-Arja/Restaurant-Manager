@@ -11,6 +11,7 @@ use App\Http\Controllers\Common\CategoryController as CommonCategoryController;
 use App\Http\Controllers\Common\RestaurantLocationController as CommonRestaurantLocationController;
 use App\Http\Controllers\Common\RecommendationController as CommonRecommendationController;
 use App\Http\Controllers\Common\TableController as CommonTableController;
+use App\Http\Controllers\Common\ChairController;
 
 // Client
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
@@ -36,6 +37,9 @@ Route::group(["prefix" => "v0.1"], function () {
     Route::group(["prefix" => "guest"], function () {
         Route::post("login",  [AuthController::class, "login"]);
         Route::post("signup", [AuthController::class, "signup"]);
+        Route::group(["prefix" => "chairs"], function () {
+            Route::post("/flip", [ChairController::class, "flip"]);
+        });
     });
 
     // Common endpoints (authenticated)
@@ -43,6 +47,12 @@ Route::group(["prefix" => "v0.1"], function () {
         "prefix"     => "common",
         "middleware" => ["auth:api"],
     ], function () {
+
+        Route::group(["prefix" => "tables"], function () {
+            Route::get("/", [CommonTableController::class, "index"]);
+        });
+        
+
         // Chat
         Route::group(["prefix" => "chat"], function () {
             Route::post("/",    [ChatController::class, "handleUserMessage"]);
