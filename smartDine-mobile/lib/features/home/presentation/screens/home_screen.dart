@@ -8,6 +8,8 @@ import 'package:mobile/features/home/presentation/bloc/home_state.dart';
 import 'package:mobile/features/home/presentation/widgets/branch_selector.dart';
 import 'package:mobile/features/categories/presentation/widgets/category_card.dart';
 import 'package:mobile/features/products/presentation/widgets/product_card.dart';
+import 'package:mobile/features/products/presentation/bloc/product_bloc.dart';
+import 'package:mobile/features/products/presentation/bloc/product_event.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -86,7 +88,16 @@ class HomeScreen extends StatelessWidget {
                               crossAxisSpacing: 12,
                               childAspectRatio: 167 / 193,
                             ),
-                            itemBuilder: (_, i) => ProductCard(product: data.products[i]),
+                            itemBuilder:
+                                (_, i) => ProductCard(
+                                  product: data.products[i],
+                                  onFavoritePressed: () {
+                                    print("❤️ Favorite pressed: ${data.products[i].id}");
+                                    context.read<ProductBloc>().add(
+                                      ToggleProductFavorite(data.products[i].id),
+                                    );
+                                  },
+                                ),
                           ),
                         ),
 

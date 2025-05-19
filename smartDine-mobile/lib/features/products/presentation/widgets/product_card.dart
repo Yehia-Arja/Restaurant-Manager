@@ -25,16 +25,18 @@ class ProductCard extends StatelessWidget {
           color: Colors.white,
           elevation: 2,
           child: InkWell(
-            onTap:
-                onTap ??
-                () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder:
-                          (_) => ProductDetailPage(initialProduct: product, productId: product.id),
-                    ),
-                  );
-                },
+            onTap: () {
+              if (onTap != null) {
+                onTap!();
+              } else {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder:
+                        (_) => ProductDetailPage(initialProduct: product, productId: product.id),
+                  ),
+                );
+              }
+            },
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(color: AppColors.border),
@@ -58,21 +60,31 @@ class ProductCard extends StatelessWidget {
                         Positioned(
                           top: 8,
                           right: 8,
-                          child: Container(
-                            width: 28,
-                            height: 28,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.primary,
-                            ),
-                            child: IconButton(
-                              padding: EdgeInsets.zero,
-                              icon: Icon(
-                                product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                                size: 16,
-                                color: product.isFavorite ? Colors.red : AppColors.placeholder,
+                          child: GestureDetector(
+                            onTap: () {
+                              if (onFavoritePressed != null) {
+                                onFavoritePressed!();
+                              }
+                            },
+                            child: Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                              onPressed: onFavoritePressed,
+                              child: Icon(
+                                Icons.favorite,
+                                size: 18,
+                                color: product.isFavorited ? Colors.red : Colors.grey.shade400,
+                              ),
                             ),
                           ),
                         ),

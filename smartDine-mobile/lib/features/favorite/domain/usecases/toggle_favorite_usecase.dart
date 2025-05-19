@@ -1,4 +1,4 @@
-import 'package:mobile/features/restaurant_selection/domain/repositories/favorite_repository.dart';
+import 'package:mobile/features/favorite/domain/repositories/favorite_repository.dart';
 
 class ToggleFavoriteUseCase {
   final FavoriteRepository _repo;
