@@ -93,16 +93,26 @@ class _SignupScreenState extends State<SignupScreen> {
                   icon: const Icon(Icons.chevron_left, size: 24, color: AppColors.placeholder),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  'Sign Up',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.headlineLarge?.copyWith(color: AppColors.secondary),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "Create your account, it's free!",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.label),
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Sign Up',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineLarge?.copyWith(color: AppColors.secondary),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Create your account, it's free!",
+                        textAlign: TextAlign.center,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(color: AppColors.label),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Row(
