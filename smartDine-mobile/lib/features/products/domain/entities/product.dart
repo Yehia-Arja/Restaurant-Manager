@@ -5,6 +5,7 @@ class Product {
   final String price;
   final String timeToDeliver;
   final String ingredients;
+  final bool isFavorite;
   final String imageUrl;
   final String arModelUrl;
 
@@ -15,6 +16,7 @@ class Product {
     required this.price,
     required this.timeToDeliver,
     required this.ingredients,
+    required this.isFavorite,
     required this.imageUrl,
     required this.arModelUrl,
   });
