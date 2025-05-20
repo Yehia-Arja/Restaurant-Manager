@@ -24,21 +24,24 @@ class ProductRemote {
           'per_page': pageSize,
           if (searchQuery != null && searchQuery.isNotEmpty) 'search': searchQuery,
           if (categoryId != null) 'category_id': categoryId,
-          if (favoritesOnly) 'favorites_only': true,
+          if (favoritesOnly) 'favorite': 1,
         },
       );
 
-      final data = response.data['data'];
-      final List<dynamic> rawList = data['products'];
+      final rawList = response.data['data'] as List;
       final products =
           rawList
-              .cast<Map<String, dynamic>>()
-              .map((json) => ProductModel.fromJson(json).toEntity())
+              .map((json) {
+                try {
+                  return ProductModel.fromJson(json).toEntity();
+                } catch (e) {
+                  return null;
+                }
+              })
+              .whereType<Product>()
               .toList();
 
-      final totalPages = data['last_page'] as int? ?? 1;
-
-      return PaginatedProducts(products: products, totalPages: totalPages);
+      return PaginatedProducts(products: products, totalPages: 1);
     } on DioException catch (e) {
       final message = e.response?.data['message'] as String? ?? e.message;
       throw Exception('Failed to fetch products: $message');
