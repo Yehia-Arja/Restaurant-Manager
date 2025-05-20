@@ -92,7 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   itemBuilder: (ctx, i) {
                     if (i == 0) {
                       return CategoryChip(
-                        key: const ValueKey('all'), // Changed to constant key
+                        key: const ValueKey('all'),
                         label: "All",
                         selected: state.selectedCategory == null,
                         onTap: () => context.read<SearchBloc>().add(CategoryChanged(null)),
@@ -100,7 +100,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     }
                     final cat = state.categories[i - 1];
                     return CategoryChip(
-                      key: ValueKey('category-${cat.id}'), // Added prefix to key
+                      key: ValueKey('category-${cat.id}'),
                       label: cat.name,
                       selected: state.selectedCategory == cat.id,
                       onTap: () => context.read<SearchBloc>().add(CategoryChanged(cat.id)),
