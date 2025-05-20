@@ -3,16 +3,19 @@ import 'search_event.dart';
 import 'search_state.dart';
 import 'package:mobile/features/categories/domain/usecases/list_categories_usecase.dart';
 import 'package:mobile/features/products/domain/usecases/list_products_usecase.dart';
+import 'package:mobile/features/favorite/domain/usecases/toggle_favorite_usecase.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final ListCategoriesUseCase _catsUc;
   final ListProductsUseCase _prodsUc;
+  final ToggleFavoriteUseCase _toggleFavUc;
 
-  SearchBloc(this._catsUc, this._prodsUc) : super(const SearchState()) {
+  SearchBloc(this._catsUc, this._prodsUc, this._toggleFavUc) : super(const SearchState()) {
     on<InitSearch>(_onInit);
     on<CategoryChanged>(_onCategoryChanged);
     on<QueryChanged>(_onQueryChanged);
     on<FetchMoreProducts>(_onFetchMore);
+    on<ToggleSearchProductFavorite>(_onToggleFavorite);
   }
 
   Future<void> _onInit(InitSearch e, Emitter<SearchState> emit) async {
@@ -120,6 +123,27 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       );
     } catch (ex) {
       emit(state.copyWith(error: ex.toString(), loadingProds: false));
+    }
+  }
+
+  Future<void> _onToggleFavorite(
+    ToggleSearchProductFavorite event,
+    Emitter<SearchState> emit,
+  ) async {
+    final idx = state.products.indexWhere((p) => p.id == event.productId);
+    if (idx == -1) return;
+
+    final original = state.products[idx];
+    final toggled = original.copyWith(isFavorited: !original.isFavorited);
+    final updatedList = List.of(state.products)..[idx] = toggled;
+
+    emit(state.copyWith(products: updatedList));
+
+    try {
+      await _toggleFavUc(id: original.id, type: 'product');
+    } catch (_) {
+      updatedList[idx] = original;
+      emit(state.copyWith(products: updatedList));
     }
   }
 }

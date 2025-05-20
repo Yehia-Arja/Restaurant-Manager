@@ -26,7 +26,7 @@ class SearchState extends Equatable {
     this.selectedCategory,
     this.query = '',
     this.error,
-    this.favoritesOnly = false, // ✅ DEFAULT ADDED HERE
+    this.favoritesOnly = false,
   });
 
   bool get hasMore => page < totalPages;
@@ -42,7 +42,7 @@ class SearchState extends Equatable {
     int? selectedCategory,
     String? query,
     String? error,
-    bool? favoritesOnly, // ✅ NEW PARAM
+    bool? favoritesOnly,
   }) {
     return SearchState(
       branchId: branchId ?? this.branchId,
@@ -55,7 +55,7 @@ class SearchState extends Equatable {
       selectedCategory: selectedCategory ?? this.selectedCategory,
       query: query ?? this.query,
       error: error ?? this.error,
-      favoritesOnly: favoritesOnly ?? this.favoritesOnly, // ✅ FIXED
+      favoritesOnly: favoritesOnly ?? this.favoritesOnly,
     );
   }
 

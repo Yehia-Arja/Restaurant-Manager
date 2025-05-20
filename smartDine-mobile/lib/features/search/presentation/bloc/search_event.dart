@@ -17,3 +17,8 @@ class QueryChanged extends SearchEvent {
 }
 
 class FetchMoreProducts extends SearchEvent {}
+
+class ToggleSearchProductFavorite extends SearchEvent {
+  final int productId;
+  ToggleSearchProductFavorite(this.productId);
+}
