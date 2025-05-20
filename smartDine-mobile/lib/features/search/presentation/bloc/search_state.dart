@@ -13,6 +13,7 @@ class SearchState extends Equatable {
   final int? selectedCategory;
   final String query;
   final String? error;
+  final bool favoritesOnly;
 
   const SearchState({
     this.branchId,
@@ -25,6 +26,7 @@ class SearchState extends Equatable {
     this.selectedCategory,
     this.query = '',
     this.error,
+    this.favoritesOnly = false, // ✅ DEFAULT ADDED HERE
   });
 
   bool get hasMore => page < totalPages;
@@ -40,6 +42,7 @@ class SearchState extends Equatable {
     int? selectedCategory,
     String? query,
     String? error,
+    bool? favoritesOnly, // ✅ NEW PARAM
   }) {
     return SearchState(
       branchId: branchId ?? this.branchId,
@@ -49,9 +52,10 @@ class SearchState extends Equatable {
       loadingProds: loadingProds ?? this.loadingProds,
       totalPages: totalPages ?? this.totalPages,
       page: page ?? this.page,
-      selectedCategory: selectedCategory,
+      selectedCategory: selectedCategory ?? this.selectedCategory,
       query: query ?? this.query,
-      error: error,
+      error: error ?? this.error,
+      favoritesOnly: favoritesOnly ?? this.favoritesOnly, // ✅ FIXED
     );
   }
 
@@ -67,5 +71,6 @@ class SearchState extends Equatable {
     selectedCategory,
     query,
     error,
+    favoritesOnly,
   ];
 }

@@ -14,11 +14,9 @@ class ProductService
         ?int $branchId = null,
         ?int $restaurantId = null,
         ?int $categoryId = null,
-        ?bool $favoritesOnly = false,
-        ?string $search = null
-    ) {
+        ?string $search = null,
+        ?bool $favoritesOnly = false,    ) {
         $q = Product::query();
-    
         if ($categoryId) {
             $q->where('category_id', $categoryId);
         }

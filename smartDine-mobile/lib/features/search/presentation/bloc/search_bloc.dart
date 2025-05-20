@@ -52,6 +52,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         page: 1,
         categoryId: e.categoryId,
         searchQuery: state.query,
+        favoritesOnly: state.favoritesOnly,
       );
       emit(
         state.copyWith(
@@ -66,13 +67,23 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   Future<void> _onQueryChanged(QueryChanged e, Emitter<SearchState> emit) async {
-    emit(state.copyWith(query: e.query, products: [], page: 1, loadingProds: true, error: null));
+    emit(
+      state.copyWith(
+        query: e.query,
+        favoritesOnly: e.favoritesOnly,
+        products: [],
+        page: 1,
+        loadingProds: true,
+        error: null,
+      ),
+    );
     try {
       final result = await _prodsUc(
         branchId: state.branchId!,
         page: 1,
         categoryId: state.selectedCategory,
         searchQuery: e.query,
+        favoritesOnly: e.favoritesOnly,
       );
       emit(
         state.copyWith(
@@ -97,6 +108,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         page: nextPage,
         categoryId: state.selectedCategory,
         searchQuery: state.query,
+        favoritesOnly: state.favoritesOnly,
       );
       emit(
         state.copyWith(
