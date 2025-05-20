@@ -24,7 +24,7 @@ class ProductRemote {
           'per_page': pageSize,
           if (searchQuery != null && searchQuery.isNotEmpty) 'search': searchQuery,
           if (categoryId != null) 'category_id': categoryId,
-          if (favoritesOnly) 'favorites_only': true,
+          if (favoritesOnly) 'favorite': 1,
         },
       );
 

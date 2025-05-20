@@ -26,7 +26,7 @@ class ProductController extends Controller
                 $data['restaurant_id']          ?? null,
                 $data['category_id']            ?? null,
                 $data['search']                 ?? null,
-                $data['favorites_only']         ?? false,
+                $data['favorite']               ?? false,
             );
 
             if ($products->isEmpty()) {

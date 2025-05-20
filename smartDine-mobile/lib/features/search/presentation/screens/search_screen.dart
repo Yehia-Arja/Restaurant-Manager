@@ -7,7 +7,6 @@ import 'package:mobile/features/categories/presentation/widgets/category_chip.da
 import 'package:mobile/shared/widgets/base_scaffold.dart';
 import 'package:mobile/core/blocs/selected_branch_cubit.dart';
 import 'package:mobile/features/products/presentation/widgets/product_card.dart';
-import 'package:mobile/features/products/presentation/bloc/product_bloc.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -23,7 +22,6 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-
     final branchId = context.read<SelectedBranchCubit>().state;
     if (branchId != null) {
       context.read<SearchBloc>().add(InitSearch(branchId));
@@ -45,7 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
 
     final bloc = context.read<SearchBloc>();
-    bloc.add(QueryChanged(bloc.state.query ?? '', favoritesOnly: showFavoritesOnly));
+    bloc.add(QueryChanged(bloc.state.query, favoritesOnly: showFavoritesOnly));
   }
 
   @override
@@ -94,6 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   itemBuilder: (ctx, i) {
                     if (i == 0) {
                       return CategoryChip(
+                        key: const ValueKey('all'), // Changed to constant key
                         label: "All",
                         selected: state.selectedCategory == null,
                         onTap: () => context.read<SearchBloc>().add(CategoryChanged(null)),
@@ -101,6 +100,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     }
                     final cat = state.categories[i - 1];
                     return CategoryChip(
+                      key: ValueKey('category-${cat.id}'), // Added prefix to key
                       label: cat.name,
                       selected: state.selectedCategory == cat.id,
                       onTap: () => context.read<SearchBloc>().add(CategoryChanged(cat.id)),
@@ -128,9 +128,13 @@ class _SearchScreenState extends State<SearchScreen> {
                               return const Center(child: CircularProgressIndicator());
                             }
                             final product = state.products[i];
-                            return BlocProvider.value(
-                              value: context.read<ProductBloc>(),
-                              child: ProductCard(product: product),
+                            return ProductCard(
+                              product: product,
+                              onFavoritePressed: () {
+                                context.read<SearchBloc>().add(
+                                  ToggleSearchProductFavorite(product.id),
+                                );
+                              },
                             );
                           },
                         ),

@@ -124,9 +124,12 @@ void main() {
           BlocProvider(create: (_) => SelectedBranchCubit()),
           BlocProvider(create: (_) => AuthBloc(loginUseCase, signupUseCase)),
           BlocProvider(create: (_) => RestaurantSelectionBloc(getRestaurantsUC, toggleFavoriteUC)),
-          BlocProvider(create: (_) => HomeBloc(getHomeDataUC, toggleFavoriteUC)), // ✅ fixed here
-          BlocProvider(create: (_) => SearchBloc(listCategoriesUC, listProductsUC)),
-          BlocProvider(create: (_) => ProductBloc(listProductsUC, toggleFavoriteUC)),
+          BlocProvider(create: (_) => HomeBloc(getHomeDataUC, toggleFavoriteUC)),
+          BlocProvider(
+            create: (_) => SearchBloc(listCategoriesUC, listProductsUC, toggleFavoriteUC),
+          ),
+
+          BlocProvider(create: (_) => ProductBloc(listProductsUC)),
         ],
         child: const MyApp(),
       ),
