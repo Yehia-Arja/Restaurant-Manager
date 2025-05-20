@@ -5,14 +5,10 @@
 <!-- project overview -->
 <img src="./readme/title2.svg"/>
 
-> **SmartDine** is built with modern, cloud-powered tech that’s fast, scalable, and ready to grow with you.  
-> Everything happens in real time, from AR-powered menus your guests explore to IoT-powered seat tracking and live insights for owners behind the scenes.  
-> The backend runs smooth and secure. The frontend is clean, fast, and built for an effortless experience.  
-> It’s designed to be easy to update, easy to scale, and hard to live without.  
->
-> Under the hood, SmartDine keeps every part of your operation in sync: menus, orders, pricing, occupancy, and users. Your team can focus on delivering great service, not fighting clunky systems.  
-> Whether you're opening a new branch or updating tonight’s specials, it’s quick, intuitive, and just works.  
-> Feels like magic. Powered by engineering ⚙️
+> **SmartDine** is a cloud-powered restaurant system built for speed, scalability, and real-time operations.  
+> From AR menus and AI combos to live seat tracking and admin insights — everything works instantly and in sync.  
+> Clean Flutter UI. Secure Laravel backend. Real-time updates via WebSockets.  
+> Built to scale. Easy to use. Feels like magic, runs like engineering ⚙️
 
 <br><br>
 
@@ -21,16 +17,20 @@
 
 ### Architecture Overview
 
-✅ **Client App**: Built in Flutter for a fast, native experience  
-✅ **Web Dashboard**: React-powered control panel for owners and admins  
-✅ **API Layer**: Laravel handles authentication, business logic, and DB interaction  
-✅ **Real-Time**: Express + Socket.IO for WebSocket updates  
-✅ **Infrastructure**: Dockerized services deployed via GitHub Actions to AWS EC2  
-✅ **Caching & Queues**: Redis supports performance and async tasks
+✅ **Client App**: Flutter mobile app  
+✅ **Web Dashboard**: React interface for admins/owners  
+✅ **API Layer**: Laravel backend for business logic  
+✅ **Real-Time**: Node.js + Socket.IO for WebSocket updates  
+✅ **Infrastructure**: Docker + GitHub Actions → AWS EC2  
+✅ **Performance**: Redis for caching and queues
 
-#### Database Diagram: Restaurant-Manager  
+#### Database Diagram
 
 <img src="./readme/erd.svg"/>
+
+#### Component Diagram
+
+<img src="./readme/Component Diagram.png"/>
 
 <br><br>
 
@@ -39,13 +39,13 @@
 
 ### What Makes SmartDine Special 💡
 
-✨ AI-generated meal combos tailored to each user  
-📱 AR dish preview before ordering  
-🪑 Smart chair sensors for real-time seat availability  
-🤖 In-app assistant to guide and help users  
-🎛️ Branch-level overrides for pricing and availability  
-📡 Real-time updates pushed to users with WebSockets  
-👥 Views optimized for admins, owners, and clients
+✨ AI-generated meal combos  
+📱 AR preview of dishes  
+🪑 Smart seating with IoT sensors  
+🤖 In-app assistant powered by AI  
+🎛️ Branch-level control over menus and pricing  
+📡 Real-time updates pushed to users  
+👥 Separate views for clients, owners, and admins
 
 <br><br>
 
@@ -75,11 +75,11 @@
 | ------------------------------------- | ------------------------------------- | ------------------------------------- |
 | ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) |
 
-🧩 Modular structure with feature-based folders  
-✅ Clean validation using FormRequests and DTOs  
-🧪 Backend and mobile tests with PHPUnit, Flutter Test, and Postman  
+🧩 Modular, feature-based folder structure  
+✅ Clean validation with FormRequests + DTOs  
+🧪 Tests: PHPUnit (Laravel), Flutter Test, Postman  
 🧠 AI + Redis logic tested independently  
-🎯 Code quality enforced with Pint, Dart Format, and ESLint
+🎯 Code formatting enforced via Pint, Dart Format, ESLint
 
 <br><br>
 
@@ -88,11 +88,11 @@
 
 ### Deployment Pipeline 🚀
 
-📦 Each service (Laravel, React, Express, Flutter) is containerized with Docker  
-🔁 CI/CD managed by GitHub Actions  
-🌐 Deployed to AWS EC2 using Docker Compose  
-🔍 Public API: `https://api.smartdine.app:8010`  
-📶 Health check: `GET /v1/health` → `{ "status": "ok" }`  
+📦 Dockerized services (Laravel, React, Express, Flutter)  
+🔁 CI/CD via GitHub Actions  
+🌐 Hosted on AWS EC2 (Docker Compose)  
+📶 API: `https://api.smartdine.app:8010`  
+📋 Health: `GET /v1/health` → `{ "status": "ok" }`  
 📄 Postman collection: `/docs/SmartDine.postman_collection.json`
 
 | Auth API                              | Order API                             | AI API                                |
@@ -109,4 +109,3 @@ This is restaurant tech done right 🍴
 ## License
 
 This project is licensed under the [MIT License](./LICENSE).
-

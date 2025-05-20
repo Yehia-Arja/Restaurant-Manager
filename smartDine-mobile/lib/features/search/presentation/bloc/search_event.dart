@@ -12,7 +12,8 @@ class CategoryChanged extends SearchEvent {
 
 class QueryChanged extends SearchEvent {
   final String query;
-  QueryChanged(this.query);
+  final bool favoritesOnly;
+  QueryChanged(this.query, {this.favoritesOnly = false});
 }
 
 class FetchMoreProducts extends SearchEvent {}

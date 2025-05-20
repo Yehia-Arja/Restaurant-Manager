@@ -5,6 +5,9 @@ import 'package:mobile/features/search/presentation/bloc/search_event.dart';
 import 'package:mobile/features/search/presentation/bloc/search_state.dart';
 import 'package:mobile/features/categories/presentation/widgets/category_chip.dart';
 import 'package:mobile/shared/widgets/base_scaffold.dart';
+import 'package:mobile/core/blocs/selected_branch_cubit.dart';
+import 'package:mobile/features/products/presentation/widgets/product_card.dart';
+import 'package:mobile/features/products/presentation/bloc/product_bloc.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -15,10 +18,17 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final _scroll = ScrollController();
+  bool showFavoritesOnly = false;
 
   @override
   void initState() {
     super.initState();
+
+    final branchId = context.read<SelectedBranchCubit>().state;
+    if (branchId != null) {
+      context.read<SearchBloc>().add(InitSearch(branchId));
+    }
+
     _scroll.addListener(() {
       final bloc = context.read<SearchBloc>();
       if (_scroll.position.pixels >= _scroll.position.maxScrollExtent - 100 &&
@@ -27,6 +37,15 @@ class _SearchScreenState extends State<SearchScreen> {
         bloc.add(FetchMoreProducts());
       }
     });
+  }
+
+  void _toggleFavorites() {
+    setState(() {
+      showFavoritesOnly = !showFavoritesOnly;
+    });
+
+    final bloc = context.read<SearchBloc>();
+    bloc.add(QueryChanged(bloc.state.query ?? '', favoritesOnly: showFavoritesOnly));
   }
 
   @override
@@ -41,14 +60,20 @@ class _SearchScreenState extends State<SearchScreen> {
                 children: [
                   Text('Search', style: Theme.of(context).textTheme.headlineMedium),
                   const Spacer(),
-                  const Icon(Icons.favorite, color: Colors.red),
+                  IconButton(
+                    onPressed: _toggleFavorites,
+                    icon: Icon(
+                      showFavoritesOnly ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.red,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
-
-              // Search bar
               TextField(
-                onChanged: (q) => context.read<SearchBloc>().add(QueryChanged(q)),
+                onChanged: (q) {
+                  context.read<SearchBloc>().add(QueryChanged(q, favoritesOnly: showFavoritesOnly));
+                },
                 decoration: InputDecoration(
                   hintText: 'Search...',
                   prefixIcon: const Icon(Icons.search),
@@ -60,10 +85,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 16),
-
-              // Category chips
               SizedBox(
                 height: 40,
                 child: ListView.builder(
@@ -86,10 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   },
                 ),
               ),
-
               const SizedBox(height: 16),
-
-              // Products grid
               Expanded(
                 child:
                     state.loadingProds && state.products.isEmpty
@@ -109,50 +128,9 @@ class _SearchScreenState extends State<SearchScreen> {
                               return const Center(child: CircularProgressIndicator());
                             }
                             final product = state.products[i];
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(12),
-                                        topRight: Radius.circular(12),
-                                      ),
-                                      child: Image.network(product.imageUrl, fit: BoxFit.cover),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          product.name,
-                                          style: const TextStyle(fontWeight: FontWeight.bold),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.timer, size: 14),
-                                            const SizedBox(width: 4),
-                                            Text(product.timeToDeliver),
-                                            const SizedBox(width: 12),
-                                            Text("\$${product.price}"),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            return BlocProvider.value(
+                              value: context.read<ProductBloc>(),
+                              child: ProductCard(product: product),
                             );
                           },
                         ),
