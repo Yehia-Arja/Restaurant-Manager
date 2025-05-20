@@ -37,15 +37,7 @@
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
 
-### What Makes SmartDine Special 💡
-
-✨ AI-generated meal combos  
-📱 AR preview of dishes  
-🪑 Smart seating with IoT sensors  
-🤖 In-app assistant powered by AI  
-🎛️ Branch-level control over menus and pricing  
-📡 Real-time updates pushed to users  
-👥 Separate views for clients, owners, and admins
+<img src="./readme/projectHighlight.svg"/>
 
 <br><br>
 
