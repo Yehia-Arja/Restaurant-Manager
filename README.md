@@ -30,9 +30,7 @@
 
 #### Component Diagram
 
-<div style="background:white; padding:16px;">
-  <img src="./readme/ComponentsDiagram.drawio.svg"/>
-</div>
+<img src="./readme/componentsDiagram.drawio.png">
 
 <br><br>
 
