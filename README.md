@@ -1,3 +1,4 @@
+
 <img src="./readme/title1.svg" />
 
 <br><br>
@@ -52,7 +53,7 @@
 
 | Home                            | Onboarding                         | Assistant                        |
 | ------------------------------- | ---------------------------------- | -------------------------------- |
-| ![Home](./readme/homepage.jpg)  | ![Onboarding](./readme/onboarding_screen.jpg) | ![Assistant](./readme/empty_chatting.jpg) |
+| <img src="./readme/homepage.jpg" width="250px"/>  | ![Onboarding](./readme/onboarding_screen.jpg) | — |
 
 | Product Details                         | Search Page                        | Login                             |
 | --------------------------------------- | ---------------------------------- | ---------------------------------- |
@@ -74,12 +75,12 @@
 
 > SmartDine separates logic cleanly across services and validations:
 >
-> - **Services:** Modular logic using service classes and sensor integrations.
+> - **Services:** Modular logic using service classes and product logic and insights.
 > - **Validation:** All inputs go through FormRequest validation and structured schemas.
 
 #### Services
 
-![Service](./readme/sensorService.png)
+![Service](./readme/productService.png)
 
 #### Validation
 
@@ -109,9 +110,7 @@
 
 ![Schema](./readme/PromptSchema.png)
 
-#### Assistant Screen
-
-![Chat UI](./readme/chatting.jpg)
+<!-- Removed Assistant Screen -->
 
 #### AI Response Preview
 
@@ -130,8 +129,9 @@
 
 - Dockerized microservices architecture (Laravel, Flutter, Node.js, React)
 - CI/CD via GitHub Actions with auto-build & push to EC2
-- Live URLs hosted via Docker Compose
-- API health checks and Postman collection included
+- Live URLs hosted via Docker Compose  
+- API health checks and Postman collection included  
+- **Deployed at:** `http://your-ec2-ip-or-domain.com`
 
 #### GitHub Actions Workflow
 
@@ -142,6 +142,22 @@
 | Login Test                     | Fetch Products                   | Fetch Restaurants                |
 | ----------------------------- | -------------------------------- | -------------------------------- |
 | ![Login](./readme/login_postman.png) | ![Products](./readme/fetch_products_postman.png) | ![Restaurants](./readme/fetch_restaurants_postman.png) |
+
+<br><br>
+
+### Output Schema: `returned_message_schema`
+
+> Defines how the AI assistant responds to user queries.
+
+- `intent`: What the user meant (e.g., `product_enquiry`, `app_enquiry`)
+- `response`: The assistant’s reply, if applicable
+
+```json
+{
+  "intent": "product_enquiry",
+  "response": ""
+}
+```
 
 <br><br>
 
