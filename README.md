@@ -86,7 +86,7 @@
 
 #### Services
 
-<img src="./readme/sensorService.png" width="500"/>
+<img src="./readme/ProductService.png" width="500"/>
 
 #### Validation
 
@@ -110,13 +110,9 @@
 
 <img src="./readme/Prompt.png" width="500"/>
 
-#### Return Message Schema
-
-<img src="./readme/return_message_schema.png" width="500"/>
-
 #### AI Response Output
 
-<img src="./readme/AI.jpg" width="500"/>
+<img src="./readme/returned_message_schema.png" width="500"/>
 
 #### AI Demo
 
