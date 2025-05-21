@@ -26,26 +26,18 @@
 
 #### Database Diagram
 
-<img src="./readme/erd.svg"/>
+![ERD](./readme/erd.svg)
 
 #### Component Diagram
 
-<img src="./readme/Component Diagram.png"/>
+![Components](./readme/componentsDiagram.drawio.png)
 
 <br><br>
 
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
 
-### What Makes SmartDine Special 💡
-
-✨ AI-generated meal combos  
-📱 AR preview of dishes  
-🪑 Smart seating with IoT sensors  
-🤖 In-app assistant powered by AI  
-🎛️ Branch-level control over menus and pricing  
-📡 Real-time updates pushed to users  
-👥 Separate views for clients, owners, and admins
+![Highlights](./readme/projectHighlight.svg)
 
 <br><br>
 
@@ -54,15 +46,19 @@
 
 ### User Screens (Mobile)
 
-| Login                             | Register                                | Home                            |
-| --------------------------------- | --------------------------------------- | ------------------------------- |
-| ![Login](./readme/demo/login.png) | ![Register](./readme/demo/register.png) | ![Home](./readme/demo/home.png) |
+| Home                             | Onboarding                          | Assistant Screen                     |
+| -------------------------------- | ----------------------------------- | ------------------------------------ |
+| ![Home](./readme/homepage.jpg)   | ![Onboarding](./readme/onboarding_screen.jpg) | ![Assistant](./readme/empty_chatting.jpg) |
+
+| Product Details                      | Search Page                         |                                      |
+| ----------------------------------- | ----------------------------------- | ------------------------------------ |
+| ![Product](./readme/product_details.jpg) | ![Search](./readme/search_page.jpg) |                                      |
 
 ### Admin Screens (Web)
 
 | Dashboard                              | Product Management                    |
 | -------------------------------------- | ------------------------------------- |
-| ![Dashboard](./readme/demo/admin1.png) | ![Products](./readme/demo/admin2.png) |
+| ![Dashboard](./readme/admin1.png)      | ![Products](./readme/admin2.png)      |
 
 <br><br>
 
@@ -71,9 +67,9 @@
 
 ### Development Flow
 
-| Services                              | Validation                            | Testing                               |
-| ------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) |
+| Services                               | Validation                             | Testing                                |
+| ------------------------------------- | -------------------------------------- | -------------------------------------- |
+| ![Services](./readme/Screenshot_2025-05-21_071221.png) | ![Validation](./readme/Screenshot_2025-05-21_071627.png) | ![Test](./readme/1440x1024.png) |
 
 🧩 Modular, feature-based folder structure  
 ✅ Clean validation with FormRequests + DTOs  
@@ -95,9 +91,9 @@
 📋 Health: `GET /v1/health` → `{ "status": "ok" }`  
 📄 Postman collection: `/docs/SmartDine.postman_collection.json`
 
-| Auth API                              | Order API                             | AI API                                |
-| ------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) |
+| Auth API                          | Order API                         | AI API                            |
+| -------------------------------- | --------------------------------- | --------------------------------- |
+| ![Auth](./readme/1440x1024.png)  | ![Order](./readme/1440x1024.png)  | ![AI](./readme/1440x1024.png)     |
 
 <br><br>
 
