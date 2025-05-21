@@ -1,20 +1,18 @@
-version: "3"
-
 services:
   app:
-    image: ghcr.io/${GITHUB_REPO_LOWER}/smartdine_laravel:${IMAGE_TAG:-latest}
-    container_name: smartdine_app_${IMAGE_TAG:-latest}
+    image: yehiaarja/dockersmartdine:latest
+    container_name: smartdine_app
     ports:
       - "8000:8000"
     environment:
       - DB_CONNECTION=mysql
       - DB_HOST=database
       - DB_PORT=3306
-      - DB_DATABASE=smartdine_${IMAGE_TAG:-latest}
+      - DB_DATABASE=smartdine
       - DB_USERNAME=root
-      - DB_PASSWORD=${DB_PASSWORD:-secretpassword}
-      - APP_ENV=${IMAGE_TAG:-production}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-default_key}
+      - DB_PASSWORD=secretpassword
+      - APP_ENV=production
+      - OPENAI_API_KEY=default_key
     restart: always
     depends_on:
       - database
@@ -22,19 +20,19 @@ services:
 
   database:
     image: mysql:8.0
-    container_name: smartdine_db_${IMAGE_TAG:-latest}
+    container_name: smartdine_db
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-secretpassword}
-      - MYSQL_DATABASE=smartdine_${IMAGE_TAG:-latest}
+      - MYSQL_ROOT_PASSWORD=secretpassword
+      - MYSQL_DATABASE=smartdine
     volumes:
       - smartdine_db:/var/lib/mysql
     restart: always
 
   redis:
     image: redis:alpine
-    container_name: smartdine_redis_${IMAGE_TAG:-latest}
+    container_name: smartdine_redis
     ports:
       - "6379:6379"
     volumes:
@@ -43,10 +41,10 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: smartdine_phpmyadmin_${IMAGE_TAG:-latest}
+    container_name: smartdine_phpmyadmin
     environment:
       - PMA_HOST=database
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-secretpassword}
+      - MYSQL_ROOT_PASSWORD=secretpassword
     ports:
       - "8080:80"
     depends_on:
@@ -54,8 +52,8 @@ services:
     restart: always
 
   ws-server:
-    image: ghcr.io/${GITHUB_REPO_LOWER}/smartdine_ws:${IMAGE_TAG:-latest}
-    container_name: smartdine_ws_${IMAGE_TAG:-latest}
+    image: yehiaarja/dockersmartdine-ws:latest
+    container_name: smartdine_ws
     ports:
       - "3000:3000"
     depends_on:
@@ -64,6 +62,4 @@ services:
 
 volumes:
   smartdine_db:
-    name: smartdine_db_${IMAGE_TAG:-latest}
   smartdine_redis:
-    name: smartdine_redis_${IMAGE_TAG:-latest}

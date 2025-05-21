@@ -31,6 +31,13 @@ jobs:
           push: true
           tags: yehiaarja/dockersmartdine:latest
 
+      - name: Build and push WebSocket server image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./smartDine-ws-server
+          push: true
+          tags: yehiaarja/dockersmartdine-ws:latest
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -58,12 +65,13 @@ jobs:
               sudo chmod +x /usr/local/bin/docker-compose
             fi
 
-            # Clone latest repo (if needed)
+            # Pull latest docker-compose.yml from main
             mkdir -p ~/smartdine && cd ~/smartdine
             curl -o docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
 
-            echo "Pulling latest Laravel image..."
+            echo "Pulling latest images..."
             docker pull yehiaarja/dockersmartdine:latest
+            docker pull yehiaarja/dockersmartdine-ws:latest
 
             echo "Stopping old containers..."
             docker compose down || true
@@ -75,10 +83,10 @@ jobs:
             sleep 10
 
             echo "Running migrations and seeders..."
-            docker exec smartdine-server php artisan migrate:fresh --seed --force
+            docker exec smartdine_app php artisan migrate:fresh --seed --force
 
             echo "Clearing Laravel cache..."
-            docker exec smartdine-server php artisan optimize:clear
+            docker exec smartdine_app php artisan optimize:clear
 
             echo "Container logs:"
-            docker logs smartdine-server --tail 50 || true
+            docker logs smartdine_app --tail 50 || true
