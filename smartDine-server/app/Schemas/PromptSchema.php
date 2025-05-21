@@ -1,58 +1,42 @@
 <?php
 
-namespace App\Traits;
+namespace App\Services\AI\Schemas;
 
-
-use App\Models\Product;
-use App\Models\Chat;
-use App\Models\Message;
-use Illuminate\Support\Facades\Cache;
-
-trait BuildChatPromptTrait
+class PromptSchema
 {
-    public function buildChatPrompt(Chat $chat, string $latestMessage): string
+    public string $user;
+    public string $branchInfo;
+    public string $favorites;
+    public string $recommended;
+    public string $pastMessages;
+    public string $latestMessage;
+
+    public function __construct(array $data)
     {
-        $user = $chat->user;
-        $location = $chat->restaurantLocation;
+        $this->user = $data['user'];
+        $this->branchInfo = $data['branchInfo'];
+        $this->favorites = $data['favorites'];
+        $this->recommended = $data['recommended'];
+        $this->pastMessages = $data['pastMessages'];
+        $this->latestMessage = $data['latestMessage'];
+    }
 
-        $pastMessages = Message::where('chat_id', $chat->id)
-            ->latest()->take(10)->get()->reverse()
-            ->map(fn($m) => ucfirst($m->sender_type) . ': ' . $m->content)
-            ->implode("\n");
-
-
-        $favorites = Cache::get("user:{$user->id}:favorites", []);
-        $recs = Cache::get("user:{$user->id}:recommendations", []);
-
-        if (!$recs) {
-            $recs = Product::whereHas('locations', function ($q) use ($location) {
-                $q->where('locationable_type', 'App\Models\RestaurantLocation')
-                  ->where('locationable_id', $location->id);
-            })
-            ->latest()->take(10)
-            ->get(['name'])
-            ->toArray();
-        }
-
-        $favoritesList = $favorites ? implode(", ", array_column($favorites, 'name')) : 'none';
-        $recommendedList = $recs ? implode(", ", array_column($recs, 'name')) : 'none';
-
-        $locationInfo = json_encode($location->toArray());
-
+    public function toPrompt(): string
+    {
         return <<<PROMPT
             You are an AI assistant inside a restaurant mobile app.
 
-            User: {$user->name}  
-            Branch Info: {$locationInfo}
+            User: {$this->user}  
+            Branch Info: {$this->branchInfo}
 
-            Favorites: {$favoritesList}  
-            Recommended: {$recommendedList}
+            Favorites: {$this->favorites}  
+            Recommended: {$this->recommended}
 
             Past 10 messages:
-            {$pastMessages}
+            {$this->pastMessages}
 
             Current user message:
-            "{$latestMessage}"
+            "{$this->latestMessage}"
 
             Your job is to:
             - You have access to the past 10 messages.

@@ -1,103 +1,151 @@
-<img src="./readme/title1.svg"/>
+<img src="./readme/title1.svg" />
 
 <br><br>
 
 <!-- project overview -->
-<img src="./readme/title2.svg"/>
+<img src="./readme/title2.svg" />
 
 > **SmartDine** is a cloud-powered restaurant system built for speed, scalability, and real-time operations.  
-> From AR menus and AI combos to live seat tracking and admin insights — everything works instantly and in sync.  
+> From AR menus and AI combos to live seat tracking and AI assistant — everything works instantly and in sync.  
 > Clean Flutter UI. Secure Laravel backend. Real-time updates via WebSockets.  
 > Built to scale. Easy to use. Feels like magic, runs like engineering ⚙️
 
 <br><br>
 
 <!-- System Design -->
-<img src="./readme/title3.svg"/>
+<img src="./readme/title3.svg" />
 
 ### Architecture Overview
 
 ✅ **Client App**: Flutter mobile app  
-✅ **Web Dashboard**: React interface for admins/owners  
 ✅ **API Layer**: Laravel backend for business logic  
 ✅ **Real-Time**: Node.js + Socket.IO for WebSocket updates  
 ✅ **Infrastructure**: Docker + GitHub Actions → AWS EC2  
 ✅ **Performance**: Redis for caching and queues
 
-#### Database Diagram
+#### ER Diagram
 
-![ERD](./readme/erd.svg)
+![ER Diagram](./readme/erd.svg)
 
 #### Component Diagram
 
-![Components](./readme/componentsDiagram.drawio.png)
+![Component Diagram](./readme/componentsDiagram.drawio.png)
 
 <br><br>
 
 <!-- Project Highlights -->
-<img src="./readme/title4.svg"/>
+<img src="./readme/title4.svg" />
 
 ![Highlights](./readme/projectHighlight.svg)
+
+> - Personalized dish combos powered by AI  
+> - Real-time seat tracking via IoT  
+> - AR-enabled menu browsing  
+> - Owner dashboards for product insights and recommendations
 
 <br><br>
 
 <!-- Demo -->
-<img src="./readme/title5.svg"/>
+<img src="./readme/title5.svg" />
 
 ### User Screens (Mobile)
 
-| Home                             | Onboarding                          | Assistant Screen                     |
-| -------------------------------- | ----------------------------------- | ------------------------------------ |
-| ![Home](./readme/homepage.jpg)   | ![Onboarding](./readme/onboarding_screen.jpg) | ![Assistant](./readme/empty_chatting.jpg) |
+| Home                            | Onboarding                         | Assistant                        |
+| ------------------------------- | ---------------------------------- | -------------------------------- |
+| ![Home](./readme/homepage.jpg)  | ![Onboarding](./readme/onboarding_screen.jpg) | ![Assistant](./readme/empty_chatting.jpg) |
 
-| Product Details                      | Search Page                         |                                      |
-| ----------------------------------- | ----------------------------------- | ------------------------------------ |
-| ![Product](./readme/product_details.jpg) | ![Search](./readme/search_page.jpg) |                                      |
+| Product Details                         | Search Page                        | Login                             |
+| --------------------------------------- | ---------------------------------- | ---------------------------------- |
+| ![Product](./readme/product_details.jpg) | ![Search](./readme/search_page.jpg) | ![Login](./readme/login.jpg)      |
 
-### Admin Screens (Web)
+### Action Demo (GIFs)
 
-| Dashboard                              | Product Management                    |
-| -------------------------------------- | ------------------------------------- |
-| ![Dashboard](./readme/admin1.png)      | ![Products](./readme/admin2.png)      |
+| Splash & Login                       | Home Flow                        | Search & Chat                      |
+| ------------------------------------ | -------------------------------- | ---------------------------------- |
+| ![Login Demo](./readme/LoginVid.gif) | ![Home Demo](./readme/homeScreenVid.gif) | ![Search Demo](./readme/search_vid.gif) |
+|                                      |                                  | ![Chat Demo](./readme/chatting_vid.gif) |
 
 <br><br>
 
 <!-- Development & Testing -->
-<img src="./readme/title6.svg"/>
+<img src="./readme/title6.svg" />
 
 ### Development Flow
 
-| Services                               | Validation                             | Testing                                |
-| ------------------------------------- | -------------------------------------- | -------------------------------------- |
-| ![Services](./readme/Screenshot_2025-05-21_071221.png) | ![Validation](./readme/Screenshot_2025-05-21_071627.png) | ![Test](./readme/1440x1024.png) |
+> SmartDine separates logic cleanly across services and validations:
+>
+> - **Services:** Modular logic using service classes and sensor integrations.
+> - **Validation:** All inputs go through FormRequest validation and structured schemas.
 
-🧩 Modular, feature-based folder structure  
-✅ Clean validation with FormRequests + DTOs  
-🧪 Tests: PHPUnit (Laravel), Flutter Test, Postman  
-🧠 AI + Redis logic tested independently  
-🎯 Code formatting enforced via Pint, Dart Format, ESLint
+#### Services
+
+![Service](./readme/sensorService.png)
+
+#### Validation
+
+![Validation](./readme/ProductValidation.png)
+
+> DTO schemas and form validation ensure consistency across mobile and backend inputs.
+
+<br><br>
+
+<!-- AI Integration -->
+<img src="./readme/title7.svg" />
+
+### AI-Powered Recommendations 🤖
+
+> SmartDine uses OpenAI to personalize user experience:
+>
+> 1. **Prompt Parsing** – Input structured with schema (e.g. preferences, history)
+> 2. **Smart Replies** – Recommendations generated by prompt-engineered responses
+> 3. **Redis Caching** – AI suggestions cached for fast UX
+> 4. **Multi-role Support** – Tailored outputs for customers, chefs, and owners
+
+#### AI Prompt Example
+
+![Prompt](./readme/Prompt.png)
+
+#### AI Schema Logic
+
+![Schema](./readme/PromptSchema.png)
+
+#### Assistant Screen
+
+![Chat UI](./readme/chatting.jpg)
+
+#### AI Response Preview
+
+![AI Response](./readme/AI.jpg)
+
+#### AI Demo
+
+![AI Demo](./readme/AIVid.gif)
 
 <br><br>
 
 <!-- Deployment -->
-<img src="./readme/title7.svg"/>
+<img src="./readme/title8.svg" />
 
 ### Deployment Pipeline 🚀
 
-📦 Dockerized services (Laravel, React, Express, Flutter)  
-🔁 CI/CD via GitHub Actions  
-🌐 Hosted on AWS EC2 (Docker Compose)  
-📶 API: `https://api.smartdine.app:8010`  
-📋 Health: `GET /v1/health` → `{ "status": "ok" }`  
-📄 Postman collection: `/docs/SmartDine.postman_collection.json`
+- Dockerized microservices architecture (Laravel, Flutter, Node.js, React)
+- CI/CD via GitHub Actions with auto-build & push to EC2
+- Live URLs hosted via Docker Compose
+- API health checks and Postman collection included
 
-| Auth API                          | Order API                         | AI API                            |
-| -------------------------------- | --------------------------------- | --------------------------------- |
-| ![Auth](./readme/1440x1024.png)  | ![Order](./readme/1440x1024.png)  | ![AI](./readme/1440x1024.png)     |
+#### GitHub Actions Workflow
+
+![Deploy Flow](./readme/github_workflow.png)
+
+#### API Verification via Postman
+
+| Login Test                     | Fetch Products                   | Fetch Restaurants                |
+| ----------------------------- | -------------------------------- | -------------------------------- |
+| ![Login](./readme/login_postman.png) | ![Products](./readme/fetch_products_postman.png) | ![Restaurants](./readme/fetch_restaurants_postman.png) |
 
 <br><br>
 
-SmartDine empowers clients, equips owners, and keeps admins in control.  
+SmartDine empowers diners, equips restaurateurs, and elevates operations.  
 This is restaurant tech done right 🍴
 
 <br><br>
