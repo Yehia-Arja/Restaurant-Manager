@@ -116,7 +116,7 @@
 
 #### AI Demo
 
-<img src="./readme/AIVid.gif" width="500"/>
+<img src="./readme/chatting_vid.gif" width="500"/>
 
 <br><br>
 
@@ -127,8 +127,7 @@
 
 > The **SmartDine** app is deployed using **AWS EC2 instances**:  
 >
-> - **Staging**: `http://52.47.117.218`  
-> - **Production**: *(same instance used for demo)*  
+> - **Production**: `http://52.47.117.218`;    
 >
 > The application is **containerized using Docker** to ensure consistency across all environments.  
 > **CI/CD pipelines** are implemented via **GitHub Actions**, enabling automatic testing and deployment on every push to `main`.
