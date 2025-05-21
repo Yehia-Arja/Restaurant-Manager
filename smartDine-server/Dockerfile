@@ -1,25 +1,31 @@
-FROM bitnami/laravel:latest
+FROM bitnami/laravel
 
-USER root
+ARG ENV=production
+ARG OPENAI_API_KEY
 
-RUN apt-get update \
-    && apt-get install -y unzip gcc make autoconf g++ libzip-dev \
-    && pecl install redis \
-    && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini \
-    && rm -rf /var/lib/apt/lists/*
+ENV APP_ENV=${ENV}
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
-COPY . /app
-
-RUN mkdir -p /app/vendor /app/storage/logs /app/bootstrap/cache \
-    && chown -R 1001:1001 /app \
-    && chmod -R 775 /app/storage /app/bootstrap/cache
-
-USER 1001
 WORKDIR /app
 
-RUN composer install --no-interaction --prefer-dist
+# Use official Composer binary for dependency installation
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+COPY . .
 
-RUN chmod +x /app/shellScript.sh
+# Handle environment setup
+RUN if [ -f .env.${ENV} ]; then \
+    cp .env.${ENV} .env; \
+    else \
+    cp .env.example .env; \
+    fi
 
-CMD ["/app/shellScript.sh"]
+# Install optimized production dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Set correct permissions for Laravel
+RUN chmod -R 775 storage bootstrap/cache
+
+EXPOSE 8000
+
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
