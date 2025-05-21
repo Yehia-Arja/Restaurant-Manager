@@ -46,19 +46,19 @@
 
 ### User Screens (Mobile)
 
-| Home                            | Onboarding                           | Empty Chatting                        |
-| ------------------------------ | ------------------------------------ | ------------------------------------- |
-| ![Home](./homepage.jpg)        | ![Onboarding](./onboarding_screen.jpg) | ![Empty Chat](./empty_chatting.jpg)  |
+| Home                                      | Onboarding                                     | Empty Chatting                                  |
+| ---------------------------------------- | ---------------------------------------------- | ------------------------------------------------ |
+| <img src="./readme/demo/homepage.jpg" width="200"/> | <img src="./readme/demo/onboarding_screen.jpg" width="200"/> | <img src="./readme/demo/empty_chatting.jpg" width="200"/> |
 
-| Product Details                       | Search Page                         |                                      |
-| ------------------------------------ | ----------------------------------- | ----------------------------------- |
-| ![Product](./product_details.jpg)    | ![Search](./search_page.jpg)        |                                     |
+| Product Details                               | Search Page                                    |                                                 |
+| -------------------------------------------- | ---------------------------------------------- | ----------------------------------------------- |
+| <img src="./readme/demo/product_details.jpg" width="200"/> | <img src="./readme/demo/search_page.jpg" width="200"/> |                                                 |
 
 ### Admin Screens (Web)
 
-| Dashboard                              | Product Management                    |
-| -------------------------------------- | ------------------------------------- |
-| ![Dashboard](./readme/demo/admin1.png) | ![Products](./readme/demo/admin2.png) |
+| Dashboard                                    | Product Management                            |
+| ------------------------------------------- | --------------------------------------------- |
+| <img src="./readme/demo/admin1.png" width="300"/> | <img src="./readme/demo/admin2.png" width="300"/> |
 
 <br><br>
 
@@ -67,9 +67,9 @@
 
 ### Development Flow
 
-| Services                                      | Validation                                   | Testing                                 |
-| -------------------------------------------- | -------------------------------------------- | ---------------------------------------- |
-| ![Services](./Screenshot 2025-05-21 071221.png) | ![Validation](./Screenshot 2025-05-21 071627.png) | ![Test](./readme/demo/1440x1024.png)   |
+| Services                                      | Validation                                     | Testing                                 |
+| -------------------------------------------- | ---------------------------------------------- | ---------------------------------------- |
+| <img src="./readme/demo/service_flow.png" width="300"/> | <img src="./readme/demo/validation_flow.png" width="300"/> | <img src="./readme/demo/1440x1024.png" width="300"/> |
 
 🧩 Modular, feature-based folder structure  
 ✅ Clean validation with FormRequests + DTOs  
@@ -93,7 +93,7 @@
 
 | Auth API                              | Order API                             | AI API                                |
 | ------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) |
+| <img src="./readme/demo/1440x1024.png" width="300"/> | <img src="./readme/demo/1440x1024.png" width="300"/> | <img src="./readme/demo/1440x1024.png" width="300"/> |
 
 <br><br>
 
