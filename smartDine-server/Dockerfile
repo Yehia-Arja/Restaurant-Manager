@@ -1,31 +1,32 @@
-FROM bitnami/laravel
+FROM php:8.2-cli
 
-ARG ENV=production
-ARG OPENAI_API_KEY
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install pdo_mysql zip gd \
+    && pecl install redis \
+    && docker-php-ext-enable redis
 
-ENV APP_ENV=${ENV}
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
-
+# Set working directory
 WORKDIR /app
 
-# Use official Composer binary for dependency installation
+# Copy Composer from official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy source code
 COPY . .
 
-# Handle environment setup
-RUN if [ -f .env.${ENV} ]; then \
-    cp .env.${ENV} .env; \
-    else \
-    cp .env.example .env; \
-    fi
+# Copy default .env if needed
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
-# Install optimized production dependencies
+# Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set correct permissions for Laravel
+# Set correct permissions
 RUN chmod -R 775 storage bootstrap/cache
 
+# Expose port
 EXPOSE 8000
 
+# Run Laravel
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
