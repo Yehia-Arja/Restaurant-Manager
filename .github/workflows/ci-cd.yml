@@ -79,8 +79,12 @@ jobs:
             echo "Starting new containers..."
             docker compose up -d
 
-            echo "Waiting for DB..."
-            sleep 10
+            echo "Waiting for MySQL to be ready..."
+            until docker exec smartdine_app php artisan db:show &> /dev/null
+            do
+              echo "Still waiting for DB..."
+              sleep 2
+            done
 
             echo "Running migrations and seeders..."
             docker exec smartdine_app php artisan migrate:fresh --seed --force
