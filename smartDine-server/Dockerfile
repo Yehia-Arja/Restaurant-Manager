@@ -1,25 +1,32 @@
-FROM bitnami/laravel:latest
+FROM php:8.2-cli
 
-USER root
-
-RUN apt-get update \
-    && apt-get install -y unzip gcc make autoconf g++ libzip-dev \
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install pdo_mysql zip gd \
     && pecl install redis \
-    && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini \
-    && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-enable redis
 
-COPY . /app
-
-RUN mkdir -p /app/vendor /app/storage/logs /app/bootstrap/cache \
-    && chown -R 1001:1001 /app \
-    && chmod -R 775 /app/storage /app/bootstrap/cache
-
-USER 1001
+# Set working directory
 WORKDIR /app
 
-RUN composer install --no-interaction --prefer-dist
+# Copy Composer from official image
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy source code
+COPY . .
 
-RUN chmod +x /app/shellScript.sh
+# Copy default .env if needed
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
-CMD ["/app/shellScript.sh"]
+# Install Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Set correct permissions
+RUN chmod -R 775 storage bootstrap/cache
+
+# Expose port
+EXPOSE 8000
+
+# Run Laravel
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

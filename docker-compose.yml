@@ -1,65 +1,65 @@
-version: '3.8'
-
 services:
-  server:
-    container_name: smartdine-server
-    build: ./smartDine-server
+  app:
     image: yehiaarja/dockersmartdine:latest
-    env_file:
-      - ./smartDine-server/.env.example
-    restart: always
+    container_name: smartdine_app
     ports:
-      - 80:8000
+      - "8000:8000"
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=database
+      - DB_PORT=3306
+      - DB_DATABASE=smartdine
+      - DB_USERNAME=root
+      - DB_PASSWORD=secretpassword
+      - APP_ENV=production
+      - OPENAI_API_KEY=default_key
+    restart: always
     depends_on:
       - database
       - redis
-    command: /app/shellScript.sh
-    volumes:
-      - ./smartDine-server:/app 
+
   database:
-    container_name: smartdine-server-database-2
     image: mysql:8.0
-    environment:
-      - MYSQL_ROOT_PASSWORD=1234
-      - MYSQL_DATABASE=restaurant_db
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      retries: 10
-      timeout: 5s
+    container_name: smartdine_db
     ports:
-      - 3390:3306
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=secretpassword
+      - MYSQL_DATABASE=smartdine
     volumes:
-      - db-data:/var/lib/mysql
+      - smartdine_db:/var/lib/mysql
+    restart: always
 
   redis:
-    container_name: smartdine-redis-1
     image: redis:alpine
+    container_name: smartdine_redis
     ports:
-      - 6380:6379
+      - "6379:6379"
     volumes:
-      - redis-data:/data
+      - smartdine_redis:/data
+    restart: always
 
   phpmyadmin:
-    container_name: smartdine-phpmyadmin-1
     image: phpmyadmin/phpmyadmin
+    container_name: smartdine_phpmyadmin
     environment:
       - PMA_HOST=database
-      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_ROOT_PASSWORD=secretpassword
     ports:
-      - 8080:80
+      - "8080:80"
     depends_on:
       - database
+    restart: always
 
   ws-server:
-    image: yehiaarja/smartdine-ws:latest
+    image: yehiaarja/dockersmartdine-ws:latest
     container_name: smartdine_ws
-    restart: always
     ports:
-      - 3000:3000
+      - "3000:3000"
     depends_on:
-      - server
+      - app
+    restart: always
 
 volumes:
-  db-data:
-  redis-data:
+  smartdine_db:
+  smartdine_redis:
