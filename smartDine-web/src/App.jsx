@@ -1,11 +1,7 @@
-import AdminInsightsPage from './features/platformInsights/screens/AdminInsightsScreen';
+import AdminPanel from "./pages/AdminPanel";
 
 function App() {
-  return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
-      <AdminInsightsPage />
-    </div>
-  );
+	return <AdminPanel />;
 }
 
 export default App;
