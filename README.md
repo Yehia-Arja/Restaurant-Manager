@@ -26,18 +26,18 @@
 
 #### Database Diagram
 
-<img src="./readme/erd.svg"/>
+![ERD](./readme/erd.svg)
 
 #### Component Diagram
 
-<img src="./readme/componentsDiagram.drawio.png">
+![Components](./readme/componentsDiagram.drawio.png)
 
 <br><br>
 
 <!-- Project Highlights -->
 <img src="./readme/title4.svg"/>
 
-<img src="./readme/projectHighlight.svg"/>
+![Highlights](./readme/projectHighlight.svg)
 
 <br><br>
 
@@ -46,19 +46,19 @@
 
 ### User Screens (Mobile)
 
-| Home                                      | Onboarding                                     | Empty Chatting                                  |
-| ---------------------------------------- | ---------------------------------------------- | ------------------------------------------------ |
-| <img src="./readme/demo/homepage.jpg" width="200"/> | <img src="./readme/demo/onboarding_screen.jpg" width="200"/> | <img src="./readme/demo/empty_chatting.jpg" width="200"/> |
+| Home                             | Onboarding                          | Assistant Screen                     |
+| -------------------------------- | ----------------------------------- | ------------------------------------ |
+| ![Home](./readme/homepage.jpg)   | ![Onboarding](./readme/onboarding_screen.jpg) | ![Assistant](./readme/empty_chatting.jpg) |
 
-| Product Details                               | Search Page                                    |                                                 |
-| -------------------------------------------- | ---------------------------------------------- | ----------------------------------------------- |
-| <img src="./readme/demo/product_details.jpg" width="200"/> | <img src="./readme/demo/search_page.jpg" width="200"/> |                                                 |
+| Product Details                      | Search Page                         |                                      |
+| ----------------------------------- | ----------------------------------- | ------------------------------------ |
+| ![Product](./readme/product_details.jpg) | ![Search](./readme/search_page.jpg) |                                      |
 
 ### Admin Screens (Web)
 
-| Dashboard                                    | Product Management                            |
-| ------------------------------------------- | --------------------------------------------- |
-| <img src="./readme/demo/admin1.png" width="300"/> | <img src="./readme/demo/admin2.png" width="300"/> |
+| Dashboard                              | Product Management                    |
+| -------------------------------------- | ------------------------------------- |
+| ![Dashboard](./readme/admin1.png)      | ![Products](./readme/admin2.png)      |
 
 <br><br>
 
@@ -67,9 +67,9 @@
 
 ### Development Flow
 
-| Services                                      | Validation                                     | Testing                                 |
-| -------------------------------------------- | ---------------------------------------------- | ---------------------------------------- |
-| <img src="./readme/demo/service_flow.png" width="300"/> | <img src="./readme/demo/validation_flow.png" width="300"/> | <img src="./readme/demo/1440x1024.png" width="300"/> |
+| Services                               | Validation                             | Testing                                |
+| ------------------------------------- | -------------------------------------- | -------------------------------------- |
+| ![Services](./readme/Screenshot_2025-05-21_071221.png) | ![Validation](./readme/Screenshot_2025-05-21_071627.png) | ![Test](./readme/1440x1024.png) |
 
 🧩 Modular, feature-based folder structure  
 ✅ Clean validation with FormRequests + DTOs  
@@ -91,9 +91,9 @@
 📋 Health: `GET /v1/health` → `{ "status": "ok" }`  
 📄 Postman collection: `/docs/SmartDine.postman_collection.json`
 
-| Auth API                              | Order API                             | AI API                                |
-| ------------------------------------- | ------------------------------------- | ------------------------------------- |
-| <img src="./readme/demo/1440x1024.png" width="300"/> | <img src="./readme/demo/1440x1024.png" width="300"/> | <img src="./readme/demo/1440x1024.png" width="300"/> |
+| Auth API                          | Order API                         | AI API                            |
+| -------------------------------- | --------------------------------- | --------------------------------- |
+| ![Auth](./readme/1440x1024.png)  | ![Order](./readme/1440x1024.png)  | ![AI](./readme/1440x1024.png)     |
 
 <br><br>
 
