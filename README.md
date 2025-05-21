@@ -30,7 +30,7 @@
 
 #### Component Diagram
 
-<img src="./readme/Component Diagram.png"/>
+<img src="./readme/componentsDiagram.svg"/>
 
 <br><br>
 
