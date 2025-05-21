@@ -46,9 +46,13 @@
 
 ### User Screens (Mobile)
 
-| Login                             | Register                                | Home                            |
-| --------------------------------- | --------------------------------------- | ------------------------------- |
-| ![Login](./readme/demo/login.png) | ![Register](./readme/demo/register.png) | ![Home](./readme/demo/home.png) |
+| Home                            | Onboarding                           | Empty Chatting                        |
+| ------------------------------ | ------------------------------------ | ------------------------------------- |
+| ![Home](./homepage.jpg)        | ![Onboarding](./onboarding_screen.jpg) | ![Empty Chat](./empty_chatting.jpg)  |
+
+| Product Details                       | Search Page                         |                                      |
+| ------------------------------------ | ----------------------------------- | ----------------------------------- |
+| ![Product](./product_details.jpg)    | ![Search](./search_page.jpg)        |                                     |
 
 ### Admin Screens (Web)
 
@@ -63,9 +67,9 @@
 
 ### Development Flow
 
-| Services                              | Validation                            | Testing                               |
-| ------------------------------------- | ------------------------------------- | ------------------------------------- |
-| ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) | ![Empty](./readme/demo/1440x1024.png) |
+| Services                                      | Validation                                   | Testing                                 |
+| -------------------------------------------- | -------------------------------------------- | ---------------------------------------- |
+| ![Services](./Screenshot 2025-05-21 071221.png) | ![Validation](./Screenshot 2025-05-21 071627.png) | ![Test](./readme/demo/1440x1024.png)   |
 
 🧩 Modular, feature-based folder structure  
 ✅ Clean validation with FormRequests + DTOs  
