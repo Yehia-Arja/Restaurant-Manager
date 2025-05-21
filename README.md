@@ -48,6 +48,14 @@
 <!-- Demo -->
 <img src="./readme/title5.svg" />
 
+### Admin Panel
+
+![Admin Dashboard](./readme/admin_panel.png)
+
+> - **Real-time order tracking** with live updates  
+> - **Restaurant performance** analytics  
+> - **Menu management** with AI-powered suggestions  
+
 ### User Screens (Mobile)
 
 | Home                              | Onboarding                           | Assistant                           |
@@ -127,7 +135,7 @@
 
 > The **SmartDine** app is deployed using **AWS EC2 instances**:  
 >
-> - **Production**: `http://52.47.117.218`;    
+> - **Production**: `http://52.47.117.218`  
 >
 > The application is **containerized using Docker** to ensure consistency across all environments.  
 > **CI/CD pipelines** are implemented via **GitHub Actions**, enabling automatic testing and deployment on every push to `main`.
@@ -151,4 +159,4 @@ This is restaurant tech done right 🍴
 
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).
+This project is licensed under the [MIT License](./LICENSE)
