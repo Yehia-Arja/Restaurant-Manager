@@ -18,7 +18,6 @@
 ### Architecture Overview
 
 ✅ **Client App**: Flutter mobile app  
-✅ **Admin Panel**: React.js dashboard  
 ✅ **API Layer**: Laravel backend for business logic  
 ✅ **Real-Time**: Node.js + Socket.IO for WebSocket updates  
 ✅ **Infrastructure**: Docker + GitHub Actions → AWS EC2  
@@ -34,31 +33,8 @@
 
 <br><br>
 
-<!-- Admin Panel -->
-<img src="./readme/title4.svg" />
-
-### Admin Dashboard Screens
-
-| Dashboard Overview               | Restaurant Management          | Order Analytics               |
-| -------------------------------- | ------------------------------ | ----------------------------- |
-| <img src="./readme/admin_dashboard.png" width="220"/> | <img src="./readme/admin_restaurants.png" width="220"/> | <img src="./readme/admin_orders.png" width="220"/> |
-
-| Menu Management                  | Customer Insights              | Real-Time Monitoring          |
-| -------------------------------- | ------------------------------ | ----------------------------- |
-| <img src="./readme/admin_menu.png" width="220"/> | <img src="./readme/admin_customers.png" width="220"/> | <img src="./readme/admin_monitoring.png" width="220"/> |
-
-### Admin Features
-
-> - **Real-time order tracking** with live updates  
-> - **Restaurant performance** analytics  
-> - **Menu management** with AI-powered suggestions  
-> - **Staff management** with role-based access  
-> - **Customer insights** with spending patterns  
-
-<br><br>
-
 <!-- Project Highlights -->
-<img src="./readme/title5.svg" />
+<img src="./readme/title4.svg" />
 
 <img src="./readme/projectHighlight.svg" width="100%"/>
 
@@ -70,7 +46,15 @@
 <br><br>
 
 <!-- Demo -->
-<img src="./readme/title6.svg" />
+<img src="./readme/title5.svg" />
+
+### Admin Panel
+
+![Admin Dashboard](./readme/admin_panel.png)
+
+> - **Real-time order tracking** with live updates  
+> - **Restaurant performance** analytics  
+> - **Menu management** with AI-powered suggestions  
 
 ### User Screens (Mobile)
 
@@ -99,7 +83,7 @@
 <br><br>
 
 <!-- Development -->
-<img src="./readme/title7.svg" />
+<img src="./readme/title6.svg" />
 
 ### Development Flow
 
@@ -119,7 +103,7 @@
 <br><br>
 
 <!-- AI Integration -->
-<img src="./readme/title8.svg" />
+<img src="./readme/title7.svg" />
 
 ### AI-Powered Recommendations 🤖
 
@@ -145,14 +129,13 @@
 <br><br>
 
 <!-- Deployment -->
-<img src="./readme/title9.svg" />
+<img src="./readme/title8.svg" />
 
 ### Deployment Pipeline 🚀
 
 > The **SmartDine** app is deployed using **AWS EC2 instances**:  
 >
 > - **Production**: `http://52.47.117.218`  
-> - **Admin Panel**: `http://52.47.117.218/admin`  
 >
 > The application is **containerized using Docker** to ensure consistency across all environments.  
 > **CI/CD pipelines** are implemented via **GitHub Actions**, enabling automatic testing and deployment on every push to `main`.
