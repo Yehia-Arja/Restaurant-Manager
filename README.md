@@ -6,7 +6,7 @@
 <img src="./readme/title2.svg" />
 
 > **SmartDine** is a cloud-powered restaurant system built for speed, scalability, and real-time operations.  
-> From AR menus and AI combos to live seat tracking and AI assistant — everything works instantly and in sync.  
+> From AR menus and AI combos to live seat tracking and AI assistant everything works instantly and in sync.  
 > Clean Flutter UI. Secure Laravel backend. Real-time updates via WebSockets.  
 > Built to scale. Easy to use. Feels like magic, runs like engineering ⚙️
 
